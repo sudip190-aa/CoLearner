@@ -181,7 +181,7 @@ export default function Signup() {
             {[1, 2, 3].map((level) => (
               <span
                 key={level}
-                className={`h-1.5 flex-1 rounded-full ${strength(password) >= level ? (strength(password) === 3 ? 'bg-c-success' : 'bg-c-yellow') : 'bg-c-border'}`}
+                className={`h-1.5 flex-1 rounded-full ${strength(password) >= level ? (strength(password) === 3 ? 'bg-c-success-solid' : 'bg-c-yellow') : 'bg-c-border'}`}
               />
             ))}
           </div>

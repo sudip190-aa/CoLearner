@@ -26,7 +26,18 @@ export const messages = {
       query = query.or(
         `created_at.lt.${before.created_at},and(created_at.eq.${before.created_at},id.lt.${before.id})`,
       )
-    return (await result(query)).reverse()
+    const items = (await result(query)).reverse()
+    const ids = [
+      ...new Set(items.map((item) => item.reply_to_id).filter(Boolean)),
+    ]
+    const originals = ids.length
+      ? await result(supabase.from('direct_messages').select('*').in('id', ids))
+      : []
+    return items.map((item) => ({
+      ...item,
+      reply:
+        originals.find((original) => original.id === item.reply_to_id) || null,
+    }))
   },
   uploadImage: async (peer, file, id) => {
     if (
@@ -87,6 +98,7 @@ export const messages = {
     id = crypto.randomUUID(),
     imagePath = null,
     audio = null,
+    replyTo = null,
   ) => {
     const sender = await viewerId()
     const response = await supabase
@@ -99,6 +111,7 @@ export const messages = {
         image_path: imagePath,
         audio_path: audio?.path || null,
         audio_duration_ms: audio?.durationMs || null,
+        reply_to_id: replyTo,
       })
       .select()
       .single()
@@ -113,7 +126,8 @@ export const messages = {
         saved.body === body.trim() &&
         saved.image_path === imagePath &&
         saved.audio_path === (audio?.path || null) &&
-        saved.audio_duration_ms === (audio?.durationMs || null)
+        saved.audio_duration_ms === (audio?.durationMs || null) &&
+        saved.reply_to_id === replyTo
       )
         return saved
     }

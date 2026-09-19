@@ -1,6 +1,15 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, CircleSlash, ExternalLink, Eye, Flag, RotateCcw, Trash2, UserX } from 'lucide-react'
+import {
+  Check,
+  CircleSlash,
+  ExternalLink,
+  Eye,
+  Flag,
+  RotateCcw,
+  Trash2,
+  UserX,
+} from 'lucide-react'
 import {
   Avatar,
   Badge,
@@ -22,8 +31,18 @@ import {
 } from '../../components/admin/AdminParts.jsx'
 import { admin } from '../../services/api.js'
 
-const STATUS_VARIANT = { open: 'warning', review: 'blue', resolved: 'success', dismissed: 'gray' }
-const STATUS_LABEL = { open: 'Open', review: 'In review', resolved: 'Resolved', dismissed: 'Dismissed' }
+const STATUS_VARIANT = {
+  open: 'warning',
+  review: 'blue',
+  resolved: 'success',
+  dismissed: 'gray',
+}
+const STATUS_LABEL = {
+  open: 'Open',
+  review: 'In review',
+  resolved: 'Resolved',
+  dismissed: 'Dismissed',
+}
 const TYPE_LABEL = { thread: 'Discussion', comment: 'Comment', user: 'Profile' }
 
 const targetLink = (target) => {
@@ -38,17 +57,26 @@ function ReportCard({ report, busy, onAct, onConfirm }) {
   const link = targetLink(target)
   const closed = report.status === 'resolved' || report.status === 'dismissed'
   return (
-    <article data-report={report.id} data-status={report.status} className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm">
+    <article
+      data-report={report.id}
+      data-status={report.status}
+      className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm"
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-xs text-c-text-muted">
-            <Badge variant="gray" size="sm">{TYPE_LABEL[target.type] || target.type}</Badge>
+            <Badge variant="gray" size="sm">
+              {TYPE_LABEL[target.type] || target.type}
+            </Badge>
             <span>{formatDay(report.createdAt)}</span>
             {target.author && <span>by @{target.author}</span>}
           </div>
           <h2 className="mt-2 text-base font-bold text-c-text">
             {link ? (
-              <Link to={link} className="inline-flex items-center gap-1.5 hover:text-c-blue">
+              <Link
+                to={link}
+                className="inline-flex items-center gap-1.5 hover:text-c-blue"
+              >
                 {target.label}
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
@@ -67,48 +95,87 @@ function ReportCard({ report, busy, onAct, onConfirm }) {
         </Badge>
       </div>
       <div className="mt-4 flex items-center gap-2 text-sm text-c-text-muted">
-        <Avatar src={report.reporter.avatar} name={report.reporter.fullName} size="sm" />
+        <Avatar
+          src={report.reporter.avatar}
+          name={report.reporter.fullName}
+          size="sm"
+        />
         <span>
-          <span className="font-semibold text-c-text">{report.reporter.fullName}</span> reported this: “{report.reason}”
+          <span className="font-semibold text-c-text">
+            {report.reporter.fullName}
+          </span>{' '}
+          reported this: “{report.reason}”
         </span>
       </div>
       <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-c-border pt-4">
         {closed ? (
-          <Button size="sm" variant="ghost" icon={RotateCcw} disabled={busy} onClick={() => onAct(report, 'reopen', 'Report reopened')}>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={RotateCcw}
+            disabled={busy}
+            onClick={() => onAct(report, 'reopen', 'Report reopened')}
+          >
             Reopen
           </Button>
         ) : (
           <>
             {report.status === 'open' && (
-              <Button size="sm" variant="ghost" icon={Eye} disabled={busy} onClick={() => onAct(report, 'review', 'Marked as in review')}>
+              <Button
+                size="sm"
+                variant="ghost"
+                icon={Eye}
+                disabled={busy}
+                onClick={() => onAct(report, 'review', 'Marked as in review')}
+              >
                 Start review
               </Button>
             )}
-            <Button size="sm" variant="ghost" icon={CircleSlash} disabled={busy} onClick={() => onAct(report, 'dismiss', 'Report dismissed')}>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={CircleSlash}
+              disabled={busy}
+              onClick={() => onAct(report, 'dismiss', 'Report dismissed')}
+            >
               Dismiss
             </Button>
-            <Button size="sm" variant="ghost" icon={Check} disabled={busy} onClick={() => onAct(report, 'resolve', 'Report resolved')}>
+            <Button
+              size="sm"
+              variant="ghost"
+              icon={Check}
+              disabled={busy}
+              onClick={() => onAct(report, 'resolve', 'Report resolved')}
+            >
               Resolve
             </Button>
-            {target.exists && (target.type === 'thread' || target.type === 'comment') && (
-              <Button
-                size="sm"
-                variant="danger"
-                icon={Trash2}
-                disabled={busy}
-                onClick={() =>
-                  onConfirm({
-                    title: `Remove this ${TYPE_LABEL[target.type].toLowerCase()}?`,
-                    description: 'It is deleted for everyone, and every report about it is closed. This cannot be undone.',
-                    confirmLabel: 'Remove content',
-                    danger: true,
-                    onConfirm: () => onAct(report, 'remove_content', 'Content removed', true),
-                  })
-                }
-              >
-                Remove content
-              </Button>
-            )}
+            {target.exists &&
+              (target.type === 'thread' || target.type === 'comment') && (
+                <Button
+                  size="sm"
+                  variant="danger"
+                  icon={Trash2}
+                  disabled={busy}
+                  onClick={() =>
+                    onConfirm({
+                      title: `Remove this ${TYPE_LABEL[target.type].toLowerCase()}?`,
+                      description:
+                        'It is deleted for everyone, and every report about it is closed. This cannot be undone.',
+                      confirmLabel: 'Remove content',
+                      danger: true,
+                      onConfirm: () =>
+                        onAct(
+                          report,
+                          'remove_content',
+                          'Content removed',
+                          true,
+                        ),
+                    })
+                  }
+                >
+                  Remove content
+                </Button>
+              )}
             {target.exists && target.type === 'user' && (
               <Button
                 size="sm"
@@ -118,10 +185,17 @@ function ReportCard({ report, busy, onAct, onConfirm }) {
                 onClick={() =>
                   onConfirm({
                     title: `Deactivate @${target.username}?`,
-                    description: 'They are signed out and cannot log in. You can reactivate them from Users. Staff accounts cannot be deactivated here.',
+                    description:
+                      'They are signed out and cannot log in. You can reactivate them from Users. Staff accounts cannot be deactivated here.',
                     confirmLabel: 'Deactivate account',
                     danger: true,
-                    onConfirm: () => onAct(report, 'deactivate_user', 'Account deactivated', true),
+                    onConfirm: () =>
+                      onAct(
+                        report,
+                        'deactivate_user',
+                        'Account deactivated',
+                        true,
+                      ),
                   })
                 }
               >
@@ -141,7 +215,10 @@ export default function AdminReports() {
   const [page, setPage] = useState(1)
   const [confirm, setConfirm] = useState(null)
   const [busy, setBusy] = useState(null)
-  const list = useAdminList(admin.adminListReports, { status: tab === 'all' ? '' : tab, page })
+  const list = useAdminList(admin.adminListReports, {
+    status: tab === 'all' ? '' : tab,
+    page,
+  })
   const { data } = list
 
   // rethrow=true lets a confirm dialog show the server's reason instead of closing
@@ -152,7 +229,10 @@ export default function AdminReports() {
       toast.success(message)
       list.reload()
     } catch (error) {
-      const reason = error?.fields?.action?.[0] || error?.message || 'Could not update the report'
+      const reason =
+        error?.fields?.action?.[0] ||
+        error?.message ||
+        'Could not update the report'
       if (rethrow) throw new Error(reason, { cause: error })
       toast.error(reason)
     } finally {
@@ -166,7 +246,10 @@ export default function AdminReports() {
 
   return (
     <div>
-      <PageHeader title="Reports" subtitle="Triage community reports and leave a clear moderation trail." />
+      <PageHeader
+        title="Reports"
+        subtitle="Triage community reports and leave a clear moderation trail."
+      />
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <Tabs value={tab} onChange={changeTab}>
           <TabsList>
@@ -185,12 +268,22 @@ export default function AdminReports() {
       </div>
       {list.status === 'error' && <ListError onRetry={list.reload} />}
       {list.status === 'loading' ? (
-        <div className="space-y-3">{[1, 2, 3].map((n) => <Skeleton key={n} height="150px" />)}</div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((n) => (
+            <Skeleton key={n} height="150px" />
+          ))}
+        </div>
       ) : data?.items.length ? (
         <>
           <div className="space-y-4">
             {data.items.map((report) => (
-              <ReportCard key={report.id} report={report} busy={busy === report.id} onAct={act} onConfirm={setConfirm} />
+              <ReportCard
+                key={report.id}
+                report={report}
+                busy={busy === report.id}
+                onAct={act}
+                onConfirm={setConfirm}
+              />
             ))}
           </div>
           <Pager data={data} onPage={setPage} />
@@ -198,7 +291,11 @@ export default function AdminReports() {
       ) : (
         <EmptyState
           title={tab === 'pending' ? 'Queue is clear' : 'Nothing here'}
-          description={tab === 'pending' ? 'New reports will appear here.' : 'No reports with this status.'}
+          description={
+            tab === 'pending'
+              ? 'New reports will appear here.'
+              : 'No reports with this status.'
+          }
         />
       )}
       <ConfirmModal request={confirm} onClose={() => setConfirm(null)} />

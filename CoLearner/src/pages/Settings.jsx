@@ -68,7 +68,7 @@ const profileErrorMap = {
 
 function SettingsSection({ title, description, children, footer }) {
   return (
-    <section className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm sm:p-7">
+    <section className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm sm:p-7">
       <div className="border-b border-c-border pb-5">
         <h2 className="text-xl font-bold text-c-text">{title}</h2>
         <p className="mt-1 text-sm text-c-text-muted">{description}</p>
@@ -463,7 +463,7 @@ function DangerTab() {
 
   return (
     <>
-      <section className="rounded-brand-lg border border-c-danger/30 bg-white p-5 shadow-sm sm:p-7">
+      <section className="rounded-brand-lg border border-c-danger/30 bg-c-surface p-5 shadow-sm sm:p-7">
         <h2 className="text-xl font-bold text-c-danger">Danger zone</h2>
         <p className="mt-1 text-sm text-c-text-muted">
           These actions affect your account and cannot be undone.
@@ -492,7 +492,7 @@ function DangerTab() {
         title="Delete your account"
         description="This action cannot be undone."
       >
-        <div className="rounded-brand bg-red-50 p-4 text-sm leading-6 text-c-danger">
+        <div className="rounded-brand bg-c-danger-soft p-4 text-sm leading-6 text-c-danger">
           Type <strong>DELETE</strong> and enter your password to permanently
           delete your account.
         </div>
@@ -548,7 +548,7 @@ export default function Settings() {
               type="button"
               key={id}
               onClick={() => setTab(id)}
-              className={`flex shrink-0 items-center gap-3 rounded-brand px-3 py-2.5 text-left text-sm font-semibold ${tab === id ? 'bg-c-blue-soft text-c-blue' : 'text-c-text-muted hover:bg-slate-50'}`}
+              className={`flex shrink-0 items-center gap-3 rounded-brand px-3 py-2.5 text-left text-sm font-semibold ${tab === id ? 'bg-c-blue-soft text-c-blue' : 'text-c-text-muted hover:bg-c-blue-wash'}`}
             >
               <Icon className="h-4 w-4" />
               {label}

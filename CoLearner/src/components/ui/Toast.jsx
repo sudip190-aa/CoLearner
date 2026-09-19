@@ -13,10 +13,10 @@ const ICONS = {
 }
 
 const STYLES = {
-  success: 'bg-white border-emerald-200 text-c-text',
-  error: 'bg-white border-rose-200 text-c-text',
-  warning: 'bg-white border-amber-200 text-c-text',
-  info: 'bg-white border-c-blue/30 text-c-text',
+  success: 'bg-c-surface border-c-success/30 text-c-text',
+  error: 'bg-c-surface border-c-danger/30 text-c-text',
+  warning: 'bg-c-surface border-c-warning/30 text-c-text',
+  info: 'bg-c-surface border-c-blue/30 text-c-text',
 }
 
 const ICON_STYLES = {
@@ -108,7 +108,7 @@ export function ToastContainer({ toasts, onDismiss }) {
             <button
               type="button"
               onClick={() => onDismiss(item.id)}
-              className="p-1 rounded text-c-text-muted hover:text-c-text hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
+              className="p-1 rounded text-c-text-muted hover:text-c-text hover:bg-c-blue-soft transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
               aria-label="Dismiss toast"
             >
               <X className="w-3.5 h-3.5" />

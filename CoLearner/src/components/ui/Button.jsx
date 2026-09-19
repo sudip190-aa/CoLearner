@@ -5,18 +5,18 @@ import { Loader2 } from 'lucide-react'
 
 const VARIANT_STYLES = {
   primary:
-    'bg-c-blue hover:bg-c-blue-hover active:bg-c-blue-hover text-white shadow-sm border border-transparent',
+    'bg-c-action hover:bg-c-action-hover active:bg-c-action-hover text-white shadow-sm border border-transparent',
   secondary:
-    'bg-c-blue-soft hover:bg-c-blue-soft/80 active:bg-blue-100 text-c-blue border border-transparent font-medium',
+    'bg-c-blue-soft hover:bg-c-blue-soft/80 active:bg-c-blue-soft text-c-blue border border-transparent font-medium',
   outline:
-    'bg-white hover:bg-c-blue-soft/40 active:bg-c-blue-soft text-c-blue border border-c-blue font-medium',
+    'bg-c-surface hover:bg-c-blue-soft/40 active:bg-c-blue-soft text-c-blue border border-c-blue font-medium',
   ghost:
-    'bg-transparent hover:bg-slate-100 active:bg-slate-200 text-c-text border border-transparent font-medium',
+    'bg-transparent hover:bg-c-blue-soft active:bg-c-border text-c-text border border-transparent font-medium',
   danger:
-    'bg-c-danger hover:bg-red-700 active:bg-red-800 text-white shadow-sm border border-transparent font-medium',
+    'bg-c-danger-solid hover:bg-red-700 active:bg-red-800 text-white shadow-sm border border-transparent font-medium',
   // Yellow Law: yellow always uses dark text.
   yellow:
-    'bg-c-yellow hover:bg-c-yellow-soft active:bg-c-yellow-soft text-c-text font-bold shadow-sm border border-transparent',
+    'bg-c-yellow hover:bg-c-yellow/80 active:bg-c-yellow/80 text-c-on-accent font-bold shadow-sm border border-transparent',
 }
 
 const SIZE_STYLES = {

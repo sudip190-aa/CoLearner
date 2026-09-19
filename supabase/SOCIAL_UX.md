@@ -1,5 +1,7 @@
 # Social features and UX stabilization
 
+For the latest member-only project chat/voice, persistent replies, navigation counters, post mentions, independent personal showcases and global themes, see the [completion report](COMPLETION_REPORT.md). Personal profile showcases are separate from the older collaborative project's showcase flag described below.
+
 ## Existing architecture
 
 React 18, Vite, React Router, Tailwind, Zustand authentication and TanStack Query remain in place. Supabase Auth, PostgreSQL RLS, Storage and Realtime are the backend. Existing profiles, connections, direct messages, WebRTC calls, projects, join requests, comments and notifications are extended. Retained Django code is not involved.

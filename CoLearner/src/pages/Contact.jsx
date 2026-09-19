@@ -78,7 +78,7 @@ export default function Contact() {
                 role="status"
                 className="rounded-2xl border border-c-blue/20 bg-c-blue-wash p-8"
               >
-                <span className="inline-flex rounded-full bg-c-yellow p-3 text-c-text">
+                <span className="inline-flex rounded-full bg-c-yellow p-3 text-c-on-accent">
                   <Check size={24} aria-hidden="true" />
                 </span>
                 <h2 className="mt-5 text-2xl font-semibold">
@@ -104,7 +104,7 @@ export default function Contact() {
                 onSubmit={submit}
                 aria-label="Contact form"
                 aria-busy={submitting}
-                className="space-y-5 rounded-2xl border border-c-border bg-white p-6 sm:p-8"
+                className="space-y-5 rounded-2xl border border-c-border bg-c-surface p-6 sm:p-8"
               >
                 <div>
                   <h2 className="text-xl font-semibold">Send a message</h2>
@@ -164,7 +164,7 @@ export default function Contact() {
                 {error && (
                   <p
                     role="alert"
-                    className="rounded-lg bg-red-50 px-3 py-2 text-sm text-c-danger"
+                    className="rounded-lg bg-c-danger-soft px-3 py-2 text-sm text-c-danger"
                   >
                     {error}
                   </p>

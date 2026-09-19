@@ -598,6 +598,9 @@ try {
     await A.wait(
       "!!document.querySelector('[aria-label=\"Friend to invite\"]')",
     );
+    await A.wait(
+      `!!document.querySelector('[aria-label="Friend to invite"] option[value="${b.user.user_metadata.username}"]')`,
+    );
     await A.fill(
       '[aria-label="Friend to invite"]',
       b.user.user_metadata.username,

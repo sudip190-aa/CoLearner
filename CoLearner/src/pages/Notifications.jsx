@@ -27,7 +27,7 @@ function NotificationRow({ notification, onOpen }) {
       type="button"
       onClick={() => onOpen(notification)}
       data-notification-id={notification.id}
-      className={`flex w-full items-start gap-3 border-b border-c-border p-4 text-left transition-colors hover:bg-c-blue-wash ${notification.isRead ? 'bg-white' : 'bg-c-blue-soft'}`}
+      className={`flex w-full items-start gap-3 border-b border-c-border p-4 text-left transition-colors hover:bg-c-blue-wash ${notification.isRead ? 'bg-c-surface' : 'bg-c-blue-soft'}`}
     >
       <Avatar
         src={notification.actor?.avatar}
@@ -46,7 +46,7 @@ function NotificationRow({ notification, onOpen }) {
       </div>
       {!notification.isRead && (
         <span
-          className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-c-blue"
+          className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-c-action"
           aria-label="Unread"
         />
       )}
@@ -136,14 +136,14 @@ export default function Notifications() {
           icon={Bell}
         />
       ) : (
-        <div className="overflow-hidden rounded-brand-lg border border-c-border bg-white shadow-sm">
+        <div className="overflow-hidden rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
           {groups.map((group) => {
             const items = filtered.filter(
               (notification) => groupFor(notification.createdAt) === group,
             )
             return items.length ? (
               <section key={group}>
-                <h2 className="border-b border-c-border bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-c-text-muted">
+                <h2 className="border-b border-c-border bg-c-blue-wash px-4 py-3 text-xs font-bold uppercase tracking-wide text-c-text-muted">
                   {group}
                 </h2>
                 {items.map((notification) => (

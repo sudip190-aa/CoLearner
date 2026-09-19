@@ -47,7 +47,7 @@ export const Checkbox = forwardRef(function Checkbox(
               'pointer-events-none flex h-5 w-5 items-center justify-center rounded-md border transition-all duration-150',
               'peer-focus-visible:ring-2 peer-focus-visible:ring-c-blue peer-focus-visible:ring-offset-2',
               error ? 'border-c-danger' : 'border-c-border',
-              'bg-white peer-checked:border-c-blue peer-checked:bg-c-blue text-transparent peer-checked:text-white',
+              'bg-c-surface peer-checked:border-c-blue peer-checked:bg-c-action text-transparent peer-checked:text-white',
               'hover:border-c-blue/70',
               className,
             )}

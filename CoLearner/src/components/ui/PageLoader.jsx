@@ -8,7 +8,7 @@ export function PageLoader({
   className,
 }) {
   const containerClasses = clsx(
-    'flex flex-col items-center justify-center bg-white text-c-text select-none',
+    'flex flex-col items-center justify-center bg-c-surface text-c-text select-none',
     fullScreen ? 'fixed inset-0 z-50 min-h-screen' : 'py-24 w-full',
     className,
   )

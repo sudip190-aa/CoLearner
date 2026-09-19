@@ -27,7 +27,7 @@ export const Comparison = () => {
 
         <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden border border-c-border shadow-sm">
           {/* Header row */}
-          <div className="grid grid-cols-3 bg-white">
+          <div className="grid grid-cols-3 bg-c-surface">
             <div className="px-3 sm:px-6 py-4 text-xs sm:text-sm font-bold text-c-text-muted uppercase tracking-wider border-b border-r border-c-border">
               Features
             </div>
@@ -48,7 +48,7 @@ export const Comparison = () => {
             return (
               <div
                 key={feature.label}
-                className={`grid grid-cols-3 ${isEven ? 'bg-white' : 'bg-c-blue-wash/30'}`}
+                className={`grid grid-cols-3 ${isEven ? 'bg-c-surface' : 'bg-c-blue-wash/30'}`}
               >
                 {/* Label */}
                 <div className="px-3 sm:px-6 py-4 flex items-center text-xs sm:text-sm font-medium text-c-text border-r border-c-border">
@@ -57,7 +57,7 @@ export const Comparison = () => {
 
                 {/* Colearn ✓ */}
                 <div className="px-3 sm:px-6 py-4 flex items-center justify-center border-r border-c-border bg-c-blue-soft/20">
-                  <span className="w-7 h-7 rounded-full bg-c-blue flex items-center justify-center shadow-sm">
+                  <span className="w-7 h-7 rounded-full bg-c-action flex items-center justify-center shadow-sm">
                     <Check size={15} className="text-white" strokeWidth={3} />
                   </span>
                 </div>

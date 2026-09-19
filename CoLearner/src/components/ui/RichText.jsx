@@ -12,7 +12,7 @@ export function Inline({ text, mentions }) {
         return (
           <code
             key={index}
-            className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.9em]"
+            className="rounded bg-c-blue-soft px-1.5 py-0.5 font-mono text-[0.9em]"
           >
             {token.text}
           </code>
@@ -62,7 +62,7 @@ export function RichText({ text, className = '', mentions }) {
         block.type === 'code' ? (
           <pre
             key={index}
-            className="overflow-x-auto rounded-brand bg-c-text p-4 font-mono text-sm leading-6 text-white"
+            className="overflow-x-auto rounded-brand bg-c-ink p-4 font-mono text-sm leading-6 text-white"
           >
             <code>{block.text}</code>
           </pre>

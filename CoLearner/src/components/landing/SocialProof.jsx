@@ -10,7 +10,7 @@ const companies = [
 
 export const SocialProof = () => {
   return (
-    <section className="py-12 border-b border-c-border bg-white">
+    <section className="py-12 border-b border-c-border bg-c-surface">
       <div className="container mx-auto px-4">
         <p className="text-center text-sm font-semibold text-c-text-muted uppercase tracking-wider mb-8">
           Learners from top companies

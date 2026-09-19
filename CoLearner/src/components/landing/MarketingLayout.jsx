@@ -27,7 +27,7 @@ export function MarketingLayout() {
     previousPath.current = pathname
   }, [pathname])
   return (
-    <div className="min-h-screen bg-white font-sans text-c-text">
+    <div className="min-h-screen bg-c-surface font-sans text-c-text">
       <LandingNav key={pathname} />
       <main
         id="main-content"

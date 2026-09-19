@@ -42,7 +42,7 @@ const faqs = [
 
 export const FAQ = () => {
   return (
-    <section className="py-14 md:py-24 bg-white">
+    <section className="py-14 md:py-24 bg-c-surface">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-c-text mb-4">

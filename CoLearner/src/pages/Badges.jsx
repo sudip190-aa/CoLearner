@@ -18,7 +18,13 @@ import {
   Star,
   Trophy,
 } from 'lucide-react'
-import { Badge, EmptyState, Modal, ProgressBar, Skeleton } from '../components/ui'
+import {
+  Badge,
+  EmptyState,
+  Modal,
+  ProgressBar,
+  Skeleton,
+} from '../components/ui'
 import { PageHeader } from '../components/layout/PageHeader'
 import { formatDate } from '../lib/formatters.js'
 import { game } from '../services/api.js'
@@ -50,10 +56,10 @@ function BadgeTile({ badge, earned, onOpen }) {
       onClick={() => onOpen(badge)}
       data-badge={badge.criteriaKey}
       data-earned={earned ? 'true' : 'false'}
-      className={`group rounded-brand-lg border border-c-border bg-white p-5 text-left shadow-sm transition-shadow hover:shadow-md ${earned ? '' : 'opacity-60'}`}
+      className={`group rounded-brand-lg border border-c-border bg-c-surface p-5 text-left shadow-sm transition-shadow hover:shadow-md ${earned ? '' : 'opacity-60'}`}
     >
       <div
-        className={`flex h-14 w-14 items-center justify-center rounded-full ${earned ? 'bg-c-yellow-soft text-c-text' : 'bg-slate-100 text-slate-400'}`}
+        className={`flex h-14 w-14 items-center justify-center rounded-full ${earned ? 'bg-c-yellow-soft text-c-text' : 'bg-c-blue-soft text-c-text-muted'}`}
       >
         <Icon className="h-7 w-7" />
       </div>
@@ -95,15 +101,27 @@ function BadgesSkeleton() {
 
 export default function Badges() {
   const [selected, setSelected] = useState(null)
-  const [state, setState] = useState({ key: -1, status: 'loading', earned: [], locked: [] })
+  const [state, setState] = useState({
+    key: -1,
+    status: 'loading',
+    earned: [],
+    locked: [],
+  })
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     let active = true
     game
       .getBadges()
-      .then(({ earned, locked }) => active && setState({ key: attempt, status: 'ready', earned, locked }))
-      .catch(() => active && setState({ key: attempt, status: 'error', earned: [], locked: [] }))
+      .then(
+        ({ earned, locked }) =>
+          active && setState({ key: attempt, status: 'ready', earned, locked }),
+      )
+      .catch(
+        () =>
+          active &&
+          setState({ key: attempt, status: 'error', earned: [], locked: [] }),
+      )
     return () => {
       active = false
     }
@@ -111,7 +129,10 @@ export default function Badges() {
 
   const { earned, locked } = state
   const status = state.key === attempt ? state.status : 'loading'
-  const earnedIds = useMemo(() => new Set(earned.map((badge) => badge.id)), [earned])
+  const earnedIds = useMemo(
+    () => new Set(earned.map((badge) => badge.id)),
+    [earned],
+  )
   const byCategory = useMemo(() => {
     const groups = {}
     for (const badge of [...earned, ...locked]) {
@@ -123,7 +144,12 @@ export default function Badges() {
     ]
     return order
       .filter((name) => groups[name])
-      .map((name) => [name, groups[name].sort((a, b) => a.required - b.required || a.xpReward - b.xpReward)])
+      .map((name) => [
+        name,
+        groups[name].sort(
+          (a, b) => a.required - b.required || a.xpReward - b.xpReward,
+        ),
+      ])
   }, [earned, locked])
 
   const isEarned = (badge) => earnedIds.has(badge.id)

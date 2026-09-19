@@ -64,7 +64,7 @@ export const LandingFooter = () => {
       <div className="container">
         <section
           aria-labelledby="newsletter-title"
-          className="grid items-center gap-8 rounded-[28px] bg-c-blue-hover px-6 py-10 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-14 lg:py-14"
+          className="grid items-center gap-8 rounded-[28px] bg-c-action-hover px-6 py-10 sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-14 lg:py-14"
         >
           <div>
             <h2
@@ -125,12 +125,12 @@ export const LandingFooter = () => {
                         ? 'newsletter-error newsletter-consent'
                         : 'newsletter-consent'
                     }
-                    className="min-w-0 flex-1 rounded-full border border-transparent bg-white px-5 py-3.5 text-sm text-c-text placeholder:text-c-text-muted focus:border-c-yellow focus:outline-none focus:ring-2 focus:ring-c-yellow/40 disabled:opacity-60"
+                    className="min-w-0 flex-1 rounded-full border border-transparent bg-c-surface px-5 py-3.5 text-sm text-c-text placeholder:text-c-text-muted focus:border-c-yellow focus:outline-none focus:ring-2 focus:ring-c-yellow/40 disabled:opacity-60"
                   />
                   <button
                     type="submit"
                     disabled={status === 'pending'}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-c-yellow px-7 py-3.5 text-sm font-semibold text-c-text transition-colors hover:bg-c-yellow-soft focus-visible:outline-c-yellow disabled:cursor-wait disabled:opacity-70"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-c-yellow px-7 py-3.5 text-sm font-semibold text-c-on-accent transition-colors hover:bg-c-yellow/80 focus-visible:outline-c-yellow disabled:cursor-wait disabled:opacity-70"
                   >
                     {status === 'pending' && (
                       <Loader2

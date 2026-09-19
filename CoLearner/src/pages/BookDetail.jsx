@@ -196,7 +196,7 @@ export default function BookDetail() {
       <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div>
           <h2 className="text-2xl font-bold text-c-text">Chapters</h2>
-          <div className="mt-4 divide-y divide-c-border rounded-brand-lg border border-c-border bg-white shadow-sm">
+          <div className="mt-4 divide-y divide-c-border rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
             {book.chapters.map((chapter) => {
               const complete = chapter.isCompleted
               return (
@@ -206,7 +206,7 @@ export default function BookDetail() {
                   className="flex items-center gap-4 p-4 hover:bg-c-blue-wash"
                 >
                   <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${complete ? 'bg-c-success text-white' : 'bg-c-blue-soft text-c-blue'}`}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${complete ? 'bg-c-success-solid text-white' : 'bg-c-blue-soft text-c-blue'}`}
                   >
                     {complete ? <Check className="h-4 w-4" /> : chapter.order}
                   </div>

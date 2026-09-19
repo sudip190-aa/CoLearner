@@ -69,14 +69,14 @@ export const Toggle = forwardRef(function Toggle(
             'relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out cursor-pointer',
             'peer-focus-visible:ring-2 peer-focus-visible:ring-c-blue peer-focus-visible:ring-offset-2',
             isSmall ? 'w-9 h-5' : 'w-11 h-6',
-            'bg-slate-200 peer-checked:bg-c-blue',
+            'bg-c-border peer-checked:bg-c-action',
             disabled && 'cursor-not-allowed opacity-60',
             className,
           )}
         >
           <span
             className={clsx(
-              'pointer-events-none inline-block rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out',
+              'pointer-events-none inline-block rounded-full bg-c-surface shadow-sm transform transition-transform duration-200 ease-in-out',
               isSmall ? 'w-4 h-4' : 'w-5 h-5',
               isSmall
                 ? 'translate-x-0.5 peer-checked:translate-x-4.5'

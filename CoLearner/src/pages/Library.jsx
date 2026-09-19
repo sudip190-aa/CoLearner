@@ -276,7 +276,7 @@ function LibraryContent() {
             setPreferencesError('')
             setPreferencesOpen(true)
           }}
-          className="inline-flex items-center gap-2 rounded-xl border border-c-border bg-white px-4 py-2.5 text-xs font-medium text-c-text-muted transition-colors hover:border-c-blue/30 hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-xl border border-c-border bg-c-surface px-4 py-2.5 text-xs font-medium text-c-text-muted transition-colors hover:border-c-blue/30 hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-40"
         >
           <Settings2 className="h-4 w-4" />
           <span className="hidden sm:inline">Preferences</span>
@@ -303,7 +303,7 @@ function LibraryContent() {
           )}
           <section
             aria-label="Browse books"
-            className="min-w-0 rounded-3xl border border-c-border/70 bg-white p-4 sm:p-6"
+            className="min-w-0 rounded-3xl border border-c-border/70 bg-c-surface p-4 sm:p-6"
           >
             <div className="flex items-center gap-3">
               <SearchBar
@@ -320,11 +320,11 @@ function LibraryContent() {
                 aria-expanded={filtersOpen}
                 aria-controls="library-filters"
                 aria-label={`Filter books${filterCount ? `, ${filterCount} active` : ''}`}
-                className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue'}`}
+                className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-c-surface text-c-text-muted hover:border-c-blue'}`}
               >
                 <SlidersHorizontal className="h-5 w-5" />
                 {filterCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-text">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-on-accent">
                     {filterCount}
                   </span>
                 )}
@@ -334,7 +334,7 @@ function LibraryContent() {
               <section
                 id="library-filters"
                 aria-label="Library filters"
-                className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
+                className="mt-4 rounded-xl border border-c-border bg-c-surface p-4 sm:p-5"
               >
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Select
@@ -400,14 +400,14 @@ function LibraryContent() {
                   >
                     {item.label}
                     <span
-                      className={`ml-1.5 hidden text-[10px] sm:inline ${tab === item.id ? 'text-c-blue' : 'text-c-text-muted/70'}`}
+                      className={`ml-1.5 hidden text-[10px] sm:inline ${tab === item.id ? 'text-c-blue' : 'text-c-text-muted'}`}
                     >
                       {books ? counts[item.id] : '–'}
                     </span>
                   </button>
                 ))}
               </div>
-              <div className="mb-3 w-full shrink-0 sm:w-36">
+              <div className="mb-3 w-full shrink-0 sm:w-44">
                 <Select
                   className="!h-9 !text-xs"
                   aria-label="Sort books"
@@ -478,7 +478,7 @@ function LibraryContent() {
                       />
                     </>
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-c-border bg-white/60 px-4 py-6">
+                    <div className="rounded-2xl border border-dashed border-c-border bg-c-surface/60 px-4 py-6">
                       <EmptyState
                         icon={BookOpen}
                         title={
@@ -573,7 +573,7 @@ function LibraryContent() {
                         : [...value.topics, topic],
                     }))
                   }
-                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-left text-xs leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${draft.topics.includes(topic) ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue'}`}
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-left text-xs leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${draft.topics.includes(topic) ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-c-surface text-c-text-muted hover:border-c-blue'}`}
                 >
                   {draft.topics.includes(topic) && (
                     <Check className="h-3.5 w-3.5 shrink-0" />

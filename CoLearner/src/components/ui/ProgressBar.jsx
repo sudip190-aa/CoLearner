@@ -2,11 +2,11 @@ import React, { forwardRef } from 'react'
 import clsx from 'clsx'
 
 const COLOR_STYLES = {
-  blue: 'bg-c-blue',
+  blue: 'bg-c-action',
   // Yellow Law: Used for XP bar fill and streak highlights
   yellow: 'bg-c-yellow border-r border-c-text/20',
-  success: 'bg-c-success',
-  danger: 'bg-c-danger',
+  success: 'bg-c-success-solid',
+  danger: 'bg-c-danger-solid',
 }
 
 export const ProgressBar = forwardRef(function ProgressBar(
@@ -49,7 +49,7 @@ export const ProgressBar = forwardRef(function ProgressBar(
 
       <div
         className={clsx(
-          'w-full bg-slate-100 rounded-full overflow-hidden border border-c-border/60',
+          'w-full bg-c-blue-soft rounded-full overflow-hidden border border-c-border/60',
           heightClasses[size] || heightClasses.md,
         )}
         role="progressbar"

@@ -78,8 +78,8 @@ export const Pagination = forwardRef(function Pagination(
           'p-2 rounded-brand border border-c-border text-c-text text-sm transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue',
           currentPage <= 1
-            ? 'opacity-40 cursor-not-allowed bg-slate-50'
-            : 'hover:bg-c-blue-soft hover:text-c-blue bg-white',
+            ? 'opacity-40 cursor-not-allowed bg-c-blue-wash'
+            : 'hover:bg-c-blue-soft hover:text-c-blue bg-c-surface',
         )}
         aria-label="Previous Page"
       >
@@ -111,8 +111,8 @@ export const Pagination = forwardRef(function Pagination(
               'min-w-[36px] h-9 px-2.5 text-xs font-semibold rounded-brand border transition-colors flex items-center justify-center',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue',
               isCurrent
-                ? 'bg-c-blue text-white border-c-blue shadow-sm'
-                : 'bg-white text-c-text border-c-border hover:bg-slate-50 hover:text-c-blue',
+                ? 'bg-c-action text-white border-c-blue shadow-sm'
+                : 'bg-c-surface text-c-text border-c-border hover:bg-c-blue-wash hover:text-c-blue',
             )}
           >
             {page}
@@ -129,8 +129,8 @@ export const Pagination = forwardRef(function Pagination(
           'p-2 rounded-brand border border-c-border text-c-text text-sm transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue',
           currentPage >= totalPages
-            ? 'opacity-40 cursor-not-allowed bg-slate-50'
-            : 'hover:bg-c-blue-soft hover:text-c-blue bg-white',
+            ? 'opacity-40 cursor-not-allowed bg-c-blue-wash'
+            : 'hover:bg-c-blue-soft hover:text-c-blue bg-c-surface',
         )}
         aria-label="Next Page"
       >

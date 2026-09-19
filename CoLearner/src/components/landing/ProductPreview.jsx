@@ -20,7 +20,7 @@ const taskColumns = [
   },
   {
     title: 'In progress',
-    dot: 'bg-c-blue',
+    dot: 'bg-c-action',
     tasks: [['Build reading list', 'Feature · Alex']],
   },
   {
@@ -32,12 +32,12 @@ const taskColumns = [
 
 export const ProductPreview = ({ variant }) => (
   <figure className="min-w-0">
-    <div className="overflow-hidden rounded-2xl border border-c-border bg-white shadow-xl shadow-blue-900/5">
+    <div className="overflow-hidden rounded-2xl border border-c-border bg-c-surface shadow-xl shadow-blue-900/5">
       <div className="flex items-center justify-between gap-3 border-b border-c-border px-5 py-3">
         <div className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2 w-2 rounded-full bg-slate-300" />
-          <span className="h-2 w-2 rounded-full bg-slate-300" />
-          <span className="h-2 w-2 rounded-full bg-slate-300" />
+          <span className="h-2 w-2 rounded-full bg-c-border" />
+          <span className="h-2 w-2 rounded-full bg-c-border" />
+          <span className="h-2 w-2 rounded-full bg-c-border" />
         </div>
         <span className="text-[11px] font-medium text-c-text-muted">
           CoLearn /{' '}
@@ -51,7 +51,7 @@ export const ProductPreview = ({ variant }) => (
       {variant === 'dashboard' ? (
         <div className="flex">
           <div
-            className="hidden w-12 shrink-0 flex-col items-center gap-6 border-r border-c-border py-6 text-slate-400 sm:flex"
+            className="hidden w-12 shrink-0 flex-col items-center gap-6 border-r border-c-border py-6 text-c-text-muted sm:flex"
             aria-hidden="true"
           >
             <LayoutDashboard size={18} className="text-c-blue" />
@@ -60,7 +60,7 @@ export const ProductPreview = ({ variant }) => (
             <Users size={18} />
             <MessageCircle size={18} />
           </div>
-          <div className="min-w-0 flex-1 bg-slate-50/70 p-4 sm:p-6">
+          <div className="min-w-0 flex-1 bg-c-blue-wash/70 p-4 sm:p-6">
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-c-text-muted">Your learning space</p>
               <span className="flex items-center gap-1 rounded-full bg-c-yellow-soft px-2 py-1 text-[10px] font-semibold">
@@ -80,7 +80,7 @@ export const ProductPreview = ({ variant }) => (
               ].map(([value, label]) => (
                 <div
                   key={label}
-                  className="rounded-xl border border-c-border bg-white p-3"
+                  className="rounded-xl border border-c-border bg-c-surface p-3"
                 >
                   <p className="text-xl font-bold">{value}</p>
                   <p className="mt-1 text-[10px] leading-relaxed text-c-text-muted">
@@ -89,12 +89,12 @@ export const ProductPreview = ({ variant }) => (
                 </div>
               ))}
             </div>
-            <div className="rounded-xl border border-c-border bg-white p-4">
+            <div className="rounded-xl border border-c-border bg-c-surface p-4">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-c-text-muted">
                 Continue learning
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded bg-c-blue text-white">
+                <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded bg-c-action text-white">
                   <BookOpen size={20} />
                 </div>
                 <div>
@@ -118,15 +118,15 @@ export const ProductPreview = ({ variant }) => (
                 aria-valuemin={0}
                 aria-valuemax={100}
               >
-                <div className="h-full w-3/5 rounded-full bg-c-blue" />
+                <div className="h-full w-3/5 rounded-full bg-c-action" />
               </div>
             </div>
-            <div className="mt-4 rounded-xl border border-c-border bg-white p-4">
+            <div className="mt-4 rounded-xl border border-c-border bg-c-surface p-4">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-c-text-muted">
                 Your next task
               </p>
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-slate-300" />
+                <span className="mt-0.5 h-4 w-4 shrink-0 rounded border border-c-border" />
                 <div>
                   <p className="text-sm font-semibold">
                     Build the reading list view
@@ -157,7 +157,7 @@ export const ProductPreview = ({ variant }) => (
               {['React', 'Django'].map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-md bg-slate-100 px-2 py-1 text-[10px] font-medium text-c-text-muted"
+                  className="rounded-md bg-c-blue-soft px-2 py-1 text-[10px] font-medium text-c-text-muted"
                 >
                   {tag}
                 </span>
@@ -182,16 +182,16 @@ export const ProductPreview = ({ variant }) => (
               aria-valuemin={0}
               aria-valuemax={7}
             >
-              <div className="h-full w-[43%] rounded-full bg-c-blue" />
+              <div className="h-full w-[43%] rounded-full bg-c-action" />
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {taskColumns.map((column) => (
-              <div key={column.title} className="rounded-xl bg-slate-50 p-3">
+              <div key={column.title} className="rounded-xl bg-c-blue-wash p-3">
                 <p className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold">
                   <span className={`h-1.5 w-1.5 rounded-full ${column.dot}`} />
                   {column.title}
-                  <span className="ml-auto text-slate-400">
+                  <span className="ml-auto text-c-text-muted">
                     {column.tasks.length}
                   </span>
                 </p>
@@ -199,7 +199,7 @@ export const ProductPreview = ({ variant }) => (
                   {column.tasks.map(([task, owner]) => (
                     <div
                       key={task}
-                      className="rounded-lg border border-c-border bg-white p-3"
+                      className="rounded-lg border border-c-border bg-c-surface p-3"
                     >
                       <p className="text-xs font-medium leading-relaxed">
                         {task}
@@ -214,7 +214,7 @@ export const ProductPreview = ({ variant }) => (
             ))}
           </div>
           <div className="mt-5 flex items-center gap-2 text-xs text-c-text-muted">
-            <Check size={15} className="text-green-700" />
+            <Check size={15} className="text-c-success" />
             Latest update: Project setup completed
           </div>
         </div>

@@ -29,6 +29,8 @@ import { formatRelative } from '../lib/formatters.js'
 import { toPlainText } from '../lib/inlineMarkdown.js'
 import { useAuthStore } from '../store/authStore'
 
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
 const PAGE_SIZE = 6
 const categories = [
   { value: '', label: 'All topics' },
@@ -49,7 +51,7 @@ function ThreadSkeleton() {
       {Array.from({ length: PAGE_SIZE }, (_, i) => (
         <div
           key={i}
-          className="overflow-hidden rounded-2xl border border-c-border bg-white"
+          className="overflow-hidden rounded-2xl border border-c-border bg-c-surface"
         >
           <Skeleton height="44px" className="rounded-none" />
           <div className="space-y-4 p-5">
@@ -106,7 +108,7 @@ function ThreadCard({ thread, onVote, isOwn }) {
     categories.find((item) => item.value === thread.category)?.label ||
     thread.category
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white shadow-sm transition-[border-color,box-shadow] hover:border-c-blue/25 hover:shadow-md">
+    <article className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-c-surface shadow-sm transition-[border-color,box-shadow] hover:border-c-blue/25 hover:shadow-md">
       <div className="flex h-11 items-center justify-between gap-3 bg-c-blue-wash px-5">
         <span className="truncate text-[10px] font-bold uppercase tracking-[0.1em] text-c-blue">
           {topic}
@@ -180,10 +182,8 @@ export default function Community() {
   const toast = useToast()
   const inFlight = useInFlight()
   const currentUserId = useAuthStore((state) => state.user?.id)
-  const [threads, setThreads] = useState(null)
-  const [total, setTotal] = useState(0)
+  const cache = useQueryClient()
   const [popularTags, setPopularTags] = useState([])
-  const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('')
   const [tag, setTag] = useState('')
@@ -207,11 +207,15 @@ export default function Community() {
     }
   }, [])
 
-  // The list is filtered, searched and ordered by the backend.
-  useEffect(() => {
-    let active = true
-    community
-      .getThreads({
+  const feedKey = [
+    'community-feed',
+    currentUserId,
+    { category, tag, query, sort, myThreads, answered, page },
+  ]
+  const feed = useQuery({
+    queryKey: feedKey,
+    queryFn: () =>
+      community.getThreads({
         category,
         tag,
         search: query.trim(),
@@ -220,21 +224,13 @@ export default function Community() {
         answered,
         page,
         pageSize: PAGE_SIZE,
-      })
-      .then(({ threads: result, count }) => {
-        if (!active) return
-        setThreads(result)
-        setTotal(count)
-        setError('')
-      })
-      .catch((requestError) => {
-        if (active)
-          setError(requestError?.message || 'We could not load the community.')
-      })
-    return () => {
-      active = false
-    }
-  }, [category, tag, query, sort, myThreads, answered, page])
+      }),
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
+  })
+  const threads = feed.data?.threads || null
+  const total = feed.data?.count || 0
+  const error = feed.error?.message || ''
 
   const resetPage = useCallback(() => setPage(1), [])
   const handleSearch = useCallback(
@@ -261,10 +257,17 @@ export default function Community() {
         thread.id,
         value,
       )
-      setThreads((items) =>
-        items.map((item) =>
-          item.id === thread.id ? { ...item, votes: score, userVote } : item,
-        ),
+      cache.setQueryData(
+        feedKey,
+        (data) =>
+          data && {
+            ...data,
+            threads: data.threads.map((item) =>
+              item.id === thread.id
+                ? { ...item, votes: score, userVote }
+                : item,
+            ),
+          },
       )
     } catch (requestError) {
       toast.error(requestError?.message || 'Could not record your vote')
@@ -305,7 +308,7 @@ export default function Community() {
         title="Community unavailable"
         description={error}
         actionLabel="Try again"
-        onAction={() => window.location.reload()}
+        onAction={() => feed.refetch()}
       />
     )
   return (
@@ -339,12 +342,12 @@ export default function Community() {
           aria-expanded={filtersOpen}
           aria-controls="community-filters"
           aria-label={`Filter discussions${activeFilters.length ? `, ${activeFilters.length} active` : ''}`}
-          className={`relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-medium transition-colors ${filtersOpen || activeFilters.length ? 'border-c-blue/40 bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue/40 hover:text-c-blue'}`}
+          className={`relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-medium transition-colors ${filtersOpen || activeFilters.length ? 'border-c-blue/40 bg-c-blue-soft text-c-blue' : 'border-c-border bg-c-surface text-c-text-muted hover:border-c-blue/40 hover:text-c-blue'}`}
         >
           <SlidersHorizontal size={18} />
           <span className="hidden sm:inline">Filters</span>
           {activeFilters.length > 0 && (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-c-blue px-1 text-[10px] text-white">
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-c-action px-1 text-[10px] text-white">
               {activeFilters.length}
             </span>
           )}
@@ -354,7 +357,7 @@ export default function Community() {
         <section
           id="community-filters"
           aria-label="Community filters"
-          className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
+          className="mt-4 rounded-xl border border-c-border bg-c-surface p-4 sm:p-5"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Select
@@ -413,7 +416,7 @@ export default function Community() {
               type="button"
               onClick={item.clear}
               aria-label={`Remove ${item.label} filter`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-white px-3 py-1.5 text-xs text-c-blue hover:bg-c-blue-soft"
+              className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-c-surface px-3 py-1.5 text-xs text-c-blue hover:bg-c-blue-soft"
             >
               {item.label}
               <X size={12} aria-hidden="true" />
@@ -487,7 +490,7 @@ export default function Community() {
           {error && (
             <p
               role="alert"
-              className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
+              className="mb-4 rounded-xl bg-c-danger-soft px-3 py-2 text-sm text-c-danger"
             >
               {error}
             </p>

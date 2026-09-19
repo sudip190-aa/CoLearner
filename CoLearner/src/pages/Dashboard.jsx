@@ -32,9 +32,10 @@ import LibraryBookCover from '../components/books/LibraryBookCover'
 import { dashboard } from '../services/api'
 import { formatRelative } from '../lib/formatters'
 import { useAuthStore } from '../store/authStore'
+import { useNavigationCounts } from '../hooks/useNavigationCounts'
 import { useMessageInbox } from '../hooks/useMessages'
 
-const panel = 'rounded-3xl border border-c-border/80 bg-white p-5 sm:p-6'
+const panel = 'rounded-3xl border border-c-border/80 bg-c-surface p-5 sm:p-6'
 const statusNames = {
   idea: 'Idea',
   active: 'In progress',
@@ -66,7 +67,7 @@ function ProjectItem({ project, compact }) {
   return (
     <Link
       to={`/projects/${project.slug}/workspace`}
-      className={`group block rounded-2xl border border-c-border bg-white transition hover:border-c-blue/40 hover:shadow-sm ${compact ? 'p-4' : 'p-5'}`}
+      className={`group block rounded-2xl border border-c-border bg-c-surface transition hover:border-c-blue/40 hover:shadow-sm ${compact ? 'p-4' : 'p-5'}`}
     >
       <div className="flex items-start gap-3">
         <span className="rounded-xl bg-c-blue-soft p-2.5 text-c-blue">
@@ -119,6 +120,7 @@ export default function Dashboard() {
   const [taskFilter, setTaskFilter] = useState('all')
   const [openedAt] = useState(Date.now)
   const inbox = useMessageInbox()
+  const navigation = useNavigationCounts()
   const query = useQuery({
     queryKey: ['dashboard', me?.id],
     queryFn: dashboard.getDashboard,
@@ -209,7 +211,7 @@ export default function Dashboard() {
   const totalXp = weeklyXp.reduce((sum, day) => sum + day.xp, 0)
   const maxXp = Math.max(1, ...weeklyXp.map((day) => day.xp))
   const contacts = inbox.data || []
-  const unread = contacts.reduce((sum, p) => sum + p.unread_count, 0)
+  const unread = navigation.data?.messages || 0
   return (
     <div className="mx-auto max-w-6xl space-y-6" data-dashboard="workspace">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -255,7 +257,7 @@ export default function Dashboard() {
                 key={key}
                 aria-current={view === key ? 'page' : undefined}
                 onClick={() => setParams({ view: key }, { replace: true })}
-                className={`relative pb-4 text-sm font-semibold transition ${view === key ? 'text-c-blue after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-c-blue' : 'text-c-text-muted hover:text-c-text'}`}
+                className={`relative pb-4 text-sm font-semibold transition ${view === key ? 'text-c-blue after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-c-action' : 'text-c-text-muted hover:text-c-text'}`}
               >
                 {label}
                 {key === 'projects' && (
@@ -315,7 +317,7 @@ export default function Dashboard() {
               ].map(({ icon: Icon, ...item }) => (
                 <div
                   key={item.stat}
-                  className="flex items-center gap-3 rounded-2xl border border-c-border/80 bg-white p-4 sm:gap-4 sm:p-5"
+                  className="flex items-center gap-3 rounded-2xl border border-c-border/80 bg-c-surface p-4 sm:gap-4 sm:p-5"
                 >
                   <span
                     className={`hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl sm:flex ${item.stat === 'xp' ? 'bg-c-yellow-soft text-c-text' : 'bg-c-blue-soft text-c-blue'}`}
@@ -590,7 +592,7 @@ export default function Dashboard() {
                             className="rounded-lg p-2 hover:bg-c-blue-soft"
                           >
                             {person.unread_count > 0 ? (
-                              <span className="rounded-full bg-c-blue px-2 py-1 text-[10px] text-white">
+                              <span className="rounded-full bg-c-action px-2 py-1 text-[10px] text-white">
                                 {person.unread_count}
                               </span>
                             ) : (
@@ -632,7 +634,7 @@ export default function Dashboard() {
                         >
                           <div
                             title={`${day.day}: ${day.xp} XP`}
-                            className={`w-full max-w-7 rounded-md ${i === 6 ? 'bg-c-blue' : 'bg-c-blue-soft'}`}
+                            className={`w-full max-w-7 rounded-md ${i === 6 ? 'bg-c-action' : 'bg-c-blue-soft'}`}
                             style={{
                               height: `${Math.max(5, (day.xp / maxXp) * 70)}px`,
                             }}
@@ -670,7 +672,7 @@ export default function Dashboard() {
       {!focus && view !== 'today' && (
         <>
           <section
-            className="flex flex-wrap items-center gap-3 rounded-2xl border border-c-border bg-white p-4"
+            className="flex flex-wrap items-center gap-3 rounded-2xl border border-c-border bg-c-surface p-4"
             aria-label={`${view} filters`}
           >
             <label className="flex min-w-[180px] flex-1 items-center gap-2 rounded-xl bg-c-blue-wash px-3 py-2.5">
@@ -691,7 +693,7 @@ export default function Dashboard() {
                     aria-label="Project status"
                     value={status}
                     onChange={(e) => change('status', e.target.value)}
-                    className="rounded-lg border border-c-border bg-white px-3 py-2.5 text-xs text-c-text"
+                    className="rounded-lg border border-c-border bg-c-surface px-3 py-2.5 text-xs text-c-text"
                   >
                     <option value="">All statuses</option>
                     {Object.entries(statusNames).map(([value, label]) => (
@@ -707,7 +709,7 @@ export default function Dashboard() {
                     aria-label="Sort projects"
                     value={sort}
                     onChange={(e) => change('sort', e.target.value)}
-                    className="rounded-lg border border-c-border bg-white px-3 py-2.5 text-xs text-c-text"
+                    className="rounded-lg border border-c-border bg-c-surface px-3 py-2.5 text-xs text-c-text"
                   >
                     <option value="recent">Newest first</option>
                     <option value="name">Name A–Z</option>
@@ -736,7 +738,7 @@ export default function Dashboard() {
                 aria-label="Activity period"
                 value={period}
                 onChange={(e) => change('period', e.target.value)}
-                className="rounded-lg border border-c-border bg-white px-3 py-2.5 text-xs"
+                className="rounded-lg border border-c-border bg-c-surface px-3 py-2.5 text-xs"
               >
                 <option value="7">Last 7 days</option>
                 <option value="30">Last 30 days</option>

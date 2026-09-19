@@ -19,7 +19,7 @@ const solutions = [
 
 export const ProblemSolution = () => {
   return (
-    <section className="py-14 md:py-24 bg-white">
+    <section className="py-14 md:py-24 bg-c-surface">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-c-text mb-4">
@@ -49,7 +49,7 @@ export const ProblemSolution = () => {
           </div>
 
           {/* Right: Solutions */}
-          <div className="bg-white rounded-2xl p-8 md:p-10 border border-c-blue/20 shadow-[0_0_40px_rgba(var(--c-blue-rgb),0.05)] relative overflow-hidden">
+          <div className="bg-c-surface rounded-2xl p-8 md:p-10 border border-c-blue/20 shadow-[0_0_40px_rgba(var(--c-blue-rgb),0.05)] relative overflow-hidden">
             {/* Decorative background glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-c-blue/5 blur-3xl rounded-full -z-10 pointer-events-none" />
 

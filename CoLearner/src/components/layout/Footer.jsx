@@ -38,7 +38,7 @@ export function Footer() {
                   aria-label={label}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-brand p-2 text-c-text-muted hover:bg-white hover:text-c-blue"
+                  className="rounded-brand p-2 text-c-text-muted hover:bg-c-surface hover:text-c-blue"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

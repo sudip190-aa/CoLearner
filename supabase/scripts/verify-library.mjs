@@ -43,10 +43,9 @@ const accounts = [],
   errors = [],
   badNetwork = [],
   checks = [];
-const tabs = await (await fetch("http://127.0.0.1:9223/json")).json();
-const ws = new WebSocket(
-  tabs.find((t) => t.type === "page").webSocketDebuggerUrl,
-);
+const info = await (await fetch("http://127.0.0.1:9224/json/version")).json();
+const ws = new WebSocket(info.webSocketDebuggerUrl);
+let browserSession;
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let sequence = 0;
 const pending = new Map();
@@ -78,7 +77,16 @@ const send = (method, params = {}) =>
   new Promise((resolve, reject) => {
     const id = ++sequence;
     pending.set(id, { resolve, reject });
-    ws.send(JSON.stringify({ id, method, params }));
+    ws.send(
+      JSON.stringify({
+        id,
+        method,
+        params,
+        ...(!method.startsWith("Target.") && browserSession
+          ? { sessionId: browserSession }
+          : {}),
+      }),
+    );
   });
 const evaluate = async (expression) => {
   const r = await send("Runtime.evaluate", {
@@ -144,6 +152,15 @@ const selectLabel = async (label, value) =>
     `(()=>{const label=Array.from(document.querySelectorAll('label')).find(l=>l.textContent.trim()===${JSON.stringify(label)});const el=document.getElementById(label.htmlFor);Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,${JSON.stringify(String(value))});el.dispatchEvent(new Event('change',{bubbles:true}));})()`,
   );
 let complete = false;
+const { browserContextId } = await send("Target.createBrowserContext");
+const { targetId } = await send("Target.createTarget", {
+  url: "about:blank",
+  browserContextId,
+});
+browserSession = (
+  await send("Target.attachToTarget", { targetId, flatten: true })
+).sessionId;
+
 try {
   for (const i of [0, 1]) {
     const email = `${tag}-${i}@colearn.example`,
@@ -175,15 +192,13 @@ try {
     peer.auth.signInWithPassword({ email: b.email, password: b.password }),
   );
   await ok(
-    peer
-      .from("library_preferences")
-      .upsert({
-        user_id: b.id,
-        goal: "career",
-        topics: [],
-        level: "all",
-        session_minutes: 30,
-      }),
+    peer.from("library_preferences").upsert({
+      user_id: b.id,
+      goal: "career",
+      topics: [],
+      level: "all",
+      session_minutes: 30,
+    }),
   );
   await ok(
     peer
@@ -235,31 +250,37 @@ try {
     "Live RLS isolates saved books and preferences; cross-account reads/writes are denied and invalid preferences rejected",
   );
 
-  const started =
-    beforeBooks.find((b) => b.title === "Prompt Design That Works") ||
-    beforeBooks[0];
-  const finished =
-    beforeBooks.find((b) => b.title === "Algorithms You Can Explain") ||
-    beforeBooks[1];
+  const started = beforeBooks.find(
+    (b) =>
+      b.status === "APPROVED" &&
+      beforeChapters.filter((c) => c.book_id === b.id).length >= 4,
+  );
+  const finished = beforeBooks.find(
+    (b) =>
+      b.status === "APPROVED" &&
+      b.id !== started.id &&
+      beforeChapters.some((c) => c.book_id === b.id),
+  );
+  const startedPercent = Math.round(
+    300 / beforeChapters.filter((c) => c.book_id === started.id).length,
+  );
   for (const [book, count] of [
     [started, 3],
-    [finished, 5],
+    [finished, beforeChapters.filter((c) => c.book_id === finished.id).length],
   ]) {
     const chapters = beforeChapters
       .filter((c) => c.book_id === book.id)
       .sort((a, b) => a.chapter_number - b.chapter_number);
     const completed = chapters.slice(0, count).map((c) => c.id);
     await ok(
-      admin
-        .from("reading_progress")
-        .insert({
-          user_id: a.id,
-          book_id: book.id,
-          chapter_id: chapters[Math.min(count, chapters.length - 1)].id,
-          completed_chapters: completed,
-          progress_percent: (100 * completed.length) / chapters.length,
-          completed: completed.length === chapters.length,
-        }),
+      admin.from("reading_progress").insert({
+        user_id: a.id,
+        book_id: book.id,
+        chapter_id: chapters[Math.min(count, chapters.length - 1)].id,
+        completed_chapters: completed,
+        progress_percent: (100 * completed.length) / chapters.length,
+        completed: completed.length === chapters.length,
+      }),
     );
   }
   await send("Runtime.enable");
@@ -296,7 +317,7 @@ try {
   await wait("document.querySelectorAll('[data-library-book]').length===1");
   assert(
     await evaluate(
-      `document.body.innerText.includes(${JSON.stringify(started.title)}) && document.body.innerText.includes('60% complete')`,
+      `document.body.innerText.includes(${JSON.stringify(started.title)}) && document.body.innerText.includes('${startedPercent}% read')`,
     ),
   );
   const continueUrl = await evaluate(
@@ -353,11 +374,11 @@ try {
   );
 
   await evaluate("document.getElementById('library-tab-all').click()");
-  await fill('input[aria-label="Search library"]', "Django");
+  await fill('input[aria-label="Search library"]', started.title);
   await wait("document.querySelectorAll('[data-library-book]').length===1");
   assert(
     await evaluate(
-      "document.querySelector('[data-library-book]').innerText.includes('Django')",
+      `document.querySelector('[data-library-book]').innerText.includes(${JSON.stringify(started.title)})`,
     ),
   );
   await fill('input[aria-label="Search library"]', "no-matching-book-xyz");
@@ -367,10 +388,21 @@ try {
   await evaluate(
     "document.querySelector('button[aria-label^=\"Filter books\"]').click()",
   );
-  await selectLabel("Difficulty", "advanced");
-  await wait(
-    "document.querySelectorAll('[data-library-book]').length>0 && Array.from(document.querySelectorAll('[data-library-book]')).every(b=>b.innerText.toLowerCase().includes('advanced'))",
-  );
+  for (const difficulty of ["beginner", "intermediate", "advanced"]) {
+    await selectLabel("Difficulty", difficulty);
+    const expected = beforeBooks.filter(
+      (book) => book.status === "APPROVED" && book.difficulty === difficulty,
+    ).length;
+    if (expected) {
+      await wait(
+        `document.querySelectorAll('[data-library-book]').length===${Math.min(6, expected)} && Array.from(document.querySelectorAll('[data-library-book]')).every(b=>b.innerText.toLowerCase().includes(${JSON.stringify(difficulty)}))`,
+      );
+    } else {
+      await wait(
+        "!document.querySelector('[data-library-book]') && document.body.innerText.includes('No books match just yet')",
+      );
+    }
+  }
   await click("Reset filters");
   await evaluate(
     "document.querySelector('button[aria-label^=\"Filter books\"]').click()",
@@ -379,7 +411,9 @@ try {
     "Search, no-results recovery and difficulty filters work without changing the collection",
   );
 
-  await click("Learning preferences");
+  await evaluate(
+    "document.querySelector('[aria-label=\"Learning preferences\"]').click()",
+  );
   await wait("!!document.querySelector('[role=dialog]')");
   await selectLabel("What are you working toward?", "projects");
   await selectLabel("Your preferred level", "beginner");
@@ -404,7 +438,9 @@ try {
   await wait(
     "document.querySelector('select[aria-label=\"Sort books\"]')?.value==='for-you' && document.querySelectorAll('[data-library-book]').length===6",
   );
-  await click("Learning preferences");
+  await evaluate(
+    "document.querySelector('[aria-label=\"Learning preferences\"]').click()",
+  );
   await wait("!!document.querySelector('[role=dialog]')");
   assert(
     await evaluate(
@@ -430,7 +466,9 @@ try {
     ),
     "All four collections fit on mobile",
   );
-  await click("Learning preferences");
+  await evaluate(
+    "document.querySelector('[aria-label=\"Learning preferences\"]').click()",
+  );
   await wait("!!document.querySelector('[role=dialog]')");
   await snapshot("library-preferences-mobile", 390, 844);
   await evaluate(
@@ -473,7 +511,8 @@ try {
     await send("Page.navigate", { url: "about:blank" });
     await pause(300);
   } finally {
-    for (const account of accounts) await ok(admin.auth.admin.deleteUser(account.id));
+    for (const account of accounts)
+      await ok(admin.auth.admin.deleteUser(account.id));
   }
   assert.deepEqual(
     await ok(admin.from("books").select("*").order("id")),
@@ -497,6 +536,9 @@ try {
       null,
       2,
     ),
+  );
+  await send("Target.disposeBrowserContext", { browserContextId }).catch(
+    () => {},
   );
   ws.close();
 }

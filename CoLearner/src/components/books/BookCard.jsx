@@ -12,7 +12,7 @@ const difficultyVariants = {
 
 export function BookCard({ book }) {
   return (
-    <article className="group overflow-hidden rounded-brand border border-c-border bg-white shadow-sm transition-shadow hover:shadow-md">
+    <article className="group overflow-hidden rounded-brand border border-c-border bg-c-surface shadow-sm transition-shadow hover:shadow-md">
       <Link to={`/library/${book.slug}`} className="block">
         <div className="aspect-[3/4] overflow-hidden bg-c-blue-wash">
           <BookCover

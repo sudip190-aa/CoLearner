@@ -7,17 +7,18 @@ import {
   Input,
   RichText,
   Select,
-  Textarea,
   useToast,
 } from '../components/ui'
 import { PageHeader } from '../components/layout/PageHeader'
 import { community } from '../services/api.js'
 
+import MentionTextarea from '../components/community/MentionTextarea'
+
 const categories = ['Frontend', 'Backend', 'Product', 'Career', 'Community']
 
 function Preview({ title, category, body, tags }) {
   return (
-    <article className="rounded-brand-lg border border-c-border bg-white p-6 shadow-sm">
+    <article className="rounded-brand-lg border border-c-border bg-c-surface p-6 shadow-sm">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-c-blue">
         <span>{category || 'Category'}</span>
         <span className="text-c-border">/</span>
@@ -146,7 +147,7 @@ export default function NewThread() {
       ) : (
         <form
           onSubmit={publish}
-          className="space-y-5 rounded-brand-lg border border-c-border bg-white p-6 shadow-sm"
+          className="space-y-5 rounded-brand-lg border border-c-border bg-c-surface p-6 shadow-sm"
         >
           <Input
             label="Title"
@@ -166,11 +167,12 @@ export default function NewThread() {
             required
           />
           <div>
-            <Textarea
+            <MentionTextarea
               label="Body"
               value={body}
               onChange={(event) => setBody(event.target.value)}
               rows={12}
+              maxLength={20000}
               placeholder="Share context, what you tried, and the question you want help with..."
               error={fieldErrors.body}
               required
@@ -194,7 +196,7 @@ export default function NewThread() {
                 ({tags.length}/5)
               </span>
             </label>
-            <div className="flex flex-wrap items-center gap-2 rounded-brand border border-c-border bg-white p-2 focus-within:border-c-blue focus-within:ring-2 focus-within:ring-c-blue/20">
+            <div className="flex flex-wrap items-center gap-2 rounded-brand border border-c-border bg-c-surface p-2 focus-within:border-c-blue focus-within:ring-2 focus-within:ring-c-blue/20">
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -237,7 +239,7 @@ export default function NewThread() {
           {error && (
             <p
               role="alert"
-              className="rounded-brand bg-red-50 px-3 py-2 text-sm text-c-danger"
+              className="rounded-brand bg-c-danger-soft px-3 py-2 text-sm text-c-danger"
             >
               {error}
             </p>

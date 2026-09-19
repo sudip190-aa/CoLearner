@@ -53,7 +53,7 @@ export function Modal({
         ref={modalRef}
         tabIndex={-1}
         className={clsx(
-          'relative w-full bg-white rounded-brand-lg border border-c-border shadow-md z-10 overflow-hidden',
+          'relative w-full bg-c-surface rounded-brand-lg border border-c-border shadow-md z-10 overflow-hidden',
           'animate-in zoom-in-95 duration-200 ease-out focus:outline-none',
           sizeClass,
           className,
@@ -81,7 +81,7 @@ export function Modal({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 -mr-2 -mt-2 rounded-brand text-c-text-muted hover:text-c-text hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+                className="p-1.5 -mr-2 -mt-2 rounded-brand text-c-text-muted hover:text-c-text hover:bg-c-blue-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />

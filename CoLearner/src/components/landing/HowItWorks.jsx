@@ -24,7 +24,7 @@ const steps = [
 
 export const HowItWorks = () => {
   return (
-    <section className="py-14 md:py-24 bg-white relative overflow-hidden">
+    <section className="py-14 md:py-24 bg-c-surface relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-3xl md:text-4xl font-bold text-c-text mb-4">
@@ -49,7 +49,7 @@ export const HowItWorks = () => {
                 className="flex md:flex-col items-start md:items-center relative"
               >
                 {/* Number Circle */}
-                <div className="w-16 h-16 rounded-full bg-c-yellow flex items-center justify-center text-2xl font-black text-c-text shrink-0 mb-6 md:mx-auto border-4 border-white shadow-sm z-10">
+                <div className="w-16 h-16 rounded-full bg-c-yellow flex items-center justify-center text-2xl font-black text-c-on-accent shrink-0 mb-6 md:mx-auto border-4 border-c-surface shadow-sm z-10">
                   {i + 1}
                 </div>
 

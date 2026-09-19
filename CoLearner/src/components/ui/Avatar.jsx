@@ -62,9 +62,9 @@ export const Avatar = forwardRef(function Avatar(
       {online !== undefined && (
         <span
           className={clsx(
-            'absolute bottom-0 right-0 rounded-full ring-2 ring-white',
+            'absolute bottom-0 right-0 rounded-full ring-2 ring-c-surface',
             sizeConfig.status,
-            online ? 'bg-c-success' : 'bg-c-text-muted',
+            online ? 'bg-c-success-solid' : 'bg-c-text-muted',
           )}
           aria-label={online ? 'Online' : 'Offline'}
         />
@@ -92,7 +92,7 @@ export const AvatarGroup = forwardRef(function AvatarGroup(
       {...props}
     >
       {visibleAvatars.map((child, index) => (
-        <div key={index} className="ring-2 ring-white rounded-full">
+        <div key={index} className="ring-2 ring-c-surface rounded-full">
           {React.isValidElement(child)
             ? React.cloneElement(child, { size })
             : child}
@@ -101,7 +101,7 @@ export const AvatarGroup = forwardRef(function AvatarGroup(
       {remainingCount > 0 && (
         <div
           className={clsx(
-            'ring-2 ring-white rounded-full flex items-center justify-center bg-slate-100 text-c-text font-semibold select-none shrink-0',
+            'ring-2 ring-c-surface rounded-full flex items-center justify-center bg-c-blue-soft text-c-text font-semibold select-none shrink-0',
             sizeConfig.box,
           )}
         >

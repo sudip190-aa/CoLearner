@@ -103,7 +103,7 @@ export function VoiceCallProvider({ children }) {
           {busy && state.phase !== 'incoming' && (
             <section
               aria-label="Voice call"
-              className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-c-blue/20 bg-white p-5 shadow-xl sm:bottom-6 sm:right-6"
+              className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-c-blue/20 bg-c-surface p-5 shadow-xl sm:bottom-6 sm:right-6"
             >
               <div className="flex items-center gap-3">
                 <Avatar
@@ -168,7 +168,7 @@ export function VoiceCallProvider({ children }) {
           {state.phase === 'finished' && (
             <div
               role="status"
-              className="fixed bottom-4 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm items-start gap-3 rounded-2xl border border-c-border bg-white p-4 shadow-lg"
+              className="fixed bottom-4 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm items-start gap-3 rounded-2xl border border-c-border bg-c-surface p-4 shadow-lg"
             >
               <PhoneOff
                 size={18}

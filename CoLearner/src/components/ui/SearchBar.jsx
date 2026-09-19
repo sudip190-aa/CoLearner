@@ -26,7 +26,9 @@ export const SearchBar = forwardRef(function SearchBar(
   // The text being typed always lives here, so the box works whether or not the parent passes `value`.
   // A `value` prop acts as "set/reset the text" (e.g. a parent's "Clear filters"), and `onChange`
   // receives the debounced text.
-  const [internalValue, setInternalValue] = useState(controlledValue ?? defaultValue)
+  const [internalValue, setInternalValue] = useState(
+    controlledValue ?? defaultValue,
+  )
   const [seenControlled, setSeenControlled] = useState(controlledValue)
   if (controlledValue !== seenControlled) {
     setSeenControlled(controlledValue)
@@ -58,10 +60,20 @@ export const SearchBar = forwardRef(function SearchBar(
     const owner = {}
     shortcutOwners.push(owner)
     const onKey = (event) => {
-      if (event.key !== shortcut || event.ctrlKey || event.metaKey || event.altKey) return
+      if (
+        event.key !== shortcut ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey
+      )
+        return
       if (shortcutOwners[shortcutOwners.length - 1] !== owner) return
       const target = event.target
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable) return
+      if (
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+        target.isContentEditable
+      )
+        return
       if (document.querySelector('[role="dialog"]')) return
       event.preventDefault()
       inputRef.current?.focus()
@@ -113,11 +125,11 @@ export const SearchBar = forwardRef(function SearchBar(
         placeholder={placeholder}
         aria-label={placeholder}
         className={clsx(
-          'w-full h-10 pl-10 pr-12 text-sm bg-white text-c-text rounded-brand border border-c-border transition-colors font-sans',
+          'w-full h-10 pl-10 pr-12 text-sm bg-c-surface text-c-text rounded-brand border border-c-border transition-colors font-sans',
           'placeholder:text-c-text-muted/60',
           'focus:outline-none focus:border-c-blue focus:ring-2 focus:ring-c-blue focus:ring-offset-2',
           disabled &&
-            'bg-slate-100 text-c-text-muted/70 cursor-not-allowed border-c-border opacity-75',
+            'bg-c-blue-soft text-c-text-muted/70 cursor-not-allowed border-c-border opacity-75',
           className,
         )}
         {...props}
@@ -128,14 +140,14 @@ export const SearchBar = forwardRef(function SearchBar(
           <button
             type="button"
             onClick={handleClear}
-            className="p-1 rounded-full text-c-text-muted hover:text-c-text hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
+            className="p-1 rounded-full text-c-text-muted hover:text-c-text hover:bg-c-blue-soft transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
             aria-label="Clear search"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         )}
         {shortcut && !query && (
-          <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-c-text-muted bg-slate-100 border border-c-border rounded select-none">
+          <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-c-text-muted bg-c-blue-soft border border-c-border rounded select-none">
             {shortcut}
           </kbd>
         )}

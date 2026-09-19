@@ -17,7 +17,7 @@ Open http://127.0.0.1:5176. Django is not used by the frontend. The linked Supab
 
 - `CoLearner/`: React/Vite; Supabase transport in `src/services/supabase/`.
 - `supabase/migrations/`: schema, relationships, indexes, RLS, business functions, and Storage policies.
-- `supabase/functions/`: protected account administration/password migration and rate-limited contact submissions.
+- `supabase/functions/`: account administration, contact submissions, the book assistant and background document processing.
 - `supabase/scripts/`: data migration, configuration, and verification.
 - `backend/`: retained Django source/database for rollback and comparison. Do not use both backends as writable sources.
 
@@ -26,7 +26,7 @@ Open http://127.0.0.1:5176. Django is not used by the frontend. The linked Supab
 ```powershell
 supabase link --project-ref ghjdpcvnzclfvyosfhoz
 supabase db push --linked --yes --skip-vault
-supabase functions deploy account contact --use-api --no-verify-jwt
+supabase functions deploy account contact book-library book-worker --use-api --no-verify-jwt
 ```
 
 These cloud commands do not require Docker. Edge Functions validate authentication internally; service keys remain private. Email/password uses Supabase Auth. Google/GitHub credentials are read from the ignored `.env.oauth` file by `supabase/scripts/configure-oauth.ps1`.
@@ -38,6 +38,10 @@ See [the educational library runbook](supabase/BOOK_LEARNING.md) for the public 
 See [social features and UX](supabase/SOCIAL_UX.md) for messaging images, notifications, mentions, project invitations, public showcases and account isolation. The [implementation report](supabase/SOCIAL_UX_REPORT.md) records verification, configuration limits and every changed file.
 
 Recorded [voice messages](supabase/VOICE_MESSAGES.md) are available through the microphone beside the chat composer, with preview, private delivery and playback controls.
+
+Project members now share a private conversation and a group voice call. Private and group messages support persistent replies; navigation badges track unread messages, pending invitations/requests and community mentions. Personal profile showcases are separate from collaborative projects. Poppins and a persistent light/dark toggle apply across the application.
+
+See the [completion report and 40-item checklist](supabase/COMPLETION_REPORT.md) for the current implementation and verified limits, and the [deployment runbook](supabase/DEPLOYMENT.md) for hosting, public URLs and remaining service configuration.
 
 ## Checks
 

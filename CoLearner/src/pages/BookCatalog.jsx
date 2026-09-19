@@ -104,7 +104,7 @@ export default function BookCatalog() {
             <Link
               key={b.id}
               to={`/books/${b.slug}`}
-              className="group overflow-hidden rounded-2xl border border-c-border bg-white transition-shadow hover:shadow-md"
+              className="group overflow-hidden rounded-2xl border border-c-border bg-c-surface transition-shadow hover:shadow-md"
             >
               <div className="flex h-40 items-center justify-between gap-5 bg-c-blue-wash px-6">
                 <div>

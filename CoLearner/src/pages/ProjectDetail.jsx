@@ -47,7 +47,7 @@ function Milestones({ milestones }) {
             <span className="absolute left-3 top-7 h-full w-px bg-c-border" />
           )}
           <span
-            className={`relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${milestone.status === 'done' ? 'bg-c-success text-white' : milestone.status === 'in_progress' ? 'bg-c-blue text-white' : 'bg-slate-100 text-c-text-muted'}`}
+            className={`relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${milestone.status === 'done' ? 'bg-c-success-solid text-white' : milestone.status === 'in_progress' ? 'bg-c-action text-white' : 'bg-c-blue-soft text-c-text-muted'}`}
           >
             {milestone.status === 'done' ? (
               <Check className="h-3.5 w-3.5" />
@@ -121,9 +121,9 @@ export default function ProjectDetail() {
   if (!project)
     return (
       <div className="space-y-6">
-        <div className="h-52 animate-pulse rounded-brand-lg bg-slate-200/75" />
-        <div className="h-10 w-2/3 animate-pulse rounded-brand bg-slate-200/75" />
-        <div className="h-48 animate-pulse rounded-brand-lg bg-slate-200/75" />
+        <div className="h-52 animate-pulse rounded-brand-lg bg-c-border/75" />
+        <div className="h-10 w-2/3 animate-pulse rounded-brand bg-c-border/75" />
+        <div className="h-48 animate-pulse rounded-brand-lg bg-c-border/75" />
       </div>
     )
 
@@ -233,7 +233,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-brand-lg border border-c-border bg-white shadow-sm">
+      <section className="overflow-hidden rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
         <div className="h-48 bg-c-blue-wash sm:h-64">
           <BookCover book={project} className="h-full w-full" />
         </div>
@@ -281,7 +281,7 @@ export default function ProjectDetail() {
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-c-blue px-4 py-2.5 text-sm font-semibold text-white"
+                  className="inline-flex items-center gap-2 rounded-xl bg-c-action px-4 py-2.5 text-sm font-semibold text-white"
                 >
                   View Live Demo <ExternalLink size={15} />
                 </a>
@@ -312,7 +312,7 @@ export default function ProjectDetail() {
                 src={url}
                 alt={`${project.title} screenshot ${index + 1}`}
                 loading="lazy"
-                className="h-52 w-full rounded-2xl border border-c-border bg-white object-contain"
+                className="h-52 w-full rounded-2xl border border-c-border bg-c-surface object-contain"
               />
             </a>
           ))}
@@ -395,7 +395,7 @@ export default function ProjectDetail() {
                   <Link
                     key={member.id}
                     to={`/u/${member.username}`}
-                    className="flex items-center gap-3 rounded-brand border border-c-border bg-white p-4 hover:border-c-blue"
+                    className="flex items-center gap-3 rounded-brand border border-c-border bg-c-surface p-4 hover:border-c-blue"
                   >
                     <Avatar
                       src={member.avatar}
@@ -428,7 +428,7 @@ export default function ProjectDetail() {
                   project.updates.map((update) => (
                     <article
                       key={update.id}
-                      className="flex gap-3 rounded-brand border border-c-border bg-white p-5"
+                      className="flex gap-3 rounded-brand border border-c-border bg-c-surface p-5"
                     >
                       <Avatar
                         src={update.author.avatar}
@@ -459,7 +459,7 @@ export default function ProjectDetail() {
           </Tabs>
         </div>
         <aside className="space-y-4">
-          <section className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm">
+          <section className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm">
             <h2 className="text-lg font-bold text-c-text">Project progress</h2>
             <ProgressBar
               value={project.taskProgress.done}

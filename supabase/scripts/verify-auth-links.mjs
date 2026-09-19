@@ -41,8 +41,9 @@ const ok = async (p) => {
   return r.data;
 };
 let user, confirmationUser, recoveryResponse;
-const tabs = await (await fetch("http://127.0.0.1:9224/json")).json(),
-  ws = new WebSocket(tabs.find((t) => t.type === "page").webSocketDebuggerUrl);
+const info = await (await fetch("http://127.0.0.1:9224/json/version")).json();
+const ws = new WebSocket(info.webSocketDebuggerUrl);
+let browserSession;
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let id = 0;
 const pending = new Map();
@@ -66,7 +67,16 @@ const send = (method, params = {}) =>
   new Promise((resolve, reject) => {
     const n = ++id;
     pending.set(n, { resolve, reject });
-    ws.send(JSON.stringify({ id: n, method, params }));
+    ws.send(
+      JSON.stringify({
+        id: n,
+        method,
+        params,
+        ...(!method.startsWith("Target.") && browserSession
+          ? { sessionId: browserSession }
+          : {}),
+      }),
+    );
   });
 const evalJS = async (expression) => {
   const r = await send("Runtime.evaluate", {
@@ -89,6 +99,15 @@ const wait = async (predicate) => {
   }
   throw new Error("Auth browser state timed out: " + predicate);
 };
+const { browserContextId } = await send("Target.createBrowserContext");
+const { targetId } = await send("Target.createTarget", {
+  url: "about:blank",
+  browserContextId,
+});
+browserSession = (
+  await send("Target.attachToTarget", { targetId, flatten: true })
+).sessionId;
+
 try {
   await send("Network.enable");
   const clear = await send("Page.addScriptToEvaluateOnNewDocument", {
@@ -239,6 +258,9 @@ try {
     );
   if (user) await admin.auth.admin.deleteUser(user.id);
   if (confirmationUser) await admin.auth.admin.deleteUser(confirmationUser.id);
+  await send("Target.disposeBrowserContext", { browserContextId }).catch(
+    () => {},
+  );
   ws.close();
   console.log("Removed temporary Auth-link account.");
 }

@@ -10,7 +10,7 @@ export function LegalPage({ policy }) {
     <div className="container py-10 md:py-16">
       <header className="rounded-3xl bg-c-blue-wash px-6 py-10 sm:p-12">
         <div className="mb-6 flex items-center gap-3">
-          <span className="rounded-xl bg-white p-3 text-c-blue">
+          <span className="rounded-xl bg-c-surface p-3 text-c-blue">
             <Icon size={24} aria-hidden="true" />
           </span>
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-c-blue">

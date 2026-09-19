@@ -38,12 +38,12 @@ export const Stepper = forwardRef(function Stepper(
               <div
                 className={clsx(
                   'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0',
-                  isCompleted && 'bg-c-blue text-white shadow-xs',
+                  isCompleted && 'bg-c-action text-white shadow-xs',
                   // Yellow Law: yellow always uses dark text.
                   isActive &&
-                    'bg-c-yellow text-c-text border-2 border-c-text/10 shadow-sm ring-4 ring-c-yellow-soft',
+                    'bg-c-yellow text-c-on-accent border-2 border-c-text/10 shadow-sm ring-4 ring-c-yellow-soft',
                   isUpcoming &&
-                    'bg-slate-100 text-c-text-muted border border-c-border',
+                    'bg-c-blue-soft text-c-text-muted border border-c-border',
                 )}
               >
                 {isCompleted ? (
@@ -80,7 +80,7 @@ export const Stepper = forwardRef(function Stepper(
               <div
                 className={clsx(
                   'flex-1 h-0.5 mx-3 sm:mx-4 transition-colors',
-                  index < currentStep ? 'bg-c-blue' : 'bg-c-border',
+                  index < currentStep ? 'bg-c-action' : 'bg-c-border',
                 )}
               />
             )}

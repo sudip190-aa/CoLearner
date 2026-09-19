@@ -64,13 +64,13 @@ export const Radio = forwardRef(function Radio(
             'w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-150',
             'peer-focus-visible:ring-2 peer-focus-visible:ring-c-blue peer-focus-visible:ring-offset-2',
             isError ? 'border-c-danger' : 'border-c-border',
-            'bg-white peer-checked:border-c-blue hover:border-c-blue/70',
+            'bg-c-surface peer-checked:border-c-blue hover:border-c-blue/70',
             className,
           )}
         >
           <div
             className={clsx(
-              'w-2.5 h-2.5 rounded-full bg-c-blue transform scale-0 peer-checked:scale-100 transition-transform duration-150',
+              'w-2.5 h-2.5 rounded-full bg-c-action transform scale-0 peer-checked:scale-100 transition-transform duration-150',
               disabled && 'bg-c-text-muted',
             )}
           />

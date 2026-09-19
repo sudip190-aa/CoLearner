@@ -5,22 +5,25 @@ import { useNotificationStore } from '../../store/notificationStore'
 import { useNotificationSync } from '../../hooks/useNotificationSync'
 import { describeNotification } from '../../lib/notifications'
 
+import { useNavigationSync } from '../../hooks/useNavigationCounts'
+import { useVoiceCall } from '../calls/VoiceCallProvider'
+
 function Popup({ item, dismiss, navigate }) {
   useEffect(() => {
     const timer = setTimeout(() => dismiss(item.id), 10000)
     return () => clearTimeout(timer)
   }, [item.id, dismiss])
   const description = describeNotification(item)
-  const isMessage = item.verb === 'direct_message'
+  const isMessage = ['direct_message', 'project_message'].includes(item.verb)
   const Icon = isMessage ? MessageCircle : Bell
   return (
     <div
       data-notification-popup={item.id}
-      className="pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-2xl border border-c-blue/20 bg-white p-4 pl-5 shadow-[0_12px_40px_-12px_rgba(24,54,94,0.3)] sm:gap-4 sm:p-5 sm:pl-6"
+      className="pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-2xl border border-c-blue/20 bg-c-surface p-4 pl-5 shadow-[0_12px_40px_-12px_rgba(24,54,94,0.3)] sm:gap-4 sm:p-5 sm:pl-6"
     >
       <span
         aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-1 bg-c-blue"
+        className="absolute inset-y-0 left-0 w-1 bg-c-action"
       />
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-c-blue-soft text-c-blue">
         <Icon size={20} strokeWidth={1.8} />
@@ -36,7 +39,7 @@ function Popup({ item, dismiss, navigate }) {
         <span className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-c-blue">
           {isMessage ? 'New message' : 'New notification'}
           <span
-            className="h-1.5 w-1.5 rounded-full bg-c-blue"
+            className="h-1.5 w-1.5 rounded-full bg-c-action"
             aria-hidden="true"
           />
         </span>
@@ -74,8 +77,13 @@ function Popup({ item, dismiss, navigate }) {
   )
 }
 
-export default function NotificationHub({ navigate }) {
+export default function NotificationHub({
+  navigate,
+  conversationOpen = false,
+}) {
   useNotificationSync()
+  useNavigationSync()
+  const call = useVoiceCall()
   const user = useAuthStore((state) => state.user)
   const notifications = useNotificationStore((state) => state.notifications)
   const [popups, setPopups] = useState([])
@@ -164,7 +172,7 @@ export default function NotificationHub({ navigate }) {
     <aside
       aria-label="New notifications"
       aria-live="polite"
-      className="pointer-events-none fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[80] w-[calc(100%-2rem)] max-w-[420px] space-y-3 lg:bottom-6 lg:right-6"
+      className={`pointer-events-none fixed right-4 z-[80] w-[calc(100%-2rem)] max-w-[420px] space-y-3 lg:right-6 ${call?.busy || conversationOpen ? 'top-24' : 'bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-6'}`}
     >
       {popups.map((item) => (
         <Popup

@@ -15,8 +15,13 @@ export const Dropdown = forwardRef(function Dropdown(
   const containerRef = useRef(null)
   const menuRef = useRef(null)
 
-  const items = () => Array.from(menuRef.current?.querySelectorAll('[role="menuitem"]:not(:disabled)') || [])
-  const focusTrigger = () => containerRef.current?.querySelector('button, a, [tabindex]')?.focus()
+  const items = () =>
+    Array.from(
+      menuRef.current?.querySelectorAll('[role="menuitem"]:not(:disabled)') ||
+        [],
+    )
+  const focusTrigger = () =>
+    containerRef.current?.querySelector('button, a, [tabindex]')?.focus()
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,7 +56,10 @@ export const Dropdown = forwardRef(function Dropdown(
     const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End']
     if (!keys.includes(event.key)) return
     if (!isOpen) {
-      if (event.key === 'ArrowDown' && containerRef.current?.contains(event.target)) {
+      if (
+        event.key === 'ArrowDown' &&
+        containerRef.current?.contains(event.target)
+      ) {
         event.preventDefault()
         setIsOpen(true)
         requestAnimationFrame(() => items()[0]?.focus())
@@ -80,14 +88,12 @@ export const Dropdown = forwardRef(function Dropdown(
       className="relative inline-block text-left"
       {...props}
     >
-      <div onClick={() => setIsOpen(!isOpen)}>
-        {trigger}
-      </div>
+      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
 
       {isOpen && (
         <div
           className={clsx(
-            'absolute z-50 mt-1.5 w-56 rounded-brand border border-c-border bg-white shadow-md py-1 font-sans focus:outline-none',
+            'absolute z-50 mt-1.5 w-56 rounded-brand border border-c-border bg-c-surface shadow-md py-1 font-sans focus:outline-none',
             'animate-in fade-in zoom-in-95 duration-150',
             align === 'right' ? 'right-0' : 'left-0',
             className,
@@ -126,7 +132,7 @@ export const DropdownItem = forwardRef(function DropdownItem(
       className={clsx(
         'w-full px-3.5 py-2 text-xs md:text-sm font-medium flex items-center gap-2.5 text-left transition-colors',
         danger
-          ? 'text-c-danger hover:bg-red-50'
+          ? 'text-c-danger hover:bg-c-danger-soft'
           : 'text-c-text hover:bg-c-blue-soft hover:text-c-blue',
         disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
         className,

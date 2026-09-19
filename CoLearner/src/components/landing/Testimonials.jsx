@@ -8,7 +8,7 @@ const testimonials = [
     name: 'Marcus T.',
     role: 'Bootcamp student → Junior Developer',
     initials: 'MT',
-    color: 'bg-c-blue',
+    color: 'bg-c-action',
   },
   {
     quote:
@@ -16,7 +16,7 @@ const testimonials = [
     name: 'Priya S.',
     role: 'Self-taught developer',
     initials: 'PS',
-    color: 'bg-c-blue-hover',
+    color: 'bg-c-action-hover',
   },
   {
     quote:
@@ -24,13 +24,13 @@ const testimonials = [
     name: 'David K.',
     role: 'Senior Engineer & Mentor',
     initials: 'DK',
-    color: 'bg-c-text',
+    color: 'bg-c-ink',
   },
 ]
 
 export const Testimonials = () => {
   return (
-    <section className="py-14 md:py-24 bg-white">
+    <section className="py-14 md:py-24 bg-c-surface">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-c-text mb-4">
@@ -45,7 +45,7 @@ export const Testimonials = () => {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="bg-white border border-c-border rounded-2xl p-7 flex flex-col gap-5 hover:border-c-blue/40 hover:shadow-md transition-all duration-300"
+              className="bg-c-surface border border-c-border rounded-2xl p-7 flex flex-col gap-5 hover:border-c-blue/40 hover:shadow-md transition-all duration-300"
             >
               {/* Quote icon */}
               <div className="text-c-blue-soft">

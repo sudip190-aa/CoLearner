@@ -70,13 +70,13 @@ const features = [
 export const Landing = () => {
   const signedIn = useAuthStore((s) => s.isAuthenticated)
   return (
-    <div id="top" className="min-h-screen bg-white font-sans text-c-text">
+    <div id="top" className="min-h-screen bg-c-surface font-sans text-c-text">
       <section className="relative overflow-hidden border-b border-c-border bg-gradient-to-b from-c-blue-wash to-white pb-16 pt-16 sm:pt-24 lg:pb-24">
         <div className="container grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
           <div>
             <p className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-c-blue">
-              <span className="h-2 w-2 rounded-full bg-c-blue" /> Learn. Build.
-              Prove.
+              <span className="h-2 w-2 rounded-full bg-c-action" /> Learn.
+              Build. Prove.
             </p>
             <h1 className="text-4xl font-bold leading-[1.12] tracking-tight sm:text-6xl lg:text-[64px]">
               Learn with purpose.
@@ -322,7 +322,7 @@ export const Landing = () => {
         </div>
       </section>
       <section className="px-4 pb-16 md:pb-20" aria-labelledby="signup-title">
-        <div className="mx-auto max-w-[1152px] rounded-3xl bg-c-text px-6 py-14 text-center sm:px-12 md:py-20">
+        <div className="mx-auto max-w-[1152px] rounded-3xl bg-c-ink px-6 py-14 text-center sm:px-12 md:py-20">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-blue-200">
             Your next chapter starts here
           </p>

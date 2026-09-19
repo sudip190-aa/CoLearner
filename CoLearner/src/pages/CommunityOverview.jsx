@@ -39,7 +39,7 @@ export default function CommunityOverview() {
         {audiences.map(([Icon, label, title, text]) => (
           <article
             key={label}
-            className="rounded-2xl border border-c-border bg-white p-7"
+            className="rounded-2xl border border-c-border bg-c-surface p-7"
           >
             <Icon size={26} className="mb-6 text-c-blue" aria-hidden="true" />
             <p className="text-xs font-semibold uppercase tracking-wider text-c-blue">

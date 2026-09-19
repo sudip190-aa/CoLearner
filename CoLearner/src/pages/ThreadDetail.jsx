@@ -29,6 +29,8 @@ import { useInFlight } from '../hooks/useInFlight.js'
 import { formatRelative } from '../lib/formatters.js'
 import { useAuthStore } from '../store/authStore'
 
+import { useMentionRead } from '../hooks/useMentionRead'
+
 const reportReasons = [
   'Spam or advertising',
   'Harassment or abuse',
@@ -79,7 +81,7 @@ function Comment({ comment, ctx }) {
   return (
     <div
       id={`comment-${comment.id}`}
-      className="flex scroll-mt-24 gap-3 rounded-xl p-2 target:bg-c-yellow-soft"
+      className="flex scroll-mt-24 gap-3 rounded-xl px-3 py-5 target:bg-c-yellow-soft sm:px-5"
       data-comment-id={comment.id}
     >
       <Avatar
@@ -133,11 +135,13 @@ function Comment({ comment, ctx }) {
             </div>
           </form>
         ) : (
-          <RichText
-            text={comment.body}
-            mentions={comment.mentions || []}
-            className="mt-2 text-sm leading-6 text-c-text"
-          />
+          <div data-mention-id={comment.id}>
+            <RichText
+              text={comment.body}
+              mentions={comment.mentions || []}
+              className="mt-2 text-sm leading-6 text-c-text"
+            />
+          </div>
         )}
         <div className="mt-2 flex flex-wrap items-center gap-4">
           <VotePill
@@ -268,6 +272,7 @@ export default function ThreadDetail() {
   const [replyTo, setReplyTo] = useState(null)
   const [replyBody, setReplyBody] = useState('')
   const [topBody, setTopBody] = useState('')
+  useMentionRead(thread)
   const [posting, setPosting] = useState(false)
   const [editing, setEditing] = useState(null)
   const [confirm, setConfirm] = useState(null) // { title, description, run }
@@ -527,9 +532,9 @@ export default function ThreadDetail() {
   if (!thread)
     return (
       <div className="space-y-5">
-        <div className="h-12 w-3/4 animate-pulse rounded-brand bg-slate-200/75" />
-        <div className="h-48 animate-pulse rounded-brand-lg bg-slate-200/75" />
-        <div className="h-32 animate-pulse rounded-brand-lg bg-slate-200/75" />
+        <div className="h-12 w-3/4 animate-pulse rounded-brand bg-c-border/75" />
+        <div className="h-48 animate-pulse rounded-brand-lg bg-c-border/75" />
+        <div className="h-32 animate-pulse rounded-brand-lg bg-c-border/75" />
       </div>
     )
   const isOwnThread = thread.author.id === me.id
@@ -552,14 +557,14 @@ export default function ThreadDetail() {
     posting,
   }
   return (
-    <div className="pb-28">
+    <div className="mx-auto max-w-4xl pb-16">
       <Link
         to="/community"
         className="text-sm font-semibold text-c-text-muted hover:text-c-blue"
       >
         Back to community
       </Link>
-      <article className="mt-6 rounded-brand-lg border border-c-border bg-white p-5 shadow-sm sm:p-8">
+      <article className="mt-6 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <Link
             to={`/u/${thread.author.username}`}
@@ -596,7 +601,7 @@ export default function ThreadDetail() {
               <button
                 type="button"
                 onClick={() => setReport({ kind: 'thread', id: thread.id })}
-                className="rounded-brand p-2 text-c-text-muted hover:bg-red-50 hover:text-c-danger"
+                className="rounded-brand p-2 text-c-text-muted hover:bg-c-danger-soft hover:text-c-danger"
                 aria-label="Report thread"
               >
                 <Flag className="h-4 w-4" />
@@ -606,7 +611,7 @@ export default function ThreadDetail() {
               <button
                 type="button"
                 onClick={askDeleteThread}
-                className="rounded-brand p-2 text-c-text-muted hover:bg-red-50 hover:text-c-danger"
+                className="rounded-brand p-2 text-c-text-muted hover:bg-c-danger-soft hover:text-c-danger"
                 aria-label="Delete thread"
               >
                 <Trash2 className="h-4 w-4" />
@@ -614,7 +619,7 @@ export default function ThreadDetail() {
             )}
           </div>
         </div>
-        <h1 className="mt-7 text-3xl font-bold leading-tight text-c-text">
+        <h1 className="mt-6 !text-2xl !font-semibold !leading-snug text-c-text sm:!text-3xl">
           {thread.title}
         </h1>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -623,14 +628,16 @@ export default function ThreadDetail() {
             <Chip key={tag}>{tag}</Chip>
           ))}
         </div>
-        <RichText
-          text={thread.body}
-          className="mt-8 max-w-3xl text-base leading-8 text-c-text"
-        />
+        <div data-mention-id="post">
+          <RichText
+            text={thread.body}
+            className="mt-6 max-w-3xl text-sm leading-7 text-c-text sm:text-base"
+          />
+        </div>
       </article>
       <section className="mt-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-c-text">
+          <h2 className="!text-xl !font-semibold text-c-text">
             {thread.commentCount}{' '}
             {thread.commentCount === 1 ? 'comment' : 'comments'}
           </h2>
@@ -639,13 +646,13 @@ export default function ThreadDetail() {
             Newest first
           </span>
         </div>
-        <div className="mt-5 space-y-6">
+        <div className="mt-5 divide-y divide-c-border overflow-hidden rounded-2xl border border-c-border bg-c-surface">
           {thread.comments.length ? (
             thread.comments.map((comment) => (
               <Comment key={comment.id} comment={comment} ctx={ctx} />
             ))
           ) : (
-            <p className="text-sm text-c-text-muted">
+            <p className="p-5 text-sm text-c-text-muted">
               No comments yet. Be the first to help.
             </p>
           )}
@@ -663,7 +670,7 @@ export default function ThreadDetail() {
       </section>
       <form
         onSubmit={(event) => submitComment(event, null)}
-        className="mt-8 rounded-2xl border border-c-border bg-white p-4 sm:p-5"
+        className="mt-8 rounded-2xl border border-c-border bg-c-surface p-4 sm:p-5"
       >
         <div className="mx-auto flex max-w-4xl items-center gap-3">
           <Avatar src={user?.avatar} name={user?.fullName || 'You'} size="sm" />

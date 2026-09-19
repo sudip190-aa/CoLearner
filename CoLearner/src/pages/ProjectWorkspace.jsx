@@ -57,10 +57,10 @@ const priorities = [
   { value: 'urgent', label: 'Urgent' },
 ]
 const priorityColors = {
-  low: 'bg-c-success',
+  low: 'bg-c-success-solid',
   medium: 'bg-c-warning',
-  high: 'bg-c-danger',
-  urgent: 'bg-c-danger ring-2 ring-red-200',
+  high: 'bg-c-danger-solid',
+  urgent: 'bg-c-danger-solid ring-2 ring-red-200',
 }
 const roleOptions = [
   { value: 'member', label: 'Member' },
@@ -104,7 +104,7 @@ function TaskCard({ task, onOpen, onDragStart }) {
       data-task-id={task.id}
       onDragStart={(event) => onDragStart(event, task.id)}
       onClick={() => onOpen(task)}
-      className="w-full rounded-brand border border-c-border bg-white p-4 text-left shadow-sm transition-shadow hover:shadow-md"
+      className="w-full rounded-brand border border-c-border bg-c-surface p-4 text-left shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-start gap-2">
         <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-c-text-muted/50" />
@@ -706,9 +706,14 @@ export default function ProjectWorkspace() {
         title={`${project.title} workspace`}
         subtitle="Coordinate the work, keep momentum visible, and ship together."
         actions={
-          <Button as={Link} to={`/projects/${slug}`} variant="outline">
-            View project
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button to={`/projects/${slug}/chat`} icon={MessageCircle}>
+              Group chat
+            </Button>
+            <Button as={Link} to={`/projects/${slug}`} variant="outline">
+              View project
+            </Button>
+          </div>
         }
       />
       <Tabs value={tab} onChange={setTab}>
@@ -744,7 +749,7 @@ export default function ProjectWorkspace() {
                     <h2 className="text-sm font-bold text-c-text">
                       {column.label}
                     </h2>
-                    <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-c-text-muted">
+                    <span className="rounded-full bg-c-surface px-2 py-0.5 text-xs font-semibold text-c-text-muted">
                       {tasks.length}
                     </span>
                   </div>
@@ -796,12 +801,12 @@ export default function ProjectWorkspace() {
               <article
                 key={milestone.id}
                 data-milestone-id={milestone.id}
-                className="flex items-center gap-4 rounded-brand-lg border border-c-border bg-white p-5 shadow-sm"
+                className="flex items-center gap-4 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm"
               >
                 <button
                   type="button"
                   onClick={() => toggleMilestone(milestone)}
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${milestone.status === 'done' ? 'border-c-success bg-c-success text-white' : 'border-c-border text-transparent hover:border-c-blue'}`}
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${milestone.status === 'done' ? 'border-c-success bg-c-success-solid text-white' : 'border-c-border text-transparent hover:border-c-blue'}`}
                   aria-label={
                     milestone.status === 'done'
                       ? 'Reopen milestone'
@@ -851,7 +856,7 @@ export default function ProjectWorkspace() {
                   <button
                     type="button"
                     onClick={() => askDeleteMilestone(milestone)}
-                    className="rounded-brand p-2 text-c-text-muted hover:bg-red-50 hover:text-c-danger"
+                    className="rounded-brand p-2 text-c-text-muted hover:bg-c-danger-soft hover:text-c-danger"
                     aria-label="Delete milestone"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -869,7 +874,7 @@ export default function ProjectWorkspace() {
                 <article
                   key={member.id}
                   data-member-id={member.id}
-                  className="flex items-start gap-4 rounded-brand-lg border border-c-border bg-white p-5 shadow-sm"
+                  className="flex items-start gap-4 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm"
                 >
                   <Avatar
                     src={member.avatar}
@@ -900,7 +905,7 @@ export default function ProjectWorkspace() {
                         <button
                           type="button"
                           onClick={() => askRemoveMember(member)}
-                          className="rounded-brand p-2 text-c-text-muted hover:bg-red-50 hover:text-c-danger"
+                          className="rounded-brand p-2 text-c-text-muted hover:bg-c-danger-soft hover:text-c-danger"
                           aria-label={`Remove ${member.fullName}`}
                         >
                           <UserMinus className="h-4 w-4" />
@@ -946,7 +951,7 @@ export default function ProjectWorkspace() {
                       <div
                         key={request.id}
                         data-request-id={request.id}
-                        className="flex flex-col gap-4 rounded-brand-lg border border-c-border bg-white p-5 sm:flex-row sm:items-center"
+                        className="flex flex-col gap-4 rounded-brand-lg border border-c-border bg-c-surface p-5 sm:flex-row sm:items-center"
                       >
                         <Avatar
                           src={request.user.avatar}
@@ -997,7 +1002,7 @@ export default function ProjectWorkspace() {
         <TabContent value="updates">
           <form
             onSubmit={publishUpdate}
-            className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm"
+            className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm"
           >
             <Textarea
               value={updateText}
@@ -1024,7 +1029,7 @@ export default function ProjectWorkspace() {
             {project.updates.map((update) => (
               <article
                 key={update.id}
-                className="flex gap-3 rounded-brand-lg border border-c-border bg-white p-5"
+                className="flex gap-3 rounded-brand-lg border border-c-border bg-c-surface p-5"
               >
                 <Avatar
                   src={update.author.avatar}
@@ -1054,7 +1059,7 @@ export default function ProjectWorkspace() {
             <ProjectGalleryEditor project={project} onChange={setProject} />
             <form
               onSubmit={saveSettings}
-              className="max-w-2xl space-y-5 rounded-brand-lg border border-c-border bg-white p-6 shadow-sm"
+              className="max-w-2xl space-y-5 rounded-brand-lg border border-c-border bg-c-surface p-6 shadow-sm"
             >
               <h2 className="text-xl font-bold text-c-text">
                 Project settings
@@ -1162,7 +1167,7 @@ export default function ProjectWorkspace() {
                   Save changes
                 </Button>
               </div>
-              <div className="border-t border-red-200 pt-5">
+              <div className="border-t border-c-danger/30 pt-5">
                 <h3 className="font-bold text-c-danger">Danger zone</h3>
                 <p className="mt-1 text-sm text-c-text-muted">
                   Deleting a project removes its workspace and cannot be undone.

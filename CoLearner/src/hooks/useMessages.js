@@ -2,6 +2,17 @@ import { useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { messages } from '../services/messages'
 import { useAuthStore } from '../store/authStore'
+import { projectChat } from '../services/projectChat'
+
+export function useProjectInbox() {
+  const id = useAuthStore((state) => state.user?.id)
+  return useQuery({
+    queryKey: ['project-inbox', id],
+    queryFn: projectChat.inbox,
+    enabled: !!id,
+    refetchInterval: 15000,
+  })
+}
 
 export function useMessageInbox() {
   const id = useAuthStore((state) => state.user?.id)

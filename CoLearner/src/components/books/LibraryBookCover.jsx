@@ -2,8 +2,8 @@ import { BookOpen } from 'lucide-react'
 
 const jackets = [
   'bg-[#18365e] text-white',
-  'bg-c-blue text-white',
-  'bg-c-yellow-soft text-[#18365e]',
+  'bg-c-action text-white',
+  'bg-c-yellow-soft text-c-text',
 ]
 
 // Uploaded covers take priority. The fallback keeps the catalog useful without stock artwork.
@@ -45,7 +45,7 @@ export default function LibraryBookCover({
       />
       {!thumbnail && (
         <span
-          className={`relative line-clamp-4 break-words font-semibold ${compact ? 'text-[9px] leading-3' : 'text-xs leading-4'}`}
+          className={`relative line-clamp-4 break-words font-semibold ${compact ? 'text-[8px] leading-3' : 'text-xs leading-4'}`}
         >
           {book.title}
         </span>

@@ -15,16 +15,19 @@ import {
   Phone,
   Search,
   Send,
+  Reply,
+  Users,
   ShieldCheck,
 } from 'lucide-react'
 import { Avatar, Button, Modal } from '../components/ui'
 import ContactDetails from '../components/messages/ContactDetails'
 import MessageImage from '../components/messages/MessageImage'
 import MessageAudio from '../components/messages/MessageAudio'
+import ReplyPreview from '../components/messages/ReplyPreview'
 import VoiceMessagePlayer from '../components/messages/VoiceMessagePlayer'
 import { useVoiceRecorder } from '../hooks/useVoiceRecorder'
 import { useAuthStore } from '../store/authStore'
-import { useMessageInbox } from '../hooks/useMessages'
+import { useMessageInbox, useProjectInbox } from '../hooks/useMessages'
 import { messages } from '../services/messages'
 import { useVoiceCall } from '../components/calls/VoiceCallProvider'
 
@@ -41,6 +44,8 @@ function Conversation({
   const cache = useQueryClient()
   const setDraft = onDraftChange
   const [sending, setSending] = useState(false)
+  const [reply, setReply] = useState(null)
+  const [original, setOriginal] = useState(null)
   const [attachment, setAttachment] = useState(null)
   const [preview, setPreview] = useState('')
   const fileInput = useRef(null)
@@ -137,7 +142,8 @@ function Conversation({
     if (
       pendingSend.current?.body !== body ||
       pendingSend.current?.file !== attachment ||
-      pendingSend.current?.audio !== recording.blob
+      pendingSend.current?.audio !== recording.blob ||
+      pendingSend.current?.reply !== (reply?.id || null)
     ) {
       if (pendingSend.current?.audioPath)
         void messages.discardAudio(pendingSend.current.audioPath)
@@ -145,6 +151,7 @@ function Conversation({
         body,
         file: attachment,
         audio: recording.blob,
+        reply: reply?.id || null,
         id: crypto.randomUUID(),
       }
     }
@@ -172,8 +179,10 @@ function Conversation({
         attempt.audioPath
           ? { path: attempt.audioPath, durationMs: recording.durationMs }
           : null,
+        attempt.reply,
       )
       setDraft('')
+      setReply(null)
       selectAttachment(null)
       setAtBottom(true)
       pendingSend.current = null
@@ -198,7 +207,7 @@ function Conversation({
   }
   return (
     <section
-      className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white shadow-sm"
+      className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-c-surface shadow-sm"
       aria-label={`Conversation with ${person.full_name}`}
     >
       <header className="flex items-center gap-2.5 border-b border-c-border px-4 py-4 lg:px-5">
@@ -306,7 +315,12 @@ function Conversation({
             new Date(entry.created_at) - new Date(entries[i - 1]?.created_at) >
               300000
           return (
-            <div key={entry.id}>
+            <div
+              key={entry.id}
+              id={`message-${entry.id}`}
+              tabIndex={-1}
+              className="rounded-lg focus:outline-none focus:ring-2 focus:ring-c-blue"
+            >
               {separator && (
                 <p className="my-5 flex items-center gap-3 text-center text-[10px] text-c-text-muted">
                   <span
@@ -335,8 +349,28 @@ function Conversation({
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 sm:max-w-[80%] ${mine ? 'rounded-br-md bg-c-blue-soft text-c-text' : 'rounded-bl-md bg-slate-50 text-c-text'}`}
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 sm:max-w-[80%] ${mine ? 'rounded-br-md bg-c-blue-soft text-c-text' : 'rounded-bl-md bg-c-blue-wash text-c-text'}`}
                 >
+                  {entry.reply && (
+                    <ReplyPreview
+                      name={
+                        entry.reply.sender_id === me ? 'You' : person.full_name
+                      }
+                      message={entry.reply}
+                      onOpen={() => {
+                        const element = document.getElementById(
+                          `message-${entry.reply.id}`,
+                        )
+                        if (element) {
+                          element.scrollIntoView({
+                            block: 'center',
+                            behavior: 'smooth',
+                          })
+                          element.focus({ preventScroll: true })
+                        } else setOriginal(entry.reply)
+                      }}
+                    />
+                  )}
                   {entry.image_path && <MessageImage path={entry.image_path} />}
                   {entry.audio_path && (
                     <MessageAudio
@@ -350,6 +384,18 @@ function Conversation({
                   <div
                     className={`mt-1 flex items-center justify-end gap-1.5 text-[10px] ${mine ? 'text-c-blue/80' : 'text-c-text-muted'}`}
                   >
+                    <button
+                      type="button"
+                      aria-label={`Reply to ${mine ? 'your message' : person.full_name}`}
+                      title="Reply"
+                      onClick={() => {
+                        setReply(entry)
+                        messageInput.current?.focus()
+                      }}
+                      className="mr-1 rounded p-1 text-c-text-muted hover:bg-c-blue-soft hover:text-c-blue"
+                    >
+                      <Reply size={14} />
+                    </button>
                     <time dateTime={entry.created_at}>
                       {new Date(entry.created_at).toLocaleTimeString(
                         undefined,
@@ -388,7 +434,33 @@ function Conversation({
           Jump to latest messages ↓
         </button>
       )}
+      <Modal
+        isOpen={!!original}
+        onClose={() => setOriginal(null)}
+        title="Original message"
+      >
+        <p className="mb-3 text-sm font-semibold">
+          {original?.sender_id === me ? 'You' : person.full_name}
+        </p>
+        {original?.image_path && <MessageImage path={original.image_path} />}
+        {original?.audio_path && (
+          <MessageAudio
+            path={original.audio_path}
+            durationMs={original.audio_duration_ms}
+          />
+        )}
+        <p className="whitespace-pre-wrap text-sm leading-6 [overflow-wrap:anywhere]">
+          {original?.body}
+        </p>
+      </Modal>
       <form onSubmit={send} className="border-t border-c-border/70 p-3 lg:p-4">
+        {reply && (
+          <ReplyPreview
+            name={reply.sender_id === me ? 'yourself' : person.full_name}
+            message={reply}
+            onCancel={() => setReply(null)}
+          />
+        )}
         {recording.busy && (
           <div
             className="mb-3 flex items-center gap-3 rounded-xl bg-c-blue-wash px-3 py-3"
@@ -420,7 +492,7 @@ function Conversation({
                 type="button"
                 aria-label="Stop recording"
                 onClick={recording.stop}
-                className="rounded-lg bg-c-blue p-2 text-white"
+                className="rounded-lg bg-c-action p-2 text-white"
               >
                 <Square size={16} fill="currentColor" />
               </button>
@@ -429,7 +501,7 @@ function Conversation({
               type="button"
               aria-label="Cancel recording"
               onClick={discardVoice}
-              className="rounded-lg p-2 text-c-text-muted hover:bg-white"
+              className="rounded-lg p-2 text-c-text-muted hover:bg-c-surface"
             >
               <X size={18} />
             </button>
@@ -447,7 +519,7 @@ function Conversation({
                 disabled={sending}
                 aria-label="Discard voice message"
                 onClick={discardVoice}
-                className="rounded p-1 text-c-text-muted hover:bg-white"
+                className="rounded p-1 text-c-text-muted hover:bg-c-surface"
               >
                 <X size={16} />
               </button>
@@ -582,12 +654,18 @@ function Conversation({
 export default function Messages() {
   const me = useAuthStore((state) => state.user?.id)
   const inbox = useMessageInbox()
+  const projectInbox = useProjectInbox()
   const [params, setParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [unreadOnly, setUnreadOnly] = useState(false)
   const [drafts, setDrafts] = useState({})
   const [detailsFor, setDetailsFor] = useState(null)
   const contacts = inbox.data || []
+  const groups = (projectInbox.data || []).filter(
+    (group) =>
+      (!unreadOnly || group.unread_count > 0) &&
+      group.title.toLowerCase().includes(search.toLowerCase()),
+  )
   const selected = contacts.find((p) => p.id === params.get('to'))
   const filtered = contacts.filter(
     (p) =>
@@ -608,7 +686,7 @@ export default function Messages() {
         </h1>
         <Link
           to="/people"
-          className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-c-blue hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-c-blue hover:bg-c-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
         >
           Find people
           <ArrowUpRight size={14} />
@@ -619,7 +697,7 @@ export default function Messages() {
       >
         <aside
           aria-label="Conversations"
-          className={`${selected ? 'hidden md:flex' : 'flex'} min-h-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white shadow-sm`}
+          className={`${selected ? 'hidden md:flex' : 'flex'} min-h-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-c-surface shadow-sm`}
         >
           <div className="space-y-4 p-4 pb-2">
             <div className="flex items-center justify-between">
@@ -659,6 +737,46 @@ export default function Messages() {
             </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
+            {groups.length > 0 && (
+              <section
+                aria-label="Project conversations"
+                className="mb-3 border-b border-c-border pb-3"
+              >
+                <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-c-text-muted">
+                  Project teams
+                </p>
+                {groups.map((group) => (
+                  <Link
+                    key={group.id}
+                    to={`/projects/${group.slug}/chat`}
+                    className="flex items-center gap-3 rounded-xl p-3 hover:bg-c-blue-wash"
+                  >
+                    <span className="rounded-xl bg-c-blue-soft p-2 text-c-blue">
+                      <Users size={17} />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-xs font-semibold">
+                      {group.title}
+                    </span>
+                    {group.unread_count > 0 && (
+                      <span className="rounded-full bg-c-danger-solid px-1.5 py-0.5 text-[10px] text-white">
+                        {group.unread_count > 99 ? '99+' : group.unread_count}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </section>
+            )}
+            {projectInbox.isError && (
+              <p role="alert" className="p-3 text-xs text-c-danger">
+                Project conversations could not load.{' '}
+                <button
+                  onClick={() => projectInbox.refetch()}
+                  className="underline"
+                >
+                  Retry
+                </button>
+              </p>
+            )}
             {inbox.isPending && (
               <p role="status" className="p-4 text-xs text-c-text-muted">
                 Loading conversations?
@@ -723,7 +841,7 @@ export default function Messages() {
                     {person.unread_count > 0 && (
                       <span
                         aria-label={`${person.unread_count} unread messages`}
-                        className="flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-c-blue px-1 text-[9px] font-semibold text-white"
+                        className="flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-c-action px-1 text-[9px] font-semibold text-white"
                       >
                         {person.unread_count > 99 ? '99+' : person.unread_count}
                       </span>
@@ -735,7 +853,7 @@ export default function Messages() {
           </div>
           <p className="flex items-center gap-2 border-t border-c-border/70 p-4 text-[10px] text-c-text-muted">
             <ShieldCheck size={13} aria-hidden="true" />
-            Only your connections
+            Your connections and project teams
           </p>
         </aside>
         <div
@@ -754,7 +872,7 @@ export default function Messages() {
               onShowDetails={() => setDetailsFor(selected.id)}
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-c-border bg-white p-8 text-center shadow-sm">
+            <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-c-border bg-c-surface p-8 text-center shadow-sm">
               <div className="mb-5 rounded-2xl bg-c-blue-soft p-5 text-c-blue">
                 <MessageCircle size={30} strokeWidth={1.5} />
               </div>
@@ -770,7 +888,7 @@ export default function Messages() {
         {selected && (
           <aside
             aria-label="Contact profile"
-            className="hidden min-h-0 overflow-y-auto rounded-2xl border border-c-border bg-white shadow-sm xl:block"
+            className="hidden min-h-0 overflow-y-auto rounded-2xl border border-c-border bg-c-surface shadow-sm xl:block"
           >
             <ContactDetails key={selected.id} person={selected} />
           </aside>

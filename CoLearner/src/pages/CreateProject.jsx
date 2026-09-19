@@ -175,7 +175,7 @@ export default function CreateProject() {
       </div>
       <form
         onSubmit={handleSubmit(publish)}
-        className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm sm:p-8"
+        className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm sm:p-8"
       >
         {step === 0 && (
           <section>

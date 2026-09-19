@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useSyncExternalStore } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import router from './routes'
 import { ErrorBoundary, PageLoader, useToast } from './components/ui'
@@ -25,7 +25,7 @@ function OfflineBanner() {
   if (isOnline) return null
 
   return (
-    <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800">
+    <div className="border-b border-c-warning/30 bg-c-warning-soft px-4 py-2 text-center text-sm font-medium text-c-warning">
       You are offline. Colearn will reconnect automatically when the network is
       back.
     </div>
@@ -56,6 +56,10 @@ function SessionExpiredListener() {
 }
 
 function App() {
+  const pathname = useSyncExternalStore(
+    router.subscribe,
+    () => router.state.location.pathname,
+  )
   const isHydrated = useAuthStore((state) => state.isHydrated)
   const hydrate = useAuthStore((state) => state.hydrate)
 
@@ -71,8 +75,13 @@ function App() {
     <ErrorBoundary>
       <OfflineBanner />
       <SessionExpiredListener />
-      <NotificationHub navigate={(to) => router.navigate(to)} />
       <VoiceCallProvider>
+        <NotificationHub
+          navigate={(to) => router.navigate(to)}
+          conversationOpen={
+            pathname === '/messages' || pathname.endsWith('/chat')
+          }
+        />
         <RouterProvider router={router} />
       </VoiceCallProvider>
     </ErrorBoundary>

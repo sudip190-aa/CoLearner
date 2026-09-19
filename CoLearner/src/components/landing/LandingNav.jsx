@@ -4,6 +4,8 @@ import { Menu, X } from 'lucide-react'
 import { Logo, Button } from '../ui'
 import { useAuthStore } from '../../store/authStore'
 
+import ThemeToggle from '../ui/ThemeToggle'
+
 const links = [
   ['Books', '/books'],
   ['How it works', '/how-it-works'],
@@ -19,7 +21,7 @@ export const LandingNav = () => {
   const closeMenu = () => setOpen(false)
   return (
     <header
-      className="sticky inset-x-0 top-0 z-50 border-b border-c-border bg-white/95 backdrop-blur-md"
+      className="sticky inset-x-0 top-0 z-50 border-b border-c-border bg-c-surface/95 backdrop-blur-md"
       onKeyDown={(event) => {
         if (event.key === 'Escape' && open) {
           closeMenu()
@@ -29,7 +31,7 @@ export const LandingNav = () => {
     >
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:p-3"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-c-surface focus:p-3"
       >
         Skip to content
       </a>
@@ -52,13 +54,14 @@ export const LandingNav = () => {
             </NavLink>
           ))}
         </div>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
+          <ThemeToggle />
           {!signedIn && (
             <Button
               to="/login"
               variant="ghost"
               size="sm"
-              className="whitespace-nowrap"
+              className="hidden whitespace-nowrap sm:inline-flex"
               onClick={closeMenu}
             >
               Sign in
@@ -88,7 +91,7 @@ export const LandingNav = () => {
         <nav
           id="landing-mobile-menu"
           aria-label="Mobile navigation"
-          className="absolute inset-x-0 top-full border-b border-c-border bg-white p-4 shadow-md lg:hidden"
+          className="absolute inset-x-0 top-full border-b border-c-border bg-c-surface p-4 shadow-md lg:hidden"
         >
           {links.map(([label, href]) => (
             <NavLink
@@ -102,6 +105,15 @@ export const LandingNav = () => {
               {label}
             </NavLink>
           ))}
+          {!signedIn && (
+            <NavLink
+              to="/login"
+              onClick={closeMenu}
+              className="block rounded-lg px-4 py-3 text-sm font-medium text-c-blue"
+            >
+              Sign in
+            </NavLink>
+          )}
         </nav>
       )}
     </header>

@@ -20,7 +20,11 @@ import { useNotificationStore } from '../../store/notificationStore.js'
 import { describeNotification } from '../../lib/notifications.js'
 import { useAuthStore } from '../../store/authStore.js'
 import { formatRelative } from '../../lib/formatters.js'
-import { useMessageInbox, useMessageSync } from '../../hooks/useMessages'
+import { useMessageSync } from '../../hooks/useMessages'
+
+import { useNavigationCounts } from '../../hooks/useNavigationCounts'
+
+import ThemeToggle from '../ui/ThemeToggle'
 
 const roleLabels = {
   learner: 'Learner',
@@ -39,11 +43,8 @@ export function AppNavbar() {
   const markRead = useNotificationStore((state) => state.markRead)
   const unreadCount = useNotificationStore((state) => state.unreadCount)
   useMessageSync()
-  const inbox = useMessageInbox()
-  const unreadMessages = (inbox.data || []).reduce(
-    (count, person) => count + person.unread_count,
-    0,
-  )
+  const { data: counts = {} } = useNavigationCounts()
+  const unreadMessages = counts.messages || 0
 
   const handleLogout = async () => {
     await logout()
@@ -53,7 +54,7 @@ export function AppNavbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-c-border bg-white">
+    <header className="sticky top-0 z-40 border-b border-c-border bg-c-surface">
       <Container className="flex h-[76px] items-center gap-3 sm:gap-5">
         <Link to="/dashboard" className="shrink-0" aria-label="Go to dashboard">
           <span className="hidden min-[768px]:inline-flex">
@@ -70,7 +71,8 @@ export function AppNavbar() {
             if (text) navigate(`/search?q=${encodeURIComponent(text)}`)
           }}
         />
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           <Link
             to="/search"
             aria-label="Search CoLearn"
@@ -85,7 +87,7 @@ export function AppNavbar() {
           >
             <MessageCircle className="h-5 w-5" />
             {unreadMessages > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 rounded-full bg-c-blue px-1.5 py-0.5 text-[9px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 rounded-full bg-c-danger-solid px-1.5 py-0.5 text-[9px] font-bold text-white">
                 {unreadMessages > 9 ? '9+' : unreadMessages}
               </span>
             )}
@@ -101,7 +103,7 @@ export function AppNavbar() {
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-c-danger px-1 text-[9px] font-bold text-white ring-2 ring-white">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-c-danger-solid px-1 text-[9px] font-bold text-white ring-2 ring-c-surface">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -130,7 +132,7 @@ export function AppNavbar() {
                   key={notification.id}
                   to={to}
                   onClick={() => markRead(notification.id)}
-                  className={`flex items-start gap-2.5 border-b border-c-border px-4 py-3 hover:bg-c-blue-wash ${notification.isRead ? 'bg-white' : 'bg-c-blue-soft'}`}
+                  className={`flex items-start gap-2.5 border-b border-c-border px-4 py-3 hover:bg-c-blue-wash ${notification.isRead ? 'bg-c-surface' : 'bg-c-blue-soft'}`}
                 >
                   <Avatar
                     src={notification.actor?.avatar}
@@ -148,7 +150,7 @@ export function AppNavbar() {
                     </span>
                   </span>
                   {!notification.isRead && (
-                    <span className="mt-1.5 h-2 w-2 rounded-full bg-c-blue" />
+                    <span className="mt-1.5 h-2 w-2 rounded-full bg-c-action" />
                   )}
                 </Link>
               )

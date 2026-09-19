@@ -27,7 +27,7 @@ export const Chip = forwardRef(function Chip(
         'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium font-sans select-none border transition-colors',
         selected
           ? 'bg-c-blue-soft text-c-blue border-c-blue font-semibold'
-          : 'bg-white text-c-text border-c-border hover:bg-slate-50',
+          : 'bg-c-surface text-c-text border-c-border hover:bg-c-blue-wash',
         isClickable &&
           'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue focus-visible:ring-offset-1',
         disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
@@ -44,7 +44,7 @@ export const Chip = forwardRef(function Chip(
             e.stopPropagation()
             if (!disabled) onRemove(e)
           }}
-          className="ml-0.5 p-0.5 rounded-full hover:bg-slate-200/80 text-c-text-muted hover:text-c-text transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
+          className="ml-0.5 p-0.5 rounded-full hover:bg-c-border/80 text-c-text-muted hover:text-c-text transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-c-blue"
           aria-label="Remove"
         >
           <X className="w-3 h-3" />

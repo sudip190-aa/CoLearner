@@ -36,13 +36,13 @@ export const Select = forwardRef(function Select(
           error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined
         }
         className={clsx(
-          'w-full h-10 pl-3.5 pr-10 text-sm bg-white text-c-text rounded-brand border appearance-none transition-colors font-sans cursor-pointer',
+          'w-full h-10 pl-3.5 pr-10 text-sm bg-c-surface text-c-text rounded-brand border appearance-none transition-colors font-sans cursor-pointer',
           'focus:outline-none focus:ring-2 focus:ring-offset-2',
           error
             ? 'border-c-danger focus:border-c-danger focus:ring-c-danger/20 text-c-text'
             : 'border-c-border focus:border-c-blue focus:ring-c-blue',
           disabled &&
-            'bg-slate-100 text-c-text-muted/70 cursor-not-allowed border-c-border opacity-75',
+            'bg-c-blue-soft text-c-text-muted/70 cursor-not-allowed border-c-border opacity-75',
           className,
         )}
         {...props}

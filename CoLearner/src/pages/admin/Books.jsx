@@ -245,7 +245,7 @@ function BookEditor({ initial, onClose, onChanged }) {
           {fieldError(errors, 'form') && (
             <p
               role="alert"
-              className="rounded-brand bg-red-50 p-3 text-sm text-c-danger"
+              className="rounded-brand bg-c-danger-soft p-3 text-sm text-c-danger"
             >
               {fieldError(errors, 'form')}
             </p>

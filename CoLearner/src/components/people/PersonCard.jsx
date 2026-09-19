@@ -46,7 +46,7 @@ export function PersonCard({ person, onConnect, busy = false }) {
   const commonCount = person.mutualSkillsCount || 0
   const available = availabilityLabels[person.availability]
   return (
-    <article className="flex min-w-0 flex-col rounded-2xl border border-c-border/80 bg-white p-5 text-left shadow-sm transition-[box-shadow,border-color] hover:border-c-blue/25 hover:shadow-md focus-within:border-c-blue/40">
+    <article className="flex min-w-0 flex-col rounded-2xl border border-c-border/80 bg-c-surface p-5 text-left shadow-sm transition-[box-shadow,border-color] hover:border-c-blue/25 hover:shadow-md focus-within:border-c-blue/40">
       <Link
         to={`/u/${person.username}`}
         className="group flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"

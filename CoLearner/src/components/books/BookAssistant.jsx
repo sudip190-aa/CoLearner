@@ -89,7 +89,7 @@ export function BookAssistant({ book, chapter, onCitation }) {
         <button
           key={i}
           type="button"
-          className="rounded-full border border-c-blue/20 bg-white px-3 py-1 text-xs font-medium text-c-blue hover:bg-c-blue-soft"
+          className="rounded-full border border-c-blue/20 bg-c-surface px-3 py-1 text-xs font-medium text-c-blue hover:bg-c-blue-soft"
           onClick={() => onCitation(c)}
         >
           {c.pageStart
@@ -191,7 +191,7 @@ export function BookAssistant({ book, chapter, onCitation }) {
               messages.map((m) => (
                 <article
                   key={m.id}
-                  className={`rounded-2xl p-4 ${m.role === 'user' ? 'ml-8 bg-c-blue-soft' : 'mr-2 bg-slate-50'}`}
+                  className={`rounded-2xl p-4 ${m.role === 'user' ? 'ml-8 bg-c-blue-soft' : 'mr-2 bg-c-blue-wash'}`}
                 >
                   <p className="mb-2 text-xs font-semibold text-c-text-muted">
                     {m.role === 'user' ? 'You' : 'Book assistant'}

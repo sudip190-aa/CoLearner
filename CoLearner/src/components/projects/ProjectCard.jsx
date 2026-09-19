@@ -29,7 +29,7 @@ export default function ProjectCard({ project }) {
     : [project.owner]
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white text-left shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-c-blue/25 hover:shadow-[0_12px_32px_-16px_rgba(46,120,229,0.3)] focus-within:border-c-blue/40 motion-safe:hover:-translate-y-1">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-c-surface text-left shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-c-blue/25 hover:shadow-[0_12px_32px_-16px_rgba(46,120,229,0.3)] focus-within:border-c-blue/40 motion-safe:hover:-translate-y-1">
       <div
         className={`relative flex h-20 items-center justify-between gap-3 overflow-hidden px-5 ${yellow ? 'bg-c-yellow-soft/70' : 'bg-c-blue-wash'}`}
       >
@@ -39,7 +39,7 @@ export default function ProjectCard({ project }) {
         />
         <div className="relative flex min-w-0 items-center gap-2.5">
           <span
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white bg-white/90 shadow-sm ${yellow ? 'text-c-text' : 'text-c-blue'}`}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-c-surface bg-c-surface/90 shadow-sm ${yellow ? 'text-c-text' : 'text-c-blue'}`}
           >
             <CategoryIcon size={20} strokeWidth={1.6} aria-hidden="true" />
           </span>
@@ -50,10 +50,10 @@ export default function ProjectCard({ project }) {
             {category}
           </span>
         </div>
-        <span className="relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white bg-white/85 px-2.5 py-1 text-[10px] font-medium text-c-text">
+        <span className="relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-c-surface bg-c-surface/85 px-2.5 py-1 text-[10px] font-medium text-c-text">
           <span
             aria-hidden="true"
-            className={`h-1.5 w-1.5 rounded-full ${yellow ? 'bg-c-yellow' : project.status === 'active' ? 'bg-c-blue' : 'bg-c-text-muted'}`}
+            className={`h-1.5 w-1.5 rounded-full ${yellow ? 'bg-c-yellow' : project.status === 'active' ? 'bg-c-action' : 'bg-c-text-muted'}`}
           />
           {projectStatusLabel(project.status)}
         </span>
@@ -114,7 +114,7 @@ export default function ProjectCard({ project }) {
             className="inline-flex shrink-0 items-center gap-2 rounded-lg py-1 font-semibold text-c-blue hover:text-c-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
           >
             View project{' '}
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-c-blue-soft transition-colors group-hover:bg-c-blue group-hover:text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-c-blue-soft transition-colors group-hover:bg-c-action group-hover:text-white">
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
             </span>
           </Link>

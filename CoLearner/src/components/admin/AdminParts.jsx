@@ -15,7 +15,13 @@ export function useAdminList(fetcher, params) {
       .then((data) => active && setState({ key, status: 'ready', data }))
       .catch(
         (error) =>
-          active && setState((current) => ({ key, status: 'error', data: current.data, error })),
+          active &&
+          setState((current) => ({
+            key,
+            status: 'error',
+            data: current.data,
+            error,
+          })),
       )
     return () => {
       active = false
@@ -51,7 +57,11 @@ export function Pager({ data, onPage }) {
       <p className="text-sm text-c-text-muted">
         Page {data.page} of {data.pages} · {data.count.toLocaleString()} total
       </p>
-      <Pagination currentPage={data.page} totalPages={data.pages} onPageChange={onPage} />
+      <Pagination
+        currentPage={data.page}
+        totalPages={data.pages}
+        onPageChange={onPage}
+      />
     </div>
   )
 }
@@ -85,14 +95,22 @@ export function ConfirmModal({ request, onClose }) {
           <Button variant="ghost" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
-          <Button variant={request.danger ? 'danger' : 'primary'} onClick={run} loading={busy} data-confirm="yes">
+          <Button
+            variant={request.danger ? 'danger' : 'primary'}
+            onClick={run}
+            loading={busy}
+            data-confirm="yes"
+          >
             {request.confirmLabel || 'Confirm'}
           </Button>
         </div>
       }
     >
       {error && (
-        <p role="alert" className="rounded-brand bg-red-50 p-3 text-sm text-c-danger">
+        <p
+          role="alert"
+          className="rounded-brand bg-c-danger-soft p-3 text-sm text-c-danger"
+        >
           {error}
         </p>
       )}
@@ -100,11 +118,12 @@ export function ConfirmModal({ request, onClose }) {
   )
 }
 
-export const formatDay = (value) => (value ? new Date(value).toLocaleDateString() : '—')
+export const formatDay = (value) =>
+  value ? new Date(value).toLocaleDateString() : '—'
 
 export function TableShell({ children, minWidth = 760 }) {
   return (
-    <div className="overflow-x-auto rounded-brand-lg border border-c-border bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
       <table className="w-full text-left text-sm" style={{ minWidth }}>
         {children}
       </table>
@@ -113,10 +132,13 @@ export function TableShell({ children, minWidth = 760 }) {
 }
 
 export const THead = ({ columns }) => (
-  <thead className="bg-slate-50 text-xs uppercase tracking-wide text-c-text-muted">
+  <thead className="bg-c-blue-wash text-xs uppercase tracking-wide text-c-text-muted">
     <tr>
       {columns.map(([label, align]) => (
-        <th key={label} className={`px-4 py-3 ${align === 'right' ? 'text-right' : ''}`}>
+        <th
+          key={label}
+          className={`px-4 py-3 ${align === 'right' ? 'text-right' : ''}`}
+        >
           {label}
         </th>
       ))}
@@ -126,7 +148,10 @@ export const THead = ({ columns }) => (
 
 export function ListError({ onRetry }) {
   return (
-    <div role="alert" className="mb-4 flex items-center justify-between rounded-brand border border-c-danger/30 bg-red-50 p-3 text-sm text-c-danger">
+    <div
+      role="alert"
+      className="mb-4 flex items-center justify-between rounded-brand border border-c-danger/30 bg-c-danger-soft p-3 text-sm text-c-danger"
+    >
       Could not load this list.
       <Button size="sm" variant="ghost" onClick={onRetry}>
         Try again

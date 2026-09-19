@@ -11,7 +11,7 @@ import { Badge, ProgressBar } from '../ui'
 
 /* ── Reader Mock ──────────────────────────────────────────────── */
 const ReaderMock = () => (
-  <div className="bg-white rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex">
+  <div className="bg-c-surface rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex">
     {/* Sidebar — collapses on small screens so the reading pane keeps its width */}
     <div className="hidden sm:flex w-52 border-r border-c-border p-4 flex-col gap-2 shrink-0 bg-c-bg-subtle/60">
       <div className="text-xs font-semibold text-c-text-muted uppercase tracking-wider mb-2">
@@ -26,7 +26,7 @@ const ReaderMock = () => (
       ].map((ch, i) => (
         <div
           key={i}
-          className={`flex items-center gap-2 p-2 rounded-lg text-sm cursor-pointer transition-colors ${i === 2 ? 'bg-c-blue text-white' : 'text-c-text-muted hover:bg-c-bg'}`}
+          className={`flex items-center gap-2 p-2 rounded-lg text-sm cursor-pointer transition-colors ${i === 2 ? 'bg-c-action text-white' : 'text-c-text-muted hover:bg-c-bg'}`}
         >
           {i < 2 ? (
             <CheckCircle2 size={14} className={i < 2 ? 'text-green-500' : ''} />
@@ -69,10 +69,10 @@ const ReaderMock = () => (
 
 /* ── Workspace Mock ───────────────────────────────────────────── */
 const WorkspaceMock = () => (
-  <div className="bg-white rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex flex-col">
+  <div className="bg-c-surface rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex flex-col">
     <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-c-border bg-c-bg-subtle/60">
       <div className="flex items-center gap-2 min-w-0">
-        <div className="w-8 h-8 rounded-lg bg-c-blue text-white flex items-center justify-center text-xs font-black shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-c-action text-white flex items-center justify-center text-xs font-black shrink-0">
           KV
         </div>
         <div className="min-w-0">
@@ -102,7 +102,7 @@ const WorkspaceMock = () => (
       ].map((task, i) => (
         <div
           key={i}
-          className={`flex items-center gap-3 p-3 rounded-lg border ${task.done ? 'border-green-200 bg-green-50' : 'border-c-border bg-white'}`}
+          className={`flex items-center gap-3 p-3 rounded-lg border ${task.done ? 'border-c-success/30 bg-c-success-soft' : 'border-c-border bg-c-surface'}`}
         >
           <div
             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${task.done ? 'border-green-500 bg-green-500' : 'border-c-border'}`}
@@ -141,9 +141,9 @@ const WorkspaceMock = () => (
 
 /* ── Portfolio Mock ───────────────────────────────────────────── */
 const PortfolioMock = () => (
-  <div className="bg-white rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex flex-col">
+  <div className="bg-c-surface rounded-2xl shadow-xl border border-c-border overflow-hidden h-[360px] sm:h-[380px] flex flex-col">
     <div className="px-5 py-4 border-b border-c-border flex items-center gap-3 sm:gap-4 bg-c-bg-subtle/50">
-      <div className="w-12 h-12 rounded-full bg-c-blue flex items-center justify-center text-white font-bold text-lg shrink-0">
+      <div className="w-12 h-12 rounded-full bg-c-action flex items-center justify-center text-white font-bold text-lg shrink-0">
         AM
       </div>
       <div className="min-w-0">
@@ -191,7 +191,7 @@ const PortfolioMock = () => (
         Top Project
       </div>
       <div className="flex items-center gap-3 p-3 bg-c-bg-subtle rounded-xl border border-c-border">
-        <div className="w-9 h-9 rounded-lg bg-c-blue text-white flex items-center justify-center text-xs font-black shrink-0">
+        <div className="w-9 h-9 rounded-lg bg-c-action text-white flex items-center justify-center text-xs font-black shrink-0">
           KV
         </div>
         <div className="flex-1 min-w-0">
@@ -238,7 +238,7 @@ const rows = [
 
 export const FeatureShowcase = () => {
   return (
-    <section className="py-14 md:py-24 bg-white space-y-16 md:space-y-28">
+    <section className="py-14 md:py-24 bg-c-surface space-y-16 md:space-y-28">
       {rows.map((row, i) => (
         <div key={i} className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">

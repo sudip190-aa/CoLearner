@@ -43,10 +43,9 @@ const accounts = [],
   errors = [],
   badNetwork = [],
   checks = [];
-const tabs = await (await fetch("http://127.0.0.1:9223/json")).json();
-const ws = new WebSocket(
-  tabs.find((t) => t.type === "page").webSocketDebuggerUrl,
-);
+const info = await (await fetch("http://127.0.0.1:9224/json/version")).json();
+const ws = new WebSocket(info.webSocketDebuggerUrl);
+let browserSession;
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let sequence = 0;
 const pending = new Map();
@@ -78,7 +77,16 @@ const send = (method, params = {}) =>
   new Promise((resolve, reject) => {
     const id = ++sequence;
     pending.set(id, { resolve, reject });
-    ws.send(JSON.stringify({ id, method, params }));
+    ws.send(
+      JSON.stringify({
+        id,
+        method,
+        params,
+        ...(!method.startsWith("Target.") && browserSession
+          ? { sessionId: browserSession }
+          : {}),
+      }),
+    );
   });
 const evaluate = async (expression) => {
   const r = await send("Runtime.evaluate", {
@@ -128,10 +136,19 @@ const snapshot = async (name, width, height) => {
   );
   const { data } = await send("Page.captureScreenshot", {
     format: "png",
-    captureBeyondViewport: !name.startsWith('navbar'),
+    captureBeyondViewport: !name.startsWith("navbar"),
   });
   writeFileSync(`.dist/${name}.png`, Buffer.from(data, "base64"));
 };
+const { browserContextId } = await send("Target.createBrowserContext");
+const { targetId } = await send("Target.createTarget", {
+  url: "about:blank",
+  browserContextId,
+});
+browserSession = (
+  await send("Target.attachToTarget", { targetId, flatten: true })
+).sessionId;
+
 try {
   for (const [i, name] of ["Maya Patel", "Jordan Lee"].entries()) {
     const email = `${tag}-${i}@example.com`,
@@ -207,7 +224,9 @@ try {
       },
     ]),
   );
-  const book = (await ok(admin.from("books").select("id").limit(1)))[0];
+  const book = (
+    await ok(admin.from("books").select("id").eq("status", "APPROVED").limit(1))
+  )[0];
   if (book)
     await ok(
       admin
@@ -215,13 +234,11 @@ try {
         .insert({ user_id: a.id, book_id: book.id, progress_percent: 35 }),
     );
   await ok(
-    peer
-      .from("direct_messages")
-      .insert({
-        sender_id: b.id,
-        recipient_id: a.id,
-        body: "Hey Maya! Want to work on the reading room together?",
-      }),
+    peer.from("direct_messages").insert({
+      sender_id: b.id,
+      recipient_id: a.id,
+      body: "Hey Maya! Want to work on the reading room together?",
+    }),
   );
   await send("Runtime.enable");
   await send("Network.enable");
@@ -262,20 +279,17 @@ try {
     )),
   );
   await click("All tasks");
-  await click("Focus");
-  await wait(
-    "document.querySelector('[aria-label=\"Focus timer\"]').innerText.includes('Pause')",
-  );
   await click("Focus view");
   assert(!(await evaluate("document.body.innerText.includes('Your circle')")));
   await click("Exit focus");
-  await send("Page.reload");
-  await wait(
-    "document.querySelector('[aria-label=\"Focus timer\"]')?.innerText.includes('Pause')",
+  await wait("document.body.innerText.includes('Your circle')");
+  assert(
+    !(await evaluate(
+      "!!document.querySelector('[aria-label=\"Focus timer\"]')",
+    )),
   );
-  await click("Pause");
   pass(
-    "Task priority filtering, distraction-free view and focus timer persistence",
+    "Task priority filtering and distraction-free view preserve the dashboard without the removed timer",
   );
   await send("Page.navigate", { url: origin + "/dashboard?view=projects" });
   await wait("!!document.querySelector('[aria-label=\"Project status\"]')");
@@ -345,13 +359,11 @@ try {
   );
   await wait("!!document.querySelector('[aria-label=Read]')", 40);
   await ok(
-    peer
-      .from("direct_messages")
-      .insert({
-        sender_id: b.id,
-        recipient_id: a.id,
-        body: "Perfect. I’ll map out the first chapter.",
-      }),
+    peer.from("direct_messages").insert({
+      sender_id: b.id,
+      recipient_id: a.id,
+      body: "Perfect. I’ll map out the first chapter.",
+    }),
   );
   await wait(
     "document.querySelector('[role=log]').innerText.includes('Perfect. I’ll map')",
@@ -362,18 +374,31 @@ try {
     "Browser sends to a real connected peer, receives live replies and read receipts, renders messages safely",
   );
   await snapshot("messages-mobile", 390, 844);
-  assert(await evaluate("document.querySelector('textarea').getBoundingClientRect().bottom < document.querySelector('nav[aria-label=\"Mobile app navigation\"]').getBoundingClientRect().top"), 'Mobile navigation covers the message composer');
-  await fill('textarea[aria-label=Message]', 'Keep this draft', 'HTMLTextAreaElement');
+  assert(
+    await evaluate(
+      "document.querySelector('textarea').getBoundingClientRect().bottom < document.querySelector('nav[aria-label=\"Mobile app navigation\"]').getBoundingClientRect().top",
+    ),
+    "Mobile navigation covers the message composer",
+  );
+  await fill(
+    "textarea[aria-label=Message]",
+    "Keep this draft",
+    "HTMLTextAreaElement",
+  );
   await evaluate(
     "document.querySelector('[aria-label=\"Back to conversations\"]').click()",
   );
   await wait("!location.search.includes('to=')");
-  await evaluate("Array.from(document.querySelectorAll('aside button')).find(b=>b.textContent.includes('Jordan Lee')).click()");
+  await evaluate(
+    "Array.from(document.querySelectorAll('aside button')).find(b=>b.textContent.includes('Jordan Lee')).click()",
+  );
   await wait("document.querySelector('textarea')?.value==='Keep this draft'");
-  await evaluate("document.querySelector('[aria-label=\"Back to conversations\"]').click()");
+  await evaluate(
+    "document.querySelector('[aria-label=\"Back to conversations\"]').click()",
+  );
   await wait("!location.search.includes('to=')");
   await fill('[aria-label="Search connections"]', "nobody matches");
-  await wait("document.body.innerText.includes('No conversations match')");
+  await wait("document.body.innerText.includes('No conversations found.')");
   pass("Mobile conversation/back navigation and connection search");
   await send("Page.navigate", { url: origin + "/dashboard" });
   await wait("!!document.querySelector('[data-dashboard=workspace]')");
@@ -401,6 +426,9 @@ try {
     await admin.from("projects").delete().eq("id", p.id);
   for (const u of accounts) await admin.auth.admin.deleteUser(u.id);
   await peer.removeAllChannels();
+  await send("Target.disposeBrowserContext", { browserContextId }).catch(
+    () => {},
+  );
   ws.close();
   console.log("Removed dashboard/browser messaging fixtures");
 }

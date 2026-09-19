@@ -1,15 +1,28 @@
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+  --c-surface: #ffffff;
+  --c-surface-rgb: 255 255 255;
+  --c-action-rgb: 37 107 212;
+  --c-action-hover-rgb: 29 88 179;
+  --c-ink-rgb: 15 23 42;
+  --c-on-accent-rgb: 15 23 42;
+  --c-danger-solid-rgb: 201 43 59;
+  --c-success-solid-rgb: 21 128 61;
+  --c-danger-soft-rgb: 254 242 242;
+  --c-success-soft-rgb: 236 253 245;
+  --c-warning-soft-rgb: 255 251 235;
+
   /* Brand Primary */
-  --c-blue: #2e78e5;
+  --c-blue: #256bd4;
   --c-blue-hover: #2565c4;
   --c-blue-soft: #eaf1fd;
   --c-blue-wash: #f5f8fe;
@@ -22,11 +35,11 @@
   --c-bg: #ffffff;
   --c-border: #e8ebf0;
   --c-text: #0f172a;
-  --c-text-muted: #64748b;
+  --c-text-muted: #596a82;
 
   /* Status Colors */
-  --c-success: #16a34a;
-  --c-warning: #d97706;
+  --c-success: #137a39;
+  --c-warning: #a35b04;
   --c-danger: #dc2626;
 
   /* Elevation & Shape */
@@ -38,7 +51,7 @@
   /* RGB channels — keep in sync with the hex tokens above.
      These exist so Tailwind opacity modifiers (bg-c-blue-soft/80, border-c-yellow/40)
      resolve correctly, since alpha cannot be applied to a plain hex CSS variable. */
-  --c-blue-rgb: 46 120 229;
+  --c-blue-rgb: 37 107 212;
   --c-blue-hover-rgb: 37 101 196;
   --c-blue-soft-rgb: 234 241 253;
   --c-blue-wash-rgb: 245 248 254;
@@ -47,10 +60,45 @@
   --c-bg-rgb: 255 255 255;
   --c-border-rgb: 232 235 240;
   --c-text-rgb: 15 23 42;
-  --c-text-muted-rgb: 100 116 139;
-  --c-success-rgb: 22 163 74;
-  --c-warning-rgb: 217 119 6;
+  --c-text-muted-rgb: 89 106 130;
+  --c-success-rgb: 19 122 57;
+  --c-warning-rgb: 163 91 4;
   --c-danger-rgb: 220 38 38;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --c-blue: #8abbff;
+  --c-blue-rgb: 138 187 255;
+  --c-blue-hover: #bdd7ff;
+  --c-blue-hover-rgb: 189 215 255;
+  --c-blue-soft: #213858;
+  --c-blue-soft-rgb: 33 56 88;
+  --c-blue-wash: #111d2f;
+  --c-blue-wash-rgb: 17 29 47;
+  --c-bg: #0d1523;
+  --c-bg-rgb: 13 21 35;
+  --c-surface: #172337;
+  --c-surface-rgb: 23 35 55;
+  --c-border: #34445e;
+  --c-border-rgb: 52 68 94;
+  --c-text: #edf3ff;
+  --c-text-rgb: 237 243 255;
+  --c-text-muted: #aab9cf;
+  --c-text-muted-rgb: 170 185 207;
+  --c-yellow-soft: #403a20;
+  --c-yellow-soft-rgb: 64 58 32;
+  --c-success: #73dba5;
+  --c-success-rgb: 115 219 165;
+  --c-warning: #f7c66d;
+  --c-warning-rgb: 247 198 109;
+  --c-danger: #ff9baa;
+  --c-danger-rgb: 255 155 170;
+  --c-danger-soft-rgb: 59 31 43;
+  --c-success-soft-rgb: 23 51 42;
+  --c-warning-soft-rgb: 55 45 28;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 @layer base {
@@ -63,7 +111,7 @@
 
   html {
     font-family:
-      'Inter',
+      'Poppins',
       system-ui,
       -apple-system,
       BlinkMacSystemFont,
@@ -80,6 +128,21 @@
     margin: 0;
     min-height: 100vh;
     background-color: var(--c-bg);
+    color: var(--c-text);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+  }
+  ::selection {
+    background: var(--c-blue-soft);
     color: var(--c-text);
   }
 

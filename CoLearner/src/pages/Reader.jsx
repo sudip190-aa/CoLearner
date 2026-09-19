@@ -1,3 +1,4 @@
+import ThemeToggle from '../components/ui/ThemeToggle'
 import { Inline } from '../components/ui/RichText'
 import { BookAssistant } from '../components/books/BookAssistant'
 import { BookPdf } from '../components/books/BookPdf'
@@ -49,7 +50,7 @@ function ReaderSkeleton() {
 function ChapterDrawer({ book, currentIndex, onSelect, open, onClose }) {
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 w-72 border-r border-c-border bg-white p-5 shadow-md transition-transform lg:sticky lg:top-14 lg:z-0 lg:block lg:h-[calc(100vh-3.5rem)] lg:translate-x-0 lg:shadow-none ${open ? 'translate-x-0' : '-translate-x-full'}`}
+      className={`fixed inset-y-0 left-0 z-40 w-72 border-r border-c-border bg-c-surface p-5 shadow-md transition-transform lg:sticky lg:top-14 lg:z-0 lg:block lg:h-[calc(100vh-3.5rem)] lg:translate-x-0 lg:shadow-none ${open ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <div className="flex items-center justify-between lg:hidden">
         <h2 className="font-bold text-c-text">Chapters</h2>
@@ -77,7 +78,7 @@ function ChapterDrawer({ book, currentIndex, onSelect, open, onClose }) {
             className={`flex w-full items-center gap-3 rounded-brand p-3 text-left text-sm ${index === currentIndex ? 'bg-c-blue-soft text-c-blue' : 'text-c-text-muted hover:bg-c-blue-wash'}`}
           >
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${chapter.isCompleted ? 'bg-c-success text-white' : index === currentIndex ? 'bg-c-blue text-white' : 'bg-slate-100 text-c-text-muted'}`}
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${chapter.isCompleted ? 'bg-c-success-solid text-white' : index === currentIndex ? 'bg-c-action text-white' : 'bg-c-blue-soft text-c-text-muted'}`}
               aria-label={chapter.isCompleted ? 'Completed' : undefined}
             >
               {chapter.isCompleted ? (
@@ -100,7 +101,7 @@ function ChapterDrawer({ book, currentIndex, onSelect, open, onClose }) {
 function NotesPanel({ notes, noteText, setNoteText, onAdd, onDelete, saving }) {
   return (
     <aside className="hidden w-64 shrink-0 xl:block">
-      <div className="sticky top-24 rounded-brand-lg border border-c-border bg-white p-4 shadow-sm">
+      <div className="sticky top-24 rounded-brand-lg border border-c-border bg-c-surface p-4 shadow-sm">
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-c-blue" />
           <h2 className="font-bold text-c-text">Notes</h2>
@@ -167,7 +168,7 @@ function ChapterBody({ content }) {
     ) : block.type === 'code' ? (
       <pre
         key={index}
-        className="overflow-x-auto rounded-brand bg-c-text p-5 font-mono text-sm leading-6 text-white"
+        className="overflow-x-auto rounded-brand bg-c-ink p-5 font-mono text-sm leading-6 text-white"
       >
         <code>{block.text}</code>
       </pre>
@@ -514,9 +515,9 @@ export default function Reader() {
   if (!book || !chapter) return <ReaderSkeleton />
   const isLast = currentIndex === book.chapters.length - 1
   return (
-    <div className="min-h-screen bg-white text-c-text">
-      <header className="sticky top-0 z-30 border-b border-c-border bg-white">
-        <div className="flex h-14 items-center gap-3 px-4">
+    <div className="min-h-screen bg-c-surface text-c-text">
+      <header className="sticky top-0 z-30 border-b border-c-border bg-c-surface">
+        <div className="flex h-14 items-center gap-1.5 px-2 sm:gap-3 sm:px-4">
           <Link
             to="/library"
             aria-label="Back to library"
@@ -534,7 +535,8 @@ export default function Reader() {
               {book.progress}% of the book complete
             </p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <ThemeToggle />
             <button
               type="button"
               onClick={() => setFontSize((value) => Math.max(16, value - 1))}
@@ -593,7 +595,7 @@ export default function Reader() {
         {drawerOpen && (
           <button
             type="button"
-            className="fixed inset-0 z-30 bg-c-text/20 lg:hidden"
+            className="fixed inset-0 z-30 bg-c-ink/20 lg:hidden"
             aria-label="Close chapter list"
             onClick={() => setDrawerOpen(false)}
           />
@@ -623,7 +625,7 @@ export default function Reader() {
             {chapterError ? (
               <div
                 role="alert"
-                className="rounded-brand bg-red-50 p-4 text-sm text-c-danger"
+                className="rounded-brand bg-c-danger-soft p-4 text-sm text-c-danger"
               >
                 {chapterError}
               </div>
@@ -660,7 +662,7 @@ export default function Reader() {
           saving={noteSaving}
         />
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-c-border bg-white/95 px-4 py-3 backdrop-blur-sm">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-c-border bg-c-surface/95 px-4 py-3 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-2">
           <Button
             variant="ghost"
@@ -697,7 +699,7 @@ export default function Reader() {
         <button
           type="button"
           onClick={() => addNote(null, selection.text)}
-          className="fixed z-40 rounded-brand bg-c-text px-3 py-2 text-xs font-semibold text-white shadow-md"
+          className="fixed z-40 rounded-brand bg-c-ink px-3 py-2 text-xs font-semibold text-white shadow-md"
           style={{
             top: `${selection.top - window.scrollY}px`,
             left: `${selection.left}px`,
@@ -714,7 +716,7 @@ export default function Reader() {
       {positionError && (
         <p
           role="status"
-          className="fixed bottom-40 right-4 z-30 max-w-xs rounded-xl bg-white p-3 text-xs shadow"
+          className="fixed bottom-40 right-4 z-30 max-w-xs rounded-xl bg-c-surface p-3 text-xs shadow"
         >
           {positionError}
         </p>

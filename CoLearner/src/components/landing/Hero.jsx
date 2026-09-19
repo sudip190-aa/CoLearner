@@ -4,7 +4,7 @@ import { Flame, FolderOpen, ArrowRight } from 'lucide-react'
 
 export const Hero = () => {
   return (
-    <section className="pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden relative bg-white">
+    <section className="pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden relative bg-c-surface">
       <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
         {/* Left: Content */}
         <div className="max-w-2xl relative z-10">
@@ -96,7 +96,7 @@ export const Hero = () => {
             <div className="grid gap-4 flex-1">
               <Card className="min-w-0 shadow-sm border-0 ring-1 ring-c-border hover:ring-c-blue transition-all">
                 <div className="p-4 flex gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-c-blue text-white flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-c-action text-white flex items-center justify-center shrink-0">
                     <span className="font-bold">KV</span>
                   </div>
                   <div className="min-w-0">

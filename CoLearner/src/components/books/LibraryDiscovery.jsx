@@ -32,13 +32,13 @@ export function LibraryHighlights({ books }) {
         </div>
         <Link
           to={`/library/${featured.slug}`}
-          className="mt-auto inline-flex items-center gap-2 self-start rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-c-blue transition hover:bg-c-blue hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          className="mt-auto inline-flex items-center gap-2 self-start rounded-full bg-c-surface px-4 py-2.5 text-xs font-semibold text-c-blue transition hover:bg-c-action hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
         >
           Explore book <ArrowRight size={14} />
         </Link>
       </div>
       {!!picks.length && (
-        <div className="hidden rounded-3xl border border-c-border/70 bg-white p-5 sm:block sm:p-6">
+        <div className="hidden rounded-3xl border border-c-border/70 bg-c-surface p-5 sm:block sm:p-6">
           <h2 className="!text-sm !font-semibold">Worth a read</h2>
           <div className="mt-5 grid grid-cols-2 gap-4">
             {picks.map((book) => (
@@ -81,7 +81,7 @@ export function LibraryReadingShelf({
       className="grid min-w-0 gap-5 sm:grid-cols-2 xl:block xl:space-y-5"
     >
       {current && (
-        <section className="rounded-3xl border border-c-border/70 bg-white p-6 text-center">
+        <section className="rounded-3xl border border-c-border/70 bg-c-surface p-6 text-center">
           <h2 className="!text-sm !font-semibold">
             {current.started && !current.finished
               ? 'Continue reading'
@@ -130,7 +130,7 @@ export function LibraryReadingShelf({
         </section>
       )}
       {personalReady && (
-        <section className="rounded-3xl border border-c-border/70 bg-white p-5">
+        <section className="rounded-3xl border border-c-border/70 bg-c-surface p-5">
           <div className="flex items-center justify-between gap-2">
             <h2 className="!text-sm !font-semibold">Saved for later</h2>
             <Bookmark size={15} className="text-c-blue" />

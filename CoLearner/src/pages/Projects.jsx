@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuthStore } from '../store/authStore'
+import { supabase } from '../services/supabase/client'
 import { Plus, SlidersHorizontal } from 'lucide-react'
 import {
   Button,
@@ -25,7 +28,7 @@ function SkeletonGrid() {
       {[1, 2, 3, 4, 5, 6].map((item) => (
         <div
           key={item}
-          className="overflow-hidden rounded-2xl border border-c-border bg-white"
+          className="overflow-hidden rounded-2xl border border-c-border bg-c-surface"
         >
           <Skeleton className="h-20 rounded-none" />
           <div className="space-y-3 p-5">
@@ -40,10 +43,8 @@ function SkeletonGrid() {
 }
 
 export default function Projects() {
-  const [projects, setProjects] = useState(null)
-  const [total, setTotal] = useState(0)
-  const [facets, setFacets] = useState({ categories: [], tech: [] })
-  const [error, setError] = useState('')
+  const userId = useAuthStore((state) => state.user?.id)
+  const cache = useQueryClient()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('')
   const [status, setStatus] = useState('')
@@ -54,11 +55,21 @@ export default function Projects() {
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1)
 
-  // The list itself is filtered, searched and ordered by the backend.
-  useEffect(() => {
-    let active = true
-    projectsApi
-      .getProjects({
+  const feed = useQuery({
+    queryKey: [
+      'project-feed',
+      userId,
+      query,
+      category,
+      status,
+      tech,
+      looking,
+      mine,
+      sort,
+      page,
+    ],
+    queryFn: () =>
+      projectsApi.getProjects({
         search: query.trim(),
         category,
         status,
@@ -68,24 +79,46 @@ export default function Projects() {
         ordering: sort,
         page,
         pageSize: PAGE_SIZE,
-      })
-      .then(({ projects: result, count, facets: options }) => {
-        if (!active) return
-        setProjects(result)
-        setTotal(count)
-        if (options) setFacets(options)
-        setError('')
-      })
-      .catch((requestError) => {
-        if (active)
-          setError(
-            requestError?.message || 'We could not load projects right now.',
-          )
-      })
-    return () => {
-      active = false
+      }),
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
+  })
+  const projects = feed.data?.projects
+  const total = feed.data?.count || 0
+  const facets = feed.data?.facets ||
+    cache
+      .getQueriesData({ queryKey: ['project-feed', userId] })
+      .map(([, data]) => data?.facets)
+      .find(Boolean) || { categories: [], tech: [] }
+  const error = feed.error?.message || ''
+  useEffect(() => {
+    let timer
+    const refresh = () => {
+      clearTimeout(timer)
+      timer = setTimeout(
+        () => cache.invalidateQueries({ queryKey: ['project-feed', userId] }),
+        150,
+      )
     }
-  }, [query, category, status, tech, looking, mine, sort, page])
+    const channel = supabase.channel(
+      `project-feed:${userId}:${crypto.randomUUID()}`,
+    )
+    for (const table of ['projects', 'project_members', 'join_requests'])
+      channel.on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table },
+        refresh,
+      )
+    channel.subscribe((state) => {
+      if (state === 'SUBSCRIBED') refresh()
+    })
+    return () => {
+      clearTimeout(timer)
+      void supabase.removeChannel(channel)
+    }
+  }, [userId, cache])
+  if (feed.data && page > Math.max(1, Math.ceil(total / PAGE_SIZE)))
+    setPage(Math.max(1, Math.ceil(total / PAGE_SIZE)))
 
   const resetPage = useCallback(() => setPage(1), [])
   const handleSearch = useCallback(
@@ -153,7 +186,7 @@ export default function Projects() {
         title="Projects unavailable"
         description={error}
         actionLabel="Try again"
-        onAction={() => window.location.reload()}
+        onAction={() => feed.refetch()}
       />
     )
   return (
@@ -196,11 +229,11 @@ export default function Projects() {
           aria-expanded={filtersOpen}
           aria-controls="project-filters"
           aria-label={`Filter projects${filterCount ? `, ${filterCount} active` : ''}`}
-          className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue'}`}
+          className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-c-surface text-c-text-muted hover:border-c-blue'}`}
         >
           <SlidersHorizontal className="h-5 w-5" aria-hidden="true" />
           {filterCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-text">
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-on-accent">
               {filterCount}
             </span>
           )}
@@ -211,7 +244,7 @@ export default function Projects() {
         <section
           id="project-filters"
           aria-label="Project filters"
-          className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
+          className="mt-4 rounded-xl border border-c-border bg-c-surface p-4 sm:p-5"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Select
@@ -315,7 +348,7 @@ export default function Projects() {
         {error && (
           <p
             role="alert"
-            className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
+            className="mb-4 rounded-xl bg-c-danger-soft px-3 py-2 text-sm text-c-danger"
           >
             {error}
           </p>

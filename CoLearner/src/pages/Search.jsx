@@ -47,15 +47,11 @@ function ResultCard({ result, query }) {
     <Link
       to={result.to}
       data-result={result.kind}
-      className="flex gap-4 rounded-brand-lg border border-c-border bg-white p-5 shadow-sm hover:border-c-blue hover:shadow-md"
+      className="flex gap-4 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm hover:border-c-blue hover:shadow-md"
     >
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-brand bg-c-blue-soft text-c-blue">
         {result.avatar ? (
-          <Avatar
-            src={result.avatar.src}
-            name={result.avatar.name}
-            size="sm"
-          />
+          <Avatar src={result.avatar.src} name={result.avatar.name} size="sm" />
         ) : (
           <Icon className="h-5 w-5" />
         )}
@@ -161,7 +157,11 @@ export default function Search() {
     }
   }, [query, key, searchable])
 
-  const status = !searchable ? 'idle' : state.key === key ? state.status : 'loading'
+  const status = !searchable
+    ? 'idle'
+    : state.key === key
+      ? state.status
+      : 'loading'
   const data = status === 'ready' ? state.data : null
   const cards = useMemo(() => (data ? toCards(data) : null), [data])
   const counts = data?.counts || {}
@@ -218,7 +218,7 @@ export default function Search() {
         </Tabs>
       </div>
       {status === 'idle' ? (
-        <div className="mt-12 rounded-brand-lg border border-dashed border-c-border bg-white p-12 text-center">
+        <div className="mt-12 rounded-brand-lg border border-dashed border-c-border bg-c-surface p-12 text-center">
           <SearchIcon className="mx-auto h-8 w-8 text-c-blue" />
           <h2 className="mt-4 text-xl font-bold text-c-text">
             {query ? 'Keep typing' : 'Start with a question'}

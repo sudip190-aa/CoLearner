@@ -9,14 +9,14 @@ export const Card = forwardRef(function Card(
     <div
       ref={ref}
       className={clsx(
-        'bg-white rounded-brand-lg border border-c-border transition-all duration-150 overflow-hidden',
+        'bg-c-surface rounded-brand-lg border border-c-border transition-all duration-150 overflow-hidden',
         hoverable && 'hover:border-c-blue hover:shadow-md cursor-pointer',
         className,
       )}
       {...props}
     >
       {header && (
-        <div className="px-6 py-4 border-b border-c-border bg-white">
+        <div className="px-6 py-4 border-b border-c-border bg-c-surface">
           {header}
         </div>
       )}

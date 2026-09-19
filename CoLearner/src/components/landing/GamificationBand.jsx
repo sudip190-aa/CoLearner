@@ -11,7 +11,7 @@ const leaderboard = [
 const badges = [
   { icon: Star, label: 'First Commit', color: 'bg-c-yellow' },
   { icon: Flame, label: '7-Day Streak', color: 'bg-orange-400' },
-  { icon: Trophy, label: 'MVP Builder', color: 'bg-c-blue' },
+  { icon: Trophy, label: 'MVP Builder', color: 'bg-c-action' },
   { icon: Medal, label: 'Peer Mentor', color: 'bg-purple-500' },
   { icon: Award, label: 'Top Learner', color: 'bg-green-500' },
 ]
@@ -38,7 +38,7 @@ export const GamificationBand = () => {
               Your Progress
             </h3>
 
-            <div className="bg-white rounded-2xl border border-c-border p-6 shadow-sm">
+            <div className="bg-c-surface rounded-2xl border border-c-border p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-c-yellow flex items-center justify-center">
                   <Zap size={22} className="text-c-text" fill="currentColor" />
@@ -60,7 +60,7 @@ export const GamificationBand = () => {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-c-border p-6 shadow-sm flex items-center gap-4">
+            <div className="bg-c-surface rounded-2xl border border-c-border p-6 shadow-sm flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
                 <Flame size={30} className="text-orange-500" />
               </div>
@@ -79,7 +79,7 @@ export const GamificationBand = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider text-c-text-muted">
               Badges Earned
             </h3>
-            <div className="bg-white rounded-2xl border border-c-border p-6 shadow-sm">
+            <div className="bg-c-surface rounded-2xl border border-c-border p-6 shadow-sm">
               <div className="grid grid-cols-3 gap-4">
                 {badges.map((b) => {
                   const Icon = b.icon
@@ -116,7 +116,7 @@ export const GamificationBand = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider text-c-text-muted">
               Leaderboard
             </h3>
-            <div className="bg-white rounded-2xl border border-c-border overflow-hidden shadow-sm">
+            <div className="bg-c-surface rounded-2xl border border-c-border overflow-hidden shadow-sm">
               {leaderboard.map((entry, i) => (
                 <div
                   key={entry.rank}

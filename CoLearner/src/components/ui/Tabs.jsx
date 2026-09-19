@@ -102,7 +102,7 @@ export const TabTrigger = forwardRef(function TabTrigger(
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue focus-visible:rounded-t',
         isActive
           ? 'border-c-blue text-c-blue font-semibold'
-          : 'border-transparent text-c-text-muted hover:text-c-text hover:border-slate-300',
+          : 'border-transparent text-c-text-muted hover:text-c-text hover:border-c-border',
         disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
         className,
       )}
@@ -115,8 +115,8 @@ export const TabTrigger = forwardRef(function TabTrigger(
           className={clsx(
             'px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none',
             isActive
-              ? 'bg-c-blue text-white'
-              : 'bg-slate-100 text-c-text-muted',
+              ? 'bg-c-action text-white'
+              : 'bg-c-blue-soft text-c-text-muted',
           )}
         >
           {badge}

@@ -84,7 +84,7 @@ export function MarketingPage({
                 {accent.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-c-blue/20 bg-white px-3 py-1.5 text-xs text-c-text-muted"
+                    className="rounded-full border border-c-blue/20 bg-c-surface px-3 py-1.5 text-xs text-c-text-muted"
                   >
                     {tag}
                   </span>

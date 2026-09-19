@@ -51,7 +51,7 @@ export const Tooltip = forwardRef(function Tooltip(
         <div
           role="tooltip"
           className={clsx(
-            'absolute z-50 px-2.5 py-1 text-xs font-medium text-white bg-c-text rounded-md shadow-md whitespace-nowrap pointer-events-none select-none',
+            'absolute z-50 px-2.5 py-1 text-xs font-medium text-white bg-c-ink rounded-md shadow-md whitespace-nowrap pointer-events-none select-none',
             'animate-in fade-in zoom-in-95 duration-150',
             PLACEMENT_STYLES[placement] || PLACEMENT_STYLES.top,
             className,

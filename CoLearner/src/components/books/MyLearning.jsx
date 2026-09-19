@@ -21,7 +21,7 @@ export function MyLearning() {
     }
   }, [])
   return (
-    <section className="rounded-2xl border border-c-border bg-white p-5 sm:p-6">
+    <section className="rounded-2xl border border-c-border bg-c-surface p-5 sm:p-6">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="font-semibold">My learning</h2>
         <Link to="/library" className="text-xs font-semibold text-c-blue">

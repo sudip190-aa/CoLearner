@@ -96,9 +96,13 @@ try {
     },
   );
   await check(
-    "anonymous content and private account data blocked",
+    "anonymous approved library allowed; private account data blocked",
     async () => {
-      await denied(anon.from("books").select("*"));
+      const published = await ok(anon.from("books").select("status"));
+      assert(
+        published.length &&
+          published.every((book) => book.status === "APPROVED"),
+      );
       await denied(
         anon.rpc("colearn_legacy_hash", { email_address: owner.email }),
       );
@@ -197,6 +201,17 @@ try {
   await check(
     "invitations and acceptance grant private project access",
     async () => {
+      await denied(
+        owner.c.rpc("colearn_action", {
+          action: "invite",
+          payload: { slug: project.slug, username: `${tag}-peer` },
+        }),
+      );
+      await action(owner.c, "connection", { username: `${tag}-peer` });
+      await action(peer.c, "connection", {
+        username: `${tag}-owner`,
+        action: "accept",
+      });
       const invite = await action(owner.c, "invite", {
         slug: project.slug,
         username: `${tag}-peer`,
@@ -244,7 +259,19 @@ try {
       const b = await ok(
         admin.c
           .from("books")
-          .insert({ slug: tag, title: "Verification book", author: "CoLearn" })
+          .insert({
+            slug: tag,
+            title: "Verification book",
+            author: "CoLearn",
+            source_url: "https://example.com/source",
+            license_name: "Original fixture",
+            license_url: "https://example.com/license",
+            attribution: "CoLearn test suite",
+            changes_made: "None",
+            license_evidence_url: "https://example.com/permission",
+            license_evidence_notes: "Original verification content",
+            redistribution_confirmed: true,
+          })
           .select()
           .single(),
       );
@@ -268,6 +295,9 @@ try {
           .update({ title: "Unauthorized" })
           .eq("id", b.id)
           .select(),
+      );
+      await ok(
+        admin.c.from("books").update({ status: "APPROVED" }).eq("id", b.id),
       );
       const p = await action(owner.c, "progress", {
         slug: b.slug,
@@ -585,7 +615,7 @@ try {
     await ok(
       service.from("profiles").update({ is_active: false }).eq("id", peer.id),
     );
-    await denied(peer.c.from("books").select("*"));
+    await denied(peer.c.from("reading_progress").select("*"));
     await denied(peer.c.rpc("colearn_action", { action: "touch" }));
   });
   console.log(`${assertions} integration groups passed.`);

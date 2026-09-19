@@ -7,6 +7,8 @@ import { Button } from '../ui/Button'
 import Container from './Container'
 import { useAuthStore } from '../../store/authStore'
 
+import ThemeToggle from '../ui/ThemeToggle'
+
 const links = [
   { label: 'Learn', to: '/books' },
   { label: 'Build', to: '/projects' },
@@ -37,14 +39,14 @@ export function Navbar() {
   return (
     <header
       className={clsx(
-        'sticky top-0 z-40 bg-white transition-shadow',
+        'sticky top-0 z-40 bg-c-surface transition-shadow',
         hasScrolled && 'border-b border-c-border shadow-sm',
       )}
     >
       <Container className="flex h-16 items-center justify-between gap-6">
         <Logo variant="full" size="lg" to="/" />
         <nav
-          className="hidden items-center gap-7 md:flex"
+          className="hidden items-center gap-5 lg:flex"
           aria-label="Primary navigation"
         >
           {links.map((link) => (
@@ -62,30 +64,37 @@ export function Navbar() {
             </NavLink>
           ))}
         </nav>
-        <div className="hidden items-center gap-5 md:flex">
-          <Link
-            to={signedIn ? '/library' : '/login'}
-            className="text-sm font-semibold text-c-text-muted hover:text-c-blue"
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <div className="hidden items-center gap-5 lg:flex">
+            <Link
+              to={signedIn ? '/library' : '/login'}
+              className="text-sm font-semibold text-c-text-muted hover:text-c-blue"
+            >
+              {signedIn ? 'My books' : 'Log in'}
+            </Link>
+            <Button
+              as={Link}
+              to={signedIn ? '/dashboard' : '/signup'}
+              size="sm"
+            >
+              {signedIn ? 'My Dashboard' : 'Get started'}
+            </Button>
+          </div>
+          <button
+            type="button"
+            className="rounded-brand p-2 text-c-text lg:hidden"
+            aria-label="Open menu"
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen(true)}
           >
-            {signedIn ? 'My books' : 'Log in'}
-          </Link>
-          <Button as={Link} to={signedIn ? '/dashboard' : '/signup'} size="sm">
-            {signedIn ? 'My Dashboard' : 'Get started'}
-          </Button>
+            <Menu className="h-5 w-5" />
+          </button>
         </div>
-        <button
-          type="button"
-          className="rounded-brand p-2 text-c-text md:hidden"
-          aria-label="Open menu"
-          aria-expanded={isOpen}
-          onClick={() => setIsOpen(true)}
-        >
-          <Menu className="h-5 w-5" />
-        </button>
       </Container>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-white md:hidden">
+        <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-c-surface lg:hidden">
           <Container className="flex h-16 items-center justify-between">
             <Logo variant="full" size="md" to="/" />
             <button

@@ -5,19 +5,19 @@ const VARIANT_STYLES = {
   blue: 'bg-c-blue-soft text-c-blue border-c-blue/20',
   // Yellow Law: yellow always uses dark text.
   yellow: 'bg-c-yellow-soft text-c-text border-c-yellow/60 font-semibold',
-  gray: 'bg-slate-100 text-c-text-muted border-slate-200',
-  success: 'bg-emerald-50 text-c-success border-emerald-200',
-  warning: 'bg-amber-50 text-c-warning border-amber-200',
-  danger: 'bg-rose-50 text-c-danger border-rose-200',
+  gray: 'bg-c-blue-soft text-c-text-muted border-c-border',
+  success: 'bg-c-success-soft text-c-success border-c-success/30',
+  warning: 'bg-c-warning-soft text-c-warning border-c-warning/30',
+  danger: 'bg-c-danger-soft text-c-danger border-c-danger/30',
 }
 
 const DOT_COLORS = {
-  blue: 'bg-c-blue',
+  blue: 'bg-c-action',
   yellow: 'bg-c-yellow',
   gray: 'bg-c-text-muted',
-  success: 'bg-c-success',
+  success: 'bg-c-success-solid',
   warning: 'bg-c-warning',
-  danger: 'bg-c-danger',
+  danger: 'bg-c-danger-solid',
 }
 
 const SIZE_STYLES = {

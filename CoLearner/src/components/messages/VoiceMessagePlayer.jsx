@@ -72,7 +72,7 @@ export default function VoiceMessagePlayer({
           type="button"
           aria-label={playing ? 'Pause voice message' : 'Play voice message'}
           onClick={toggle}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-c-blue text-white focus-visible:ring-2 focus-visible:ring-c-blue focus-visible:ring-offset-2"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-c-action text-white focus-visible:ring-2 focus-visible:ring-c-blue focus-visible:ring-offset-2"
         >
           {playing ? (
             <Pause size={16} />

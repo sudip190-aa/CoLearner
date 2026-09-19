@@ -29,6 +29,10 @@ import { Logo } from '../components/ui/Logo'
 import { users } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 
+import ProfileShowcase from '../components/profile/ProfileShowcase'
+
+import ThemeToggle from '../components/ui/ThemeToggle'
+
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   year: 'numeric',
@@ -99,8 +103,8 @@ function Stat({ label, value, icon: Icon, accent = false }) {
 function ProjectCard({ project }) {
   const isComplete = project.status === 'completed'
   return (
-    <article className="overflow-hidden rounded-brand-lg border border-c-border bg-white shadow-sm">
-      <div className="h-2 bg-c-blue" />
+    <article className="overflow-hidden rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
+      <div className="h-2 bg-c-action" />
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -136,10 +140,10 @@ function ProjectCard({ project }) {
 
 const intensityClasses = [
   'bg-c-blue-wash',
-  'bg-blue-100',
+  'bg-c-blue-soft',
   'bg-blue-200',
   'bg-blue-400',
-  'bg-c-blue',
+  'bg-c-action',
 ]
 const intensityFor = (count) =>
   count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : count <= 9 ? 3 : 4
@@ -217,7 +221,7 @@ export default function PublicProfile() {
   if (error) {
     const notFound = error.code === 'not_found'
     return (
-      <div className="min-h-screen bg-white px-6 py-16">
+      <div className="min-h-screen bg-c-surface px-6 py-16">
         <EmptyState
           title={
             notFound ? 'Profile not found' : 'We could not load this profile'
@@ -282,25 +286,28 @@ export default function PublicProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-c-text">
+    <div className="min-h-screen bg-c-surface text-c-text">
       <style>{`@media print { body { background: white !important; } .public-actions, .share-profile, .public-topbar .join-button { display: none !important; } .public-print-header { display: flex !important; } .public-section { break-inside: avoid; } a { color: inherit !important; text-decoration: none !important; } } .public-print-header { display: none; }`}</style>
-      <header className="public-topbar border-b border-c-border bg-white">
+      <header className="public-topbar border-b border-c-border bg-c-surface">
         <div className="mx-auto flex h-14 max-w-content items-center justify-between px-6">
           <Logo variant="full" size="sm" to="/" />
-          {signedInUser ? (
-            <Button
-              size="sm"
-              variant="outline"
-              to="/dashboard"
-              className="join-button"
-            >
-              Back to Colearn
-            </Button>
-          ) : (
-            <Button className="join-button" to="/signup" size="sm">
-              Join Colearn
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            {signedInUser ? (
+              <Button
+                size="sm"
+                variant="outline"
+                to="/dashboard"
+                className="join-button"
+              >
+                Back to Colearn
+              </Button>
+            ) : (
+              <Button className="join-button" to="/signup" size="sm">
+                Join Colearn
+              </Button>
+            )}
+          </div>
         </div>
       </header>
       <div className="public-print-header mx-auto max-w-content items-center justify-between border-b border-c-border px-6 py-4">
@@ -377,7 +384,7 @@ export default function PublicProfile() {
           </div>
         </section>
         <div className="mx-auto max-w-content px-6">
-          <section className="-mt-5 grid grid-cols-2 gap-y-5 rounded-brand-lg border border-c-border bg-white p-5 shadow-md sm:grid-cols-4 lg:grid-cols-7">
+          <section className="-mt-5 grid grid-cols-2 gap-y-5 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-md sm:grid-cols-4 lg:grid-cols-7">
             <Stat
               label="Level"
               value={
@@ -469,8 +476,15 @@ export default function PublicProfile() {
               </div>
             </aside>
           </section>
+          <ProfileShowcase
+            userId={person.id}
+            editable={signedInUser?.id === person.id}
+          />
           <section className="public-section border-t border-c-border py-14">
-            <SectionTitle eyebrow="Build" title="Projects" />
+            <SectionTitle
+              eyebrow="Build together"
+              title="Collaborative projects"
+            />
             {projects.length ? (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {projects.map((project) => (
@@ -489,7 +503,7 @@ export default function PublicProfile() {
                   <article
                     key={badge.id}
                     title={badge.description}
-                    className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm"
+                    className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm"
                   >
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-c-yellow-soft text-c-text">
                       <Trophy className="h-5 w-5" />
@@ -516,7 +530,7 @@ export default function PublicProfile() {
                 {books.map((book) => (
                   <article
                     key={book.id}
-                    className="rounded-brand-lg border border-c-border bg-white p-4 shadow-sm"
+                    className="rounded-brand-lg border border-c-border bg-c-surface p-4 shadow-sm"
                   >
                     <h3 className="text-sm font-bold leading-5 text-c-text">
                       {book.title}
@@ -538,7 +552,7 @@ export default function PublicProfile() {
           </section>
           <section className="public-section border-t border-c-border py-14">
             <SectionTitle eyebrow="Engage" title="Activity" />
-            <div className="mt-6 rounded-brand-lg border border-c-border bg-white p-5 shadow-sm">
+            <div className="mt-6 rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm">
               <div className="mb-5 flex items-center justify-between">
                 <p className="text-sm text-c-text-muted">
                   Contributions over the last 12 weeks
@@ -555,7 +569,7 @@ export default function PublicProfile() {
       <button
         type="button"
         onClick={share}
-        className="share-profile fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-c-blue px-4 py-3 text-sm font-bold text-white shadow-md hover:bg-c-blue-hover"
+        className="share-profile fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-c-action px-4 py-3 text-sm font-bold text-white shadow-md hover:bg-c-action-hover"
       >
         <Share2 className="h-4 w-4" />
         Share profile

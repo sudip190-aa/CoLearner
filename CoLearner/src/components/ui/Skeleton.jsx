@@ -21,7 +21,7 @@ export const Skeleton = forwardRef(function Skeleton(
     <div
       ref={ref}
       className={clsx(
-        'animate-pulse bg-slate-200/75',
+        'animate-pulse bg-c-border/75',
         variantStyles[variant] || variantStyles.rect,
         className,
       )}

@@ -70,12 +70,12 @@ export default function Pricing() {
         {plans.map((plan, index) => (
           <article
             key={plan.name}
-            className={`flex flex-col rounded-2xl border p-7 sm:p-8 ${index === 0 ? 'border-c-blue bg-c-blue-wash' : 'border-c-border bg-white'}`}
+            className={`flex flex-col rounded-2xl border p-7 sm:p-8 ${index === 0 ? 'border-c-blue bg-c-blue-wash' : 'border-c-border bg-c-surface'}`}
           >
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-xl font-semibold">{plan.name}</h2>
               <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${index === 0 ? 'bg-c-yellow text-c-text' : 'bg-c-blue-soft text-c-blue'}`}
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${index === 0 ? 'bg-c-yellow text-c-on-accent' : 'bg-c-blue-soft text-c-blue'}`}
               >
                 {index === 0 ? 'Available now' : 'Coming soon'}
               </span>

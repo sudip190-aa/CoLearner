@@ -41,7 +41,7 @@ export function Drawer({
           ref={drawerRef}
           tabIndex={-1}
           className={clsx(
-            'pointer-events-auto w-full sm:max-w-md bg-white border-c-border shadow-md z-10 flex flex-col',
+            'pointer-events-auto w-full sm:max-w-md bg-c-surface border-c-border shadow-md z-10 flex flex-col',
             'max-h-[85vh] sm:max-h-full rounded-t-brand-lg sm:rounded-t-none sm:border-l',
             'animate-in slide-in-from-bottom sm:slide-in-from-right duration-250 ease-out focus:outline-none',
             className,
@@ -69,7 +69,7 @@ export function Drawer({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="p-1.5 -mr-2 -mt-2 rounded-brand text-c-text-muted hover:text-c-text hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+                  className="p-1.5 -mr-2 -mt-2 rounded-brand text-c-text-muted hover:text-c-text hover:bg-c-blue-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
                   aria-label="Close drawer"
                 >
                   <X className="w-5 h-5" />

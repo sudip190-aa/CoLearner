@@ -2,12 +2,17 @@ import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import { Logo } from '../ui/Logo'
 
+import ThemeToggle from '../ui/ThemeToggle'
+
 export function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen bg-white lg:grid lg:grid-cols-2">
+    <div className="min-h-screen bg-c-surface lg:grid lg:grid-cols-2">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <main className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
         <Logo variant="full" size="lg" to="/" />
-        <div className="mt-8 w-full max-w-md rounded-brand-lg border border-c-border bg-white p-6 shadow-sm sm:p-8">
+        <div className="mt-8 w-full max-w-md rounded-brand-lg border border-c-border bg-c-surface p-6 shadow-sm sm:p-8">
           {children || <Outlet />}
         </div>
         <nav

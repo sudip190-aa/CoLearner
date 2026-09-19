@@ -2,7 +2,12 @@ import { useRef, useState } from 'react'
 import { useMessageInbox } from '../../hooks/useMessages'
 import { Textarea } from '../ui'
 
-export default function MentionTextarea({ value, onChange, ...props }) {
+export default function MentionTextarea({
+  value,
+  onChange,
+  maxLength = 5000,
+  ...props
+}) {
   const friends = useMessageInbox()
   const input = useRef(null)
   const [caret, setCaret] = useState(0)
@@ -37,7 +42,7 @@ export default function MentionTextarea({ value, onChange, ...props }) {
         {...props}
         ref={input}
         value={value}
-        maxLength={5000}
+        maxLength={maxLength}
         onChange={(event) => {
           onChange(event)
           setCaret(event.target.selectionStart)
@@ -71,7 +76,7 @@ export default function MentionTextarea({ value, onChange, ...props }) {
         <div
           role="listbox"
           aria-label="Mention a connection"
-          className="absolute bottom-full z-20 mb-2 w-full max-w-sm overflow-hidden rounded-xl border border-c-border bg-white p-1 shadow-lg"
+          className="absolute bottom-full z-20 mb-2 w-full max-w-sm overflow-hidden rounded-xl border border-c-border bg-c-surface p-1 shadow-lg"
         >
           {choices.map((person, index) => (
             <button

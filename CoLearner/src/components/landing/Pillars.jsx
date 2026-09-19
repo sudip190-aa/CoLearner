@@ -53,7 +53,7 @@ export const Pillars = () => {
             return (
               <Card
                 key={pillar.id}
-                className="group border border-c-border hover:border-c-blue transition-colors duration-300 h-full bg-white"
+                className="group border border-c-border hover:border-c-blue transition-colors duration-300 h-full bg-c-surface"
               >
                 <div className="p-6 md:p-8 flex flex-col items-center text-center">
                   <div className="w-16 h-16 rounded-2xl bg-c-blue-soft text-c-blue flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">

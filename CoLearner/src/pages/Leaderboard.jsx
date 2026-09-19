@@ -75,7 +75,7 @@ function RankRow({ entry }) {
   return (
     <tr
       data-testid={entry.isSelf ? 'my-rank' : undefined}
-      className={`border-t border-c-border/70 transition-colors ${entry.isSelf ? 'bg-c-blue-soft/70' : 'bg-white hover:bg-c-blue-wash/60'}`}
+      className={`border-t border-c-border/70 transition-colors ${entry.isSelf ? 'bg-c-blue-soft/70' : 'bg-c-surface hover:bg-c-blue-wash/60'}`}
     >
       <td className="py-4 pl-3 pr-1 text-center sm:pl-5 sm:pr-3">
         <span
@@ -173,7 +173,7 @@ export default function Leaderboard() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-c-blue to-c-blue-hover px-5 pb-12 pt-6 text-white sm:px-8 sm:pb-14 sm:pt-8">
+      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-c-action to-c-action-hover px-5 pb-12 pt-6 text-white sm:px-8 sm:pb-14 sm:pt-8">
         <Trophy
           size={180}
           strokeWidth={0.75}
@@ -207,7 +207,7 @@ export default function Leaderboard() {
               name={user?.fullName || user?.name}
               size="lg"
               className="ring-4 ring-white/15"
-              fallbackClassName="!border-white/30 !bg-white !text-c-blue"
+              fallbackClassName="!border-white/30 !bg-c-surface !text-c-blue"
             />
             <span className="min-w-0">
               <span className="block text-xs text-white/80">Your progress</span>
@@ -240,7 +240,7 @@ export default function Leaderboard() {
 
       <section
         aria-label="Community rankings"
-        className="relative mx-0 mt-[-24px] overflow-hidden rounded-2xl border border-c-border bg-white shadow-sm sm:mx-5"
+        className="relative mx-0 mt-[-24px] overflow-hidden rounded-2xl border border-c-border bg-c-surface shadow-sm sm:mx-5"
       >
         <div className="flex flex-col gap-4 border-b border-c-border px-4 py-5 sm:flex-row sm:items-center sm:gap-6 sm:px-6">
           <Tabs

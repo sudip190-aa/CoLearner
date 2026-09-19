@@ -51,7 +51,7 @@ export default function HowItWorksPage() {
         {steps.map(({ icon: Icon, title, text, actions, outcome }, index) => (
           <article
             key={title}
-            className="mb-5 grid gap-6 rounded-2xl border border-c-border bg-white p-6 last:mb-0 md:grid-cols-[90px_1fr_1fr] md:gap-10 md:p-8"
+            className="mb-5 grid gap-6 rounded-2xl border border-c-border bg-c-surface p-6 last:mb-0 md:grid-cols-[90px_1fr_1fr] md:gap-10 md:p-8"
           >
             <div className="flex items-center gap-4 md:flex-col md:items-start">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-c-blue-soft font-mono text-sm text-c-blue">
@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
                     key={action}
                     className="flex gap-3 text-sm leading-relaxed"
                   >
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-c-blue" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-c-action" />
                     {action}
                   </li>
                 ))}

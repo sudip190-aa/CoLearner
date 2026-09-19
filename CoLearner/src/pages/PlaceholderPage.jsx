@@ -8,7 +8,7 @@ export function PlaceholderPage({ title }) {
         title={title}
         subtitle="This Colearn page is ready for its feature implementation."
       />
-      <div className="rounded-brand-lg border border-dashed border-c-border bg-white p-10 text-center text-sm text-c-text-muted">
+      <div className="rounded-brand-lg border border-dashed border-c-border bg-c-surface p-10 text-center text-sm text-c-text-muted">
         {title} content will appear here.
       </div>
     </div>

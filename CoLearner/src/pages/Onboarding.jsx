@@ -76,7 +76,11 @@ export default function Onboarding() {
     users
       .getSkills()
       .then(({ skills }) => active && setCatalog(skills))
-      .catch(() => active && setCatalogError('Could not load skills. You can still add your own.'))
+      .catch(
+        () =>
+          active &&
+          setCatalogError('Could not load skills. You can still add your own.'),
+      )
     return () => {
       active = false
     }
@@ -122,7 +126,9 @@ export default function Onboarding() {
       setUser(saved)
       reset()
       const earned = Math.max(0, saved.xp - currentXp)
-      toast.success(earned ? `+${earned} XP — profile complete` : 'Profile saved')
+      toast.success(
+        earned ? `+${earned} XP — profile complete` : 'Profile saved',
+      )
       navigate('/dashboard', { replace: true })
     } catch (error) {
       Object.entries(error?.fields || {}).forEach(([key, value]) => {
@@ -162,7 +168,7 @@ export default function Onboarding() {
           ]}
         />
       </div>
-      <div className="rounded-brand-lg border border-c-border bg-white p-5 shadow-sm sm:p-8">
+      <div className="rounded-brand-lg border border-c-border bg-c-surface p-5 shadow-sm sm:p-8">
         {step === 0 && (
           <div>
             <h1 className="text-2xl font-bold">Pick your path</h1>
@@ -212,12 +218,18 @@ export default function Onboarding() {
               </p>
             )}
             <div className="mt-5 flex flex-wrap gap-2">
-              {[...customSelected.map((name) => ({ id: `custom-${name}`, name })), ...filteredSkills].map((skill) => (
+              {[
+                ...customSelected.map((name) => ({
+                  id: `custom-${name}`,
+                  name,
+                })),
+                ...filteredSkills,
+              ].map((skill) => (
                 <button
                   type="button"
                   key={skill.id}
                   onClick={() => toggle('skills', skill.name)}
-                  className={`rounded-full border px-3 py-2 text-sm ${selectedSkills.includes(skill.name) ? 'border-c-blue bg-c-blue text-white' : 'border-c-border text-c-text-muted hover:border-c-blue hover:text-c-blue'}`}
+                  className={`rounded-full border px-3 py-2 text-sm ${selectedSkills.includes(skill.name) ? 'border-c-blue bg-c-action text-white' : 'border-c-border text-c-text-muted hover:border-c-blue hover:text-c-blue'}`}
                 >
                   {skill.name}
                 </button>
@@ -255,7 +267,7 @@ export default function Onboarding() {
                   type="button"
                   key={category.id}
                   onClick={() => toggle('interests', category.id)}
-                  className={`rounded-brand border px-4 py-3 text-sm font-medium ${selectedInterests.includes(category.id) ? 'border-c-blue bg-c-blue text-white' : 'border-c-border text-c-text-muted hover:border-c-blue hover:text-c-blue'}`}
+                  className={`rounded-brand border px-4 py-3 text-sm font-medium ${selectedInterests.includes(category.id) ? 'border-c-blue bg-c-action text-white' : 'border-c-border text-c-text-muted hover:border-c-blue hover:text-c-blue'}`}
                 >
                   {category.name}
                 </button>
@@ -343,7 +355,10 @@ export default function Onboarding() {
               </div>
             </div>
             {submitError && (
-              <p className="mt-4 text-sm font-medium text-c-danger" role="alert">
+              <p
+                className="mt-4 text-sm font-medium text-c-danger"
+                role="alert"
+              >
                 {submitError}
               </p>
             )}

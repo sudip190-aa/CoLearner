@@ -41,6 +41,7 @@ const AuthCallback = lazy(() => import('./pages/auth/AuthCallback.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Messages = lazy(() => import('./pages/Messages.jsx'))
+const ProjectChat = lazy(() => import('./pages/ProjectChat.jsx'))
 const BookCatalog = lazy(() => import('./pages/BookCatalog.jsx'))
 const PublicBook = () => (
   <div className="container py-10">
@@ -176,6 +177,7 @@ export const router = createBrowserRouter([
           { path: '/projects/new', element: view(NewProject) },
           { path: '/projects/:slug', element: view(Project) },
           { path: '/projects/:slug/workspace', element: view(Workspace) },
+          { path: '/projects/:slug/chat', element: view(ProjectChat) },
           { path: '/people', element: view(People) },
           { path: '/community', element: view(Community) },
           { path: '/community/new', element: view(NewCommunity) },

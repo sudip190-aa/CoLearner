@@ -1,9 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     container: {
       center: true,
@@ -14,6 +12,17 @@ export default {
     },
     extend: {
       colors: {
+        'c-surface': 'rgb(var(--c-surface-rgb) / <alpha-value>)',
+        'c-action': 'rgb(var(--c-action-rgb) / <alpha-value>)',
+        'c-action-hover': 'rgb(var(--c-action-hover-rgb) / <alpha-value>)',
+        'c-ink': 'rgb(var(--c-ink-rgb) / <alpha-value>)',
+        'c-on-accent': 'rgb(var(--c-on-accent-rgb) / <alpha-value>)',
+        'c-danger-solid': 'rgb(var(--c-danger-solid-rgb) / <alpha-value>)',
+        'c-success-solid': 'rgb(var(--c-success-solid-rgb) / <alpha-value>)',
+        'c-danger-soft': 'rgb(var(--c-danger-soft-rgb) / <alpha-value>)',
+        'c-success-soft': 'rgb(var(--c-success-soft-rgb) / <alpha-value>)',
+        'c-warning-soft': 'rgb(var(--c-warning-soft-rgb) / <alpha-value>)',
+
         // Mapped through RGB channel variables so Tailwind opacity modifiers
         // (e.g. bg-c-blue-soft/80) work. Hex tokens remain in :root for raw CSS.
         'c-blue': 'rgb(var(--c-blue-rgb) / <alpha-value>)',
@@ -34,7 +43,15 @@ export default {
         'c-danger': 'rgb(var(--c-danger-rgb) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: [
+          'Poppins',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
       },
       borderRadius: {
         DEFAULT: 'var(--radius)',
@@ -52,4 +69,4 @@ export default {
     },
   },
   plugins: [],
-};
+}

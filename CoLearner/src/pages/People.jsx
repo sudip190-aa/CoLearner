@@ -33,7 +33,7 @@ function PeopleSkeleton() {
       {[1, 2, 3, 4, 5, 6].map((item) => (
         <div
           key={item}
-          className="rounded-brand-lg border border-c-border bg-white p-5"
+          className="rounded-brand-lg border border-c-border bg-c-surface p-5"
         >
           <div className="flex items-center gap-3">
             <Skeleton width="44px" height="44px" className="!rounded-full" />
@@ -220,7 +220,7 @@ export default function People() {
       <section aria-label="Find people" className="mb-8">
         <div className="flex items-center gap-3 rounded-2xl bg-c-blue-soft/80 px-5 pb-12 pt-5 sm:px-6 sm:pt-6">
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-c-blue"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-c-surface/80 text-c-blue"
             aria-hidden="true"
           >
             <Users size={20} />
@@ -229,7 +229,7 @@ export default function People() {
             Find a study partner, teammate, or mentor.
           </p>
         </div>
-        <div className="relative mx-3 -mt-7 grid grid-cols-2 items-center gap-4 rounded-2xl border border-c-border/70 bg-white p-4 shadow-sm sm:mx-5 sm:p-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.1fr)_auto] xl:gap-2">
+        <div className="relative mx-3 -mt-7 grid grid-cols-2 items-center gap-4 rounded-2xl border border-c-border/70 bg-c-surface p-4 shadow-sm sm:mx-5 sm:p-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.1fr)_auto] xl:gap-2">
           <div className="col-span-2 min-w-0 sm:col-span-1">
             <label
               htmlFor="people-search"
@@ -279,12 +279,12 @@ export default function People() {
             aria-label={`Filter by skills${selectedSkills.length ? `, ${selectedSkills.length} selected` : ''}`}
             title="Filter by skills"
             onClick={() => setFiltersOpen((open) => !open)}
-            className={`relative flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue sm:col-span-2 xl:col-span-1 xl:h-14 xl:w-14 ${filtersOpen || selectedSkills.length ? 'bg-c-blue text-white' : 'bg-c-blue-soft text-c-blue hover:bg-c-blue-soft/70'}`}
+            className={`relative flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue sm:col-span-2 xl:col-span-1 xl:h-14 xl:w-14 ${filtersOpen || selectedSkills.length ? 'bg-c-action text-white' : 'bg-c-blue-soft text-c-blue hover:bg-c-blue-soft/70'}`}
           >
             <SlidersHorizontal size={19} aria-hidden="true" />
             <span className="xl:sr-only">Skills</span>
             {selectedSkills.length > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-c-yellow px-1 text-[10px] font-bold text-c-text">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-c-yellow px-1 text-[10px] font-bold text-c-on-accent">
                 {selectedSkills.length}
               </span>
             )}
@@ -293,7 +293,7 @@ export default function People() {
         {filtersOpen && (
           <div
             id="people-filters"
-            className="mx-3 mt-3 rounded-2xl border border-c-border bg-white p-5 sm:mx-5"
+            className="mx-3 mt-3 rounded-2xl border border-c-border bg-c-surface p-5 sm:mx-5"
           >
             <fieldset>
               <legend className="mb-3 text-xs font-semibold text-c-text-muted">
@@ -331,7 +331,7 @@ export default function People() {
                 type="button"
                 onClick={() => toggleSkill(skill)}
                 aria-label={`Remove ${skill} filter`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-white px-3 py-1.5 text-xs text-c-blue"
+                className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-c-surface px-3 py-1.5 text-xs text-c-blue"
               >
                 {skill}
                 <X size={12} aria-hidden="true" />
@@ -379,14 +379,14 @@ export default function People() {
                 { value: 'xp', label: 'Most XP' },
                 { value: 'newest', label: 'Recently joined' },
               ]}
-              className="!h-9 !rounded-full !border-transparent !bg-white/70 !text-xs !text-c-text-muted"
+              className="!h-9 !rounded-full !border-transparent !bg-c-surface/70 !text-xs !text-c-text-muted"
             />
           </div>
         </div>
       </div>
       {error && (
         <p
-          className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
+          className="mb-4 rounded-xl bg-c-danger-soft px-3 py-2 text-sm text-c-danger"
           role="alert"
         >
           {error}
