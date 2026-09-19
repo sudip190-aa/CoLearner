@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Bell, X } from 'lucide-react'
+import { Bell, MessageCircle, X } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { useNotificationStore } from '../../store/notificationStore'
 import { useNotificationSync } from '../../hooks/useNotificationSync'
@@ -11,27 +11,61 @@ function Popup({ item, dismiss, navigate }) {
     return () => clearTimeout(timer)
   }, [item.id, dismiss])
   const description = describeNotification(item)
+  const isMessage = item.verb === 'direct_message'
+  const Icon = isMessage ? MessageCircle : Bell
   return (
     <div
       data-notification-popup={item.id}
-      className="pointer-events-auto flex gap-3 rounded-2xl border border-c-border bg-white p-4 shadow-lg"
+      className="pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-2xl border border-c-blue/20 bg-white p-4 pl-5 shadow-[0_12px_40px_-12px_rgba(24,54,94,0.3)] sm:gap-4 sm:p-5 sm:pl-6"
     >
-      <Bell size={18} className="mt-1 shrink-0 text-c-blue" />
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-1 bg-c-blue"
+      />
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-c-blue-soft text-c-blue">
+        <Icon size={20} strokeWidth={1.8} />
+      </span>
       <button
-        className="min-w-0 flex-1 text-left text-sm leading-6"
+        className="min-w-0 flex-1 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue focus-visible:ring-offset-2"
         onClick={() => {
           void useNotificationStore.getState().markRead(item.id)
           dismiss(item.id)
           navigate(description.to)
         }}
       >
-        <span className="font-semibold">{description.actorName} </span>
-        {description.phrase}{' '}
-        <span className="font-medium">{description.label}</span>
+        <span className="mb-1.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-c-blue">
+          {isMessage ? 'New message' : 'New notification'}
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-c-blue"
+            aria-hidden="true"
+          />
+        </span>
+        {isMessage ? (
+          <>
+            <span className="block truncate text-sm font-semibold leading-5 text-c-text">
+              {description.actorName || 'Someone'}
+            </span>
+            <span className="mt-1 line-clamp-2 break-words text-xs leading-5 text-c-text-muted">
+              {description.label || 'Sent you a message'}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="block text-[13px] leading-5 text-c-text">
+              <span className="font-semibold">{description.actorName} </span>
+              {description.phrase}
+            </span>
+            {description.label && (
+              <span className="mt-1 line-clamp-2 break-words text-xs leading-5 text-c-text-muted">
+                {description.label}
+              </span>
+            )}
+          </>
+        )}
       </button>
       <button
         aria-label="Dismiss notification"
-        className="self-start rounded p-1 text-c-text-muted hover:bg-c-blue-wash"
+        className="-mr-1 -mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-c-text-muted transition-colors hover:bg-c-blue-soft hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
         onClick={() => dismiss(item.id)}
       >
         <X size={16} />
@@ -130,7 +164,7 @@ export default function NotificationHub({ navigate }) {
     <aside
       aria-label="New notifications"
       aria-live="polite"
-      className="pointer-events-none fixed bottom-20 right-4 z-[80] w-[calc(100%-2rem)] max-w-sm space-y-3 md:bottom-6"
+      className="pointer-events-none fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[80] w-[calc(100%-2rem)] max-w-[420px] space-y-3 lg:bottom-6 lg:right-6"
     >
       {popups.map((item) => (
         <Popup

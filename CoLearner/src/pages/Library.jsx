@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { BookOpen, Check, Settings2, SlidersHorizontal, X } from 'lucide-react'
 import LibraryBookCard from '../components/books/LibraryBookCard'
 import {
+  LibraryHighlights,
+  LibraryReadingShelf,
+} from '../components/books/LibraryDiscovery'
+import {
   Button,
   EmptyState,
   Modal,
@@ -32,23 +36,21 @@ const TABS = [
 function LibrarySkeleton() {
   return (
     <div
-      className="grid gap-5 md:grid-cols-2 xl:grid-cols-3"
+      className="grid gap-5 md:grid-cols-2"
       aria-label="Loading books"
       aria-busy="true"
     >
       {Array.from({ length: 6 }, (_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden rounded-2xl border border-c-border bg-white"
-        >
-          <Skeleton className="h-16 rounded-none" />
-          <div className="space-y-4 p-5">
-            <Skeleton width="85%" height="24px" />
-            <Skeleton width="60%" height="16px" />
-            <Skeleton width="32%" height="20px" />
-            <Skeleton width="45%" height="16px" />
-            <Skeleton height="6px" className="!mt-7" />
-            <Skeleton width="75%" height="16px" />
+        <div key={i} className="flex gap-4 p-3">
+          <Skeleton
+            width="80px"
+            height="112px"
+            className="shrink-0 rounded-md"
+          />
+          <div className="flex-1 space-y-3 pt-1">
+            <Skeleton width="85%" height="18px" />
+            <Skeleton width="65%" height="14px" />
+            <Skeleton width="45%" height="14px" />
           </div>
         </div>
       ))}
@@ -127,6 +129,25 @@ function LibraryContent() {
       }),
     [books, query, category, level, duration, tab, sort, savedIds, preferences],
   )
+  const recommended = useMemo(
+    () =>
+      selectLibraryBooks(books || [], {
+        query: '',
+        category: 'all',
+        level: 'all',
+        duration: 'all',
+        tab: 'all',
+        sort: 'for-you',
+        savedIds,
+        preferences,
+      }).filter((book) => !book.finished),
+    [books, savedIds, preferences],
+  )
+  const highlights = recommended.filter((book) => !book.started).slice(0, 3)
+  const currentBook =
+    (books || []).find((book) => book.started && !book.finished) ||
+    recommended[0]
+  const savedBooks = (books || []).filter((book) => savedIds.includes(book.id))
   const counts = {
     all: books?.length || 0,
     progress: books?.filter((b) => b.started && !b.finished).length || 0,
@@ -238,26 +259,27 @@ function LibraryContent() {
   return (
     <div data-library="minimal" className="mx-auto max-w-6xl">
       <header className="mb-7 flex flex-wrap items-start justify-between gap-4 sm:mb-9">
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="!text-3xl !font-bold !tracking-tight sm:!text-4xl">
             Library
           </h1>
           <p className="mt-2 text-sm leading-6 text-c-text-muted sm:text-base">
-            Continue learning or find your next good read.
+            A good place for your next chapter.
           </p>
         </div>
         <button
           type="button"
           disabled={!personalReady}
+          aria-label="Learning preferences"
           onClick={() => {
             setDraft({ ...preferences, topics: [...preferences.topics] })
             setPreferencesError('')
             setPreferencesOpen(true)
           }}
-          className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-c-text-muted transition-colors hover:bg-white hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-xl border border-c-border bg-white px-4 py-2.5 text-xs font-medium text-c-text-muted transition-colors hover:border-c-blue/30 hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-40"
         >
           <Settings2 className="h-4 w-4" />
-          Learning preferences
+          <span className="hidden sm:inline">Preferences</span>
         </button>
       </header>
       {personalError && (
@@ -274,212 +296,240 @@ function LibraryContent() {
           </button>
         </div>
       )}
-      <div className="flex items-center gap-3">
-        <SearchBar
-          value={query}
-          onChange={change(setQuery)}
-          placeholder="Search books, authors, or topics..."
-          aria-label="Search library"
-          containerClassName="min-w-0 flex-1"
-          className="!h-12 !rounded-xl"
-        />
-        <button
-          type="button"
-          onClick={() => setFiltersOpen((open) => !open)}
-          aria-expanded={filtersOpen}
-          aria-controls="library-filters"
-          aria-label={`Filter books${filterCount ? `, ${filterCount} active` : ''}`}
-          className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue'}`}
-        >
-          <SlidersHorizontal className="h-5 w-5" />
-          {filterCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-text">
-              {filterCount}
-            </span>
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_248px]">
+        <div className="min-w-0 space-y-5">
+          {tab === 'all' && !hasFilters && safePage === 1 && (
+            <LibraryHighlights books={highlights} />
           )}
-        </button>
-      </div>
-      {filtersOpen && (
-        <section
-          id="library-filters"
-          aria-label="Library filters"
-          className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
-        >
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Select
-              label="Topic"
-              value={category}
-              onChange={(e) => change(setCategory)(e.target.value)}
-              options={[
-                { value: 'all', label: 'All topics' },
-                ...categories.map((value) => ({ value, label: value })),
-              ]}
-            />
-            <Select
-              label="Difficulty"
-              value={level}
-              onChange={(e) => change(setLevel)(e.target.value)}
-              options={LEVELS}
-            />
-            <Select
-              label="Reading time"
-              value={duration}
-              onChange={(e) => change(setDuration)(e.target.value)}
-              options={[
-                { value: 'all', label: 'Any reading time' },
-                {
-                  value: 'session',
-                  label: `Next chapter: ${preferences.session_minutes} min or less`,
-                },
-                { value: 'short', label: 'Whole book: up to 3 hours' },
-                { value: 'long', label: 'Whole book: over 3 hours' },
-              ]}
-            />
-          </div>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <p className="text-c-text-muted">
-              Fit a chapter between classes, or settle in for a longer read.
-            </p>
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="font-semibold text-c-blue hover:underline"
-            >
-              Reset filters
-            </button>
-          </div>
-        </section>
-      )}
-      <div className="mb-5 mt-7 flex flex-col gap-3 border-b border-c-border sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-        <div
-          role="tablist"
-          aria-label="Book collections"
-          onKeyDown={moveTab}
-          className="flex min-w-0 gap-3 overflow-x-auto sm:gap-6"
-        >
-          {TABS.map((item) => (
-            <button
-              key={item.id}
-              id={`library-tab-${item.id}`}
-              type="button"
-              role="tab"
-              aria-selected={tab === item.id}
-              aria-controls="library-results"
-              tabIndex={tab === item.id ? 0 : -1}
-              disabled={item.id === 'saved' && !personalReady}
-              onClick={() => change(setTab)(item.id)}
-              className={`relative shrink-0 whitespace-nowrap border-b-2 px-1 pb-4 pt-2 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-c-blue disabled:opacity-40 sm:text-sm ${tab === item.id ? 'border-c-blue text-c-blue' : 'border-transparent text-c-text-muted hover:text-c-text'}`}
-            >
-              {item.label}
-              <span
-                className={`ml-1.5 hidden text-[10px] sm:inline ${tab === item.id ? 'text-c-blue' : 'text-c-text-muted/70'}`}
+          <section
+            aria-label="Browse books"
+            className="min-w-0 rounded-3xl border border-c-border/70 bg-white p-4 sm:p-6"
+          >
+            <div className="flex items-center gap-3">
+              <SearchBar
+                value={query}
+                onChange={change(setQuery)}
+                placeholder="Find a book, author, or topic..."
+                aria-label="Search library"
+                containerClassName="min-w-0 flex-1 [&_kbd]:hidden"
+                className="!h-11 !rounded-xl !bg-c-blue-wash/50 !text-xs"
+              />
+              <button
+                type="button"
+                onClick={() => setFiltersOpen((open) => !open)}
+                aria-expanded={filtersOpen}
+                aria-controls="library-filters"
+                aria-label={`Filter books${filterCount ? `, ${filterCount} active` : ''}`}
+                className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen || filterCount ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue'}`}
               >
-                {books ? counts[item.id] : '–'}
-              </span>
-            </button>
-          ))}
-        </div>
-        <div className="mb-3 w-full shrink-0 sm:w-44">
-          <Select
-            aria-label="Sort books"
-            value={sort}
-            onChange={(e) => change(setSort)(e.target.value)}
-            options={[
-              { value: 'newest', label: 'Recently added' },
-              { value: 'for-you', label: 'For you', disabled: !personalReady },
-              { value: 'shortest', label: 'Shortest first' },
-              { value: 'popular', label: 'Most read' },
-            ]}
-          />
-        </div>
-      </div>
-      <section
-        id="library-results"
-        role="tabpanel"
-        aria-labelledby={`library-tab-${tab}`}
-        tabIndex={0}
-        className="outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
-      >
-        {!books ? (
-          <LibrarySkeleton />
-        ) : (
-          <>
-            <div
-              className="mb-5 flex flex-wrap items-center justify-between gap-2 text-xs text-c-text-muted"
-              aria-live="polite"
-            >
-              <p>
-                {filtered.length} {filtered.length === 1 ? 'book' : 'books'}
-                {sort === 'for-you'
-                  ? ' · Ordered by your topics, level, and study goal'
-                  : ' · A little progress, every day'}
-              </p>
-              {hasFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="inline-flex items-center gap-1 font-medium text-c-blue"
-                >
-                  <X className="h-3.5 w-3.5" />
-                  Clear filters
-                </button>
-              )}
+                <SlidersHorizontal className="h-5 w-5" />
+                {filterCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-c-yellow text-[10px] font-bold text-c-text">
+                    {filterCount}
+                  </span>
+                )}
+              </button>
             </div>
-            {visible.length ? (
-              <>
-                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                  {visible.map((book) => (
-                    <LibraryBookCard
-                      key={book.id}
-                      book={book}
-                      saved={savedIds.includes(book.id)}
-                      saving={savingIds.includes(book.id)}
-                      disabled={!personalReady}
-                      onSave={toggleSave}
-                    />
-                  ))}
+            {filtersOpen && (
+              <section
+                id="library-filters"
+                aria-label="Library filters"
+                className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
+              >
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <Select
+                    label="Topic"
+                    value={category}
+                    onChange={(e) => change(setCategory)(e.target.value)}
+                    options={[
+                      { value: 'all', label: 'All topics' },
+                      ...categories.map((value) => ({ value, label: value })),
+                    ]}
+                  />
+                  <Select
+                    label="Difficulty"
+                    value={level}
+                    onChange={(e) => change(setLevel)(e.target.value)}
+                    options={LEVELS}
+                  />
+                  <Select
+                    label="Reading time"
+                    value={duration}
+                    onChange={(e) => change(setDuration)(e.target.value)}
+                    options={[
+                      { value: 'all', label: 'Any reading time' },
+                      {
+                        value: 'session',
+                        label: `Next chapter: ${preferences.session_minutes} min or less`,
+                      },
+                      { value: 'short', label: 'Whole book: up to 3 hours' },
+                      { value: 'long', label: 'Whole book: over 3 hours' },
+                    ]}
+                  />
                 </div>
-                <Pagination
-                  currentPage={safePage}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                  className="mt-8"
-                />
-              </>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-c-border bg-white/60 px-4 py-6">
-                <EmptyState
-                  icon={BookOpen}
-                  title={
-                    hasFilters
-                      ? 'No books match just yet'
-                      : tab === 'saved'
-                        ? 'Your next reads belong here'
-                        : tab === 'completed'
-                          ? 'One chapter at a time'
-                          : 'Ready when you are'
-                  }
-                  description={
-                    hasFilters
-                      ? 'Try a different topic or widen your reading time.'
-                      : tab === 'saved'
-                        ? 'Use the bookmark on any book to keep it for later.'
-                        : tab === 'completed'
-                          ? 'Books you finish will appear here. Pick one and make a start.'
-                          : 'Start a book and come back here to pick up where you left off.'
-                  }
-                  actionLabel={
-                    hasFilters ? 'Clear filters' : 'Browse all books'
-                  }
-                  onAction={
-                    hasFilters ? clearFilters : () => change(setTab)('all')
-                  }
+                <div className="mt-2 flex justify-end text-xs">
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="font-semibold text-c-blue hover:underline"
+                  >
+                    Reset filters
+                  </button>
+                </div>
+              </section>
+            )}
+            <div className="mb-4 mt-5 flex flex-col gap-3 border-b border-c-border sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div
+                role="tablist"
+                aria-label="Book collections"
+                onKeyDown={moveTab}
+                className="flex min-w-0 gap-3 overflow-x-auto sm:gap-4"
+              >
+                {TABS.map((item) => (
+                  <button
+                    key={item.id}
+                    id={`library-tab-${item.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === item.id}
+                    aria-controls="library-results"
+                    tabIndex={tab === item.id ? 0 : -1}
+                    disabled={item.id === 'saved' && !personalReady}
+                    onClick={() => change(setTab)(item.id)}
+                    className={`relative shrink-0 whitespace-nowrap border-b-2 px-1 pb-4 pt-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-c-blue disabled:opacity-40 ${tab === item.id ? 'border-c-blue text-c-blue' : 'border-transparent text-c-text-muted hover:text-c-text'}`}
+                  >
+                    {item.label}
+                    <span
+                      className={`ml-1.5 hidden text-[10px] sm:inline ${tab === item.id ? 'text-c-blue' : 'text-c-text-muted/70'}`}
+                    >
+                      {books ? counts[item.id] : '–'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="mb-3 w-full shrink-0 sm:w-36">
+                <Select
+                  className="!h-9 !text-xs"
+                  aria-label="Sort books"
+                  value={sort}
+                  onChange={(e) => change(setSort)(e.target.value)}
+                  options={[
+                    { value: 'newest', label: 'Recently added' },
+                    {
+                      value: 'for-you',
+                      label: 'For you',
+                      disabled: !personalReady,
+                    },
+                    { value: 'shortest', label: 'Shortest first' },
+                    { value: 'popular', label: 'Most read' },
+                  ]}
                 />
               </div>
-            )}
-          </>
+            </div>
+            <section
+              id="library-results"
+              role="tabpanel"
+              aria-labelledby={`library-tab-${tab}`}
+              tabIndex={0}
+              className="outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+            >
+              {!books ? (
+                <LibrarySkeleton />
+              ) : (
+                <>
+                  <div
+                    className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-c-text-muted"
+                    aria-live="polite"
+                  >
+                    <p>
+                      {filtered.length}{' '}
+                      {filtered.length === 1 ? 'book' : 'books'}
+                    </p>
+                    {hasFilters && (
+                      <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="inline-flex items-center gap-1 font-medium text-c-blue"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+                  {visible.length ? (
+                    <>
+                      <div className="grid gap-x-3 gap-y-4 md:grid-cols-2">
+                        {visible.map((book) => (
+                          <LibraryBookCard
+                            key={book.id}
+                            book={book}
+                            saved={savedIds.includes(book.id)}
+                            saving={savingIds.includes(book.id)}
+                            disabled={!personalReady}
+                            onSave={toggleSave}
+                          />
+                        ))}
+                      </div>
+                      <Pagination
+                        currentPage={safePage}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                        className="mt-8"
+                      />
+                    </>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-c-border bg-white/60 px-4 py-6">
+                      <EmptyState
+                        icon={BookOpen}
+                        title={
+                          hasFilters
+                            ? 'No books match just yet'
+                            : tab === 'saved'
+                              ? 'Your next reads belong here'
+                              : tab === 'completed'
+                                ? 'One chapter at a time'
+                                : 'Ready when you are'
+                        }
+                        description={
+                          hasFilters
+                            ? 'Try a different topic or widen your reading time.'
+                            : tab === 'saved'
+                              ? 'Use the bookmark on any book to keep it for later.'
+                              : tab === 'completed'
+                                ? 'Books you finish will appear here. Pick one and make a start.'
+                                : 'Start a book and come back here to pick up where you left off.'
+                        }
+                        actionLabel={
+                          hasFilters ? 'Clear filters' : 'Browse all books'
+                        }
+                        onAction={
+                          hasFilters
+                            ? clearFilters
+                            : () => change(setTab)('all')
+                        }
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </section>
+          </section>
+        </div>
+        {!!books?.length && (
+          <LibraryReadingShelf
+            current={currentBook}
+            saved={savedBooks}
+            personalReady={personalReady}
+            onViewSaved={() => {
+              clearFilters()
+              change(setTab)('saved')
+              document
+                .getElementById('library-tab-saved')
+                ?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+            }}
+          />
         )}
-      </section>
+      </div>
       <Modal
         isOpen={preferencesOpen}
         onClose={() => {

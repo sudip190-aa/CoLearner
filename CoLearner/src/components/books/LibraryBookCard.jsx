@@ -1,20 +1,8 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
-import {
-  ArrowRight,
-  Bookmark,
-  BookmarkCheck,
-  Clock3,
-  Loader2,
-} from 'lucide-react'
+import { ArrowRight, Bookmark, BookmarkCheck, Loader2 } from 'lucide-react'
 import { ProgressBar } from '../ui'
 import { readingLink } from '../../lib/library'
-
-const bands = [
-  'bg-c-blue-soft text-c-blue',
-  'bg-c-yellow-soft text-c-text',
-  'bg-c-blue-wash text-c-blue',
-]
+import LibraryBookCover from './LibraryBookCover'
 
 export default function LibraryBookCard({
   book,
@@ -23,101 +11,88 @@ export default function LibraryBookCard({
   disabled,
   onSave,
 }) {
-  const tone =
-    [...book.category].reduce((sum, letter) => sum + letter.charCodeAt(0), 0) %
-    bands.length
   const progress = Math.min(100, Math.max(0, Math.round(book.progress || 0)))
+  const action = book.finished ? 'Review' : book.started ? 'Continue' : 'Read'
   return (
     <article
       data-library-book={book.slug}
-      className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
+      className="group flex min-w-0 gap-4 rounded-2xl border border-transparent p-3 transition-colors hover:border-c-blue/10 hover:bg-c-blue-wash/70"
     >
-      <div
-        className={`flex h-16 shrink-0 items-center justify-between gap-3 px-5 py-3 ${bands[tone]}`}
+      <Link
+        to={`/library/${book.slug}`}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="shrink-0 self-start overflow-hidden rounded-md shadow-sm transition-transform motion-safe:group-hover:-translate-y-0.5"
       >
-        <span
-          title={book.category}
-          className="min-w-0 line-clamp-2 text-[10px] font-bold uppercase leading-4 tracking-[0.1em]"
-        >
-          {book.category}
-        </span>
-        <button
-          type="button"
-          onClick={() => onSave(book)}
-          disabled={disabled || saving}
-          aria-pressed={saved}
-          aria-label={`${saved ? 'Unsave' : 'Save'} ${book.title}`}
-          title={saved ? 'Remove from saved books' : 'Save for later'}
-          className="-mr-2 shrink-0 rounded-lg p-2 transition-colors hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-50"
-        >
-          {saving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : saved ? (
-            <BookmarkCheck className="h-4 w-4" />
-          ) : (
-            <Bookmark className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-      <div className="flex flex-1 flex-col p-5">
-        <Link
-          to={`/library/${book.slug}`}
-          title={book.title}
-          className="block min-w-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
-        >
-          <h2 className="h-12 line-clamp-2 break-words text-lg font-bold leading-6 tracking-tight text-c-text transition-colors hover:text-c-blue">
-            {book.title}
-          </h2>
-        </Link>
+        <LibraryBookCover book={book} compact className="h-28 w-20" />
+      </Link>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start gap-1">
+          <Link
+            to={`/library/${book.slug}`}
+            title={book.title}
+            className="min-w-0 flex-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          >
+            <h3 className="line-clamp-2 min-h-10 !text-[13px] !font-semibold !leading-5 text-c-text hover:text-c-blue">
+              {book.title}
+            </h3>
+          </Link>
+          <button
+            type="button"
+            onClick={() => onSave(book)}
+            disabled={disabled || saving}
+            aria-pressed={saved}
+            aria-label={`${saved ? 'Unsave' : 'Save'} ${book.title}`}
+            title={saved ? 'Remove from saved books' : 'Save for later'}
+            className={`-mr-1 -mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-c-blue-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:opacity-40 ${saved ? 'text-c-blue' : 'text-c-text-muted'}`}
+          >
+            {saving ? (
+              <Loader2 size={15} className="animate-spin" />
+            ) : saved ? (
+              <BookmarkCheck size={15} />
+            ) : (
+              <Bookmark size={15} />
+            )}
+          </button>
+        </div>
         <p
           title={book.author}
-          className="mt-2 h-5 truncate text-sm leading-5 text-c-text-muted"
+          className="mt-1 truncate text-[11px] text-c-text-muted"
         >
           {book.author}
         </p>
-        <div className="mt-3 flex min-h-6 items-center">
-          <span
-            className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium capitalize ${book.difficulty === 'advanced' ? 'bg-c-yellow-soft text-c-text' : 'bg-c-blue-soft text-c-blue'}`}
-          >
-            {book.difficulty}
-          </span>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 text-[10px] leading-4 text-c-text-muted">
+          <span className="capitalize">{book.difficulty}</span>
+          <span aria-hidden="true">&middot;</span>
+          <span>{book.estMinutes} min</span>
         </div>
-        <p className="mb-5 mt-3 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-c-text-muted">
-          <span className="inline-flex items-center gap-2 whitespace-nowrap">
-            <Clock3 className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span className="tabular-nums">{book.estMinutes} minutes</span>
-          </span>
-          <span className="shrink-0 text-c-border" aria-hidden="true">
-            ·
-          </span>
-          <span className="whitespace-nowrap tabular-nums">
-            {book.chapterCount} chapters
-          </span>
-        </p>
-        <div className="mt-auto">
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+          {book.started ? (
+            <span className="text-[10px] font-medium text-c-text-muted">
+              {book.finished ? 'Completed' : `${progress}% read`}
+            </span>
+          ) : (
+            <span className="truncate text-[10px] text-c-text-muted">
+              {book.chapterCount} chapters
+            </span>
+          )}
+          <Link
+            to={readingLink(book)}
+            aria-label={`${action} ${book.title}`}
+            className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-c-blue hover:text-c-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          >
+            {action}
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+        {book.started && (
           <ProgressBar
             value={progress}
             size="sm"
+            className="mt-2"
             aria-label={`${book.title} progress`}
           />
-          <div className="mt-3 flex min-h-5 items-center justify-between gap-2 text-xs leading-5">
-            <span className="whitespace-nowrap tabular-nums text-c-text-muted">
-              {book.finished
-                ? 'Completed'
-                : book.started
-                  ? `${progress}% complete`
-                  : 'Not started'}
-            </span>
-            <Link
-              to={readingLink(book)}
-              aria-label={`${book.finished ? 'Review' : book.started ? 'Continue' : 'Start'} ${book.title}`}
-              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded font-semibold text-c-blue hover:text-c-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
-            >
-              {book.finished ? 'Review' : book.started ? 'Continue' : 'Start'}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
     </article>
   )

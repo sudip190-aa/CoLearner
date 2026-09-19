@@ -1,4 +1,3 @@
-import { MyLearning } from '../components/books/MyLearning'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -19,8 +18,6 @@ import {
   Plus,
   Search,
   SlidersHorizontal,
-  Sparkles,
-  Target,
   X,
   Zap,
 } from 'lucide-react'
@@ -31,14 +28,13 @@ import {
   ProgressBar,
   Skeleton,
 } from '../components/ui'
-import { BookCover } from '../components/books/BookCover'
-import FocusTimer from '../components/dashboard/FocusTimer'
+import LibraryBookCover from '../components/books/LibraryBookCover'
 import { dashboard } from '../services/api'
 import { formatRelative } from '../lib/formatters'
 import { useAuthStore } from '../store/authStore'
 import { useMessageInbox } from '../hooks/useMessages'
 
-const panel = 'rounded-3xl border border-c-border bg-white p-5 sm:p-6'
+const panel = 'rounded-3xl border border-c-border/80 bg-white p-5 sm:p-6'
 const statusNames = {
   idea: 'Idea',
   active: 'In progress',
@@ -49,7 +45,7 @@ function Heading({ title, detail, to, label = 'View all' }) {
   return (
     <div className="mb-5 flex items-start justify-between gap-4">
       <div>
-        <h2 className="text-base font-bold tracking-tight">{title}</h2>
+        <h2 className="!text-base !font-semibold !tracking-tight">{title}</h2>
         {detail && (
           <p className="mt-1 text-xs leading-5 text-c-text-muted">{detail}</p>
         )}
@@ -215,10 +211,7 @@ export default function Dashboard() {
   const contacts = inbox.data || []
   const unread = contacts.reduce((sum, p) => sum + p.unread_count, 0)
   return (
-    <div
-      className="mx-auto max-w-[1120px] space-y-7"
-      data-dashboard="workspace"
-    >
+    <div className="mx-auto max-w-6xl space-y-6" data-dashboard="workspace">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-c-text-muted">
@@ -228,12 +221,12 @@ export default function Dashboard() {
               day: 'numeric',
             })}
           </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="mt-2 !text-3xl !font-bold !tracking-tight sm:!text-4xl">
             {greeting}, {firstName}
             <span className="text-c-blue">.</span>
           </h1>
           <p className="mt-2 text-sm text-c-text-muted">
-            A little learning. A little building. Real progress.
+            Your learning, projects, and people. All in one place.
           </p>
         </div>
         <div className="flex gap-2">
@@ -287,13 +280,13 @@ export default function Dashboard() {
         <>
           {!focus && (
             <section
-              className="grid grid-cols-2 gap-4 xl:grid-cols-4"
+              className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4"
               aria-label="Your progress"
             >
               {[
                 {
                   icon: Zap,
-                  label: 'Total experience',
+                  label: 'Total XP',
                   value: stats.xp.toLocaleString(),
                   note: `Level ${stats.level}`,
                   stat: 'xp',
@@ -302,19 +295,19 @@ export default function Dashboard() {
                   icon: Flame,
                   label: 'Current streak',
                   value: `${stats.streakDays} ${stats.streakDays === 1 ? 'day' : 'days'}`,
-                  note: 'Keep showing up',
+                  note: 'Learning streak',
                   stat: 'streak',
                 },
                 {
                   icon: FolderKanban,
                   label: 'Active projects',
                   value: stats.activeProjects,
-                  note: 'Ideas in motion',
+                  note: 'In progress',
                   stat: 'projects',
                 },
                 {
                   icon: BookOpen,
-                  label: 'Currently learning',
+                  label: 'Reading',
                   value: stats.booksInProgress,
                   note: 'Books in progress',
                   stat: 'books',
@@ -322,64 +315,77 @@ export default function Dashboard() {
               ].map(({ icon: Icon, ...item }) => (
                 <div
                   key={item.stat}
-                  className="rounded-2xl border border-c-border bg-white px-4 py-5 sm:px-5"
+                  className="flex items-center gap-3 rounded-2xl border border-c-border/80 bg-white p-4 sm:gap-4 sm:p-5"
                 >
-                  <div className="flex items-center gap-2 text-[11px] font-medium text-c-text-muted">
-                    <Icon size={15} className="text-c-blue" />
-                    {item.label}
-                  </div>
-                  <div
-                    className="mt-3 text-2xl font-bold tracking-tight"
-                    data-stat={item.stat}
+                  <span
+                    className={`hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl sm:flex ${item.stat === 'xp' ? 'bg-c-yellow-soft text-c-text' : 'bg-c-blue-soft text-c-blue'}`}
                   >
-                    {item.value}
+                    <Icon size={20} strokeWidth={1.7} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-c-text-muted">
+                      {item.label}
+                    </p>
+                    <div
+                      className="mt-1 text-2xl font-bold tracking-tight tabular-nums"
+                      data-stat={item.stat}
+                    >
+                      {item.value}
+                    </div>
+                    <p className="mt-0.5 text-[10px] text-c-text-muted">
+                      {item.note}
+                    </p>
                   </div>
-                  <p className="mt-1 text-[11px] text-c-text-muted">
-                    {item.note}
-                  </p>
                 </div>
               ))}
             </section>
           )}
           <div
-            className={`grid items-start gap-6 ${focus ? 'lg:grid-cols-2' : 'xl:grid-cols-[minmax(0,1.7fr)_minmax(290px,1fr)]'}`}
+            className={`grid items-start gap-6 ${focus ? '' : 'xl:grid-cols-[minmax(0,1.7fr)_minmax(290px,1fr)]'}`}
           >
             <div className="min-w-0 space-y-6">
               <section
-                className="relative overflow-hidden rounded-3xl border border-c-blue/15 bg-gradient-to-br from-c-blue-soft via-white to-white p-6 sm:p-7"
+                className="relative isolate overflow-hidden rounded-3xl bg-[#18365e] p-6 text-white sm:p-8"
                 data-section="reading"
               >
-                <div className="mb-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-c-blue">
-                  <Sparkles size={14} /> Your next small win
-                </div>
-                <div className="flex items-center gap-5">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-24 -top-32 -z-10 h-96 w-96 rounded-full border-[50px] border-white/[0.035]"
+                />
+                <div className="flex items-center gap-5 sm:gap-8">
                   <div className="min-w-0 flex-1">
-                    <h2 className="max-w-md text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+                    <p className="mb-4 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/70">
+                      <span className="h-1.5 w-1.5 rounded-full bg-c-yellow" />
+                      {reading ? 'Continue your chapter' : 'Your next chapter'}
+                    </p>
+                    <h2 className="max-w-md !text-2xl !font-semibold !leading-snug !tracking-tight !text-white sm:!text-[28px]">
                       {reading
                         ? reading.book.title
-                        : 'Make today a good day to start.'}
+                        : 'A little curiosity. A new possibility.'}
                     </h2>
-                    <p className="mt-3 text-sm leading-6 text-c-text-muted">
+                    <p className="mt-3 line-clamp-2 max-w-sm text-xs leading-6 text-white/65">
                       {reading?.chapter
-                        ? `Up next: ${reading.chapter.title}`
+                        ? reading.chapter.title
                         : reading
-                          ? 'Your next chapter is waiting. Pick up where you left off.'
-                          : 'Choose something you’re curious about. Turn one chapter into a new skill.'}
+                          ? 'Pick up where you left off.'
+                          : 'Find a book. Learn something new. Put it to work.'}
                     </p>
                     {reading && (
-                      <div className="mt-5 flex items-center gap-3">
+                      <div className="mt-5 flex max-w-sm items-center gap-3">
                         <ProgressBar
                           value={reading.progress}
                           size="sm"
                           className="flex-1"
+                          color="yellow"
                         />
-                        <span className="text-xs font-semibold text-c-blue">
+                        <span className="text-xs font-medium text-white/80">
                           {Math.round(reading.progress)}%
                         </span>
                       </div>
                     )}
                     <Button
-                      className="mt-6"
+                      variant="yellow"
+                      className="mt-6 !rounded-xl !text-xs"
                       to={reading ? `/read/${reading.book.slug}` : '/library'}
                       icon={ArrowRight}
                       iconPosition="right"
@@ -387,25 +393,30 @@ export default function Dashboard() {
                       {reading ? 'Continue learning' : 'Explore the library'}
                     </Button>
                   </div>
-                  {reading && (
-                    <div className="hidden h-36 w-24 shrink-0 -rotate-6 overflow-hidden rounded-xl shadow-md sm:block">
-                      <BookCover
+                  <div className="hidden shrink-0 sm:block">
+                    {reading ? (
+                      <LibraryBookCover
                         book={reading.book}
-                        compact
-                        className="h-full w-full"
+                        className="h-44 w-28 -rotate-6 rounded-md shadow-xl"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div
+                        aria-hidden="true"
+                        className="relative flex h-36 w-28 -rotate-6 items-center justify-center rounded-r-2xl border-l-8 border-c-blue bg-white/10 shadow-xl"
+                      >
+                        <BookOpen
+                          size={44}
+                          strokeWidth={1}
+                          className="text-white/80"
+                        />
+                        <span className="absolute -top-2 right-4 h-9 w-4 rounded-b-sm bg-c-yellow" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </section>
-              <MyLearning />
               <section className={panel}>
-                <Heading
-                  title="On your radar"
-                  detail="Your assigned tasks, with the closest deadlines first."
-                  to="/projects"
-                  label="Workspace"
-                />
+                <Heading title="Your tasks" to="/projects" label="Workspace" />
                 <div
                   className="mb-4 flex flex-wrap gap-2"
                   aria-label="Task filters"
@@ -469,12 +480,12 @@ export default function Dashboard() {
                     <div>
                       <p className="text-sm font-semibold">
                         {taskFilter === 'all'
-                          ? 'A little breathing room.'
+                          ? 'You are all caught up'
                           : 'Nothing here right now.'}
                       </p>
                       <p className="mt-1 text-xs leading-5 text-c-text-muted">
                         {taskFilter === 'all'
-                          ? 'No open tasks assigned to you. Pick your next challenge in Projects.'
+                          ? 'Your next task will appear here.'
                           : 'Try a different filter to see your other tasks.'}
                       </p>
                     </div>
@@ -489,10 +500,7 @@ export default function Dashboard() {
               </section>
               {!focus && (
                 <section>
-                  <Heading
-                    title="Keep building"
-                    detail="Your most recent projects, within easy reach."
-                  />
+                  <Heading title="Your projects" to="/projects" />
                   <div
                     className="grid gap-4 sm:grid-cols-2"
                     data-section="projects"
@@ -505,7 +513,7 @@ export default function Dashboard() {
                         to="/projects/new"
                         className="col-span-full flex items-center justify-between rounded-2xl border border-dashed border-c-blue/30 p-6 text-sm text-c-blue"
                       >
-                        Give your next idea a home.
+                        Start your first project
                         <Plus size={20} />
                       </Link>
                     )}
@@ -513,17 +521,11 @@ export default function Dashboard() {
                 </section>
               )}
             </div>
-            <aside className="min-w-0 space-y-6">
-              <FocusTimer key={me.id} userId={me.id} />
+            <aside className={`min-w-0 space-y-6 ${focus ? 'hidden' : ''}`}>
               {!focus && (
                 <>
                   <section className={panel}>
-                    <Heading
-                      title="Your circle"
-                      detail="A direct line to the people you build with."
-                      to="/messages"
-                      label="Inbox"
-                    />
+                    <Heading title="Your circle" to="/messages" label="Inbox" />
                     {inbox.isPending && <Skeleton height="80px" />}
                     {inbox.isError && (
                       <p role="alert" className="text-sm text-c-text-muted">
@@ -543,7 +545,7 @@ export default function Dashboard() {
                           className="mx-auto text-c-blue"
                         />
                         <p className="mt-3 text-sm font-semibold">
-                          Find your people.
+                          Better together
                         </p>
                         <p className="mt-2 text-xs leading-5 text-c-text-muted">
                           Connect with a peer to start your first conversation.
@@ -604,8 +606,9 @@ export default function Dashboard() {
                   </section>
                   <section className={panel} data-section="weekly-xp">
                     <Heading
-                      title="Small steps add up"
-                      detail="Your XP over the last 7 days."
+                      title="This week"
+                      to="/leaderboard"
+                      label="Leaderboard"
                     />
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold">
@@ -890,10 +893,6 @@ export default function Dashboard() {
           )}
         </>
       )}
-      <p className="flex items-center justify-center gap-2 pb-2 text-[11px] text-c-text-muted">
-        <Target size={13} /> Progress is a practice. Make a little space for it
-        today.
-      </p>
     </div>
   )
 }
