@@ -24,7 +24,7 @@ npm --prefix CoLearner run build
 
 ## Supabase cloud changes
 
-All 44 repository migrations, including the eight `20260920100000` through `20260920100700` migrations, are applied to the linked project. The migration dry run reports no pending changes and linked database lint reports no errors.
+All 46 repository migrations, through `20260920111000`, are applied to the linked project. The migration dry run reports no pending changes and linked database lint reports no errors.
 
 For subsequent reviewed changes, use the cloud workflow; Docker is unnecessary:
 
@@ -32,7 +32,7 @@ For subsequent reviewed changes, use the cloud workflow; Docker is unnecessary:
 supabase link --project-ref ghjdpcvnzclfvyosfhoz
 supabase db push --linked --dry-run --skip-vault
 supabase db push --linked --yes --skip-vault
-supabase functions deploy account contact book-library book-worker --use-api --no-verify-jwt
+supabase functions deploy account contact book-library book-worker voice-ice --use-api --no-verify-jwt
 ```
 
 The functions validate authentication/authorization internally. `contact` intentionally accepts public, rate-limited submissions. The worker checks its private scheduling credential. CORS supports browser clients without credential cookies; it does not grant data access. RLS, validated bearer tokens and function authorization enforce access. Service-role keys stay in server environments and maintenance scripts.
@@ -56,11 +56,11 @@ Immediate email signup is preserved as previously requested. The restricted Supa
 
 - Book generation requires server-only `GEMINI_API_KEY` and `AI_MODEL`. They are currently absent. Use the ignored `.env.ai` and [book runbook](BOOK_LEARNING.md); never use `VITE_` names for these secrets. Embeddings, retrieval, document processing and progress work and were tested against the cloud. Answers and summaries currently show the honest unconfigured state. Provider-adapter citation validation tests pass, but do not prove live generation.
 - Group voice uses a small WebRTC audio mesh capped at eight participants. Three browsers exchanged real audio in the demo test. Group membership protects signaling and roster access; leaving or losing membership releases the microphone. Navigating away ends the group call.
-- Both private and group calls currently use STUN. A TURN service with short-lived credentials from an authenticated server endpoint is still needed for restrictive NAT/firewall coverage. No TURN provider or secret is available, so relay provisioning and testing remain unfinished. Do not put long-lived TURN credentials in the frontend. Text chat continues when calls fail.
-- Notification sound requires browser audio permission/user interaction and follows the saved preference. Popups are in-app; there is no new OS push notification service. Signed media URLs remain valid until their short expiry even after access changes.
+- Both private and group calls use an authenticated `voice-ice` endpoint. Direct STUN calling is active; Cloudflare and generic coturn REST credentials are supported server-side. A provider account/secret still needs to be configured for restrictive networks. See [VOICE_SETUP.md](VOICE_SETUP.md) for exact variables and testing. No live TURN allocation has been verified.
+- Incoming private calls have an opt-in browser notification and a single-tab ringtone while the app remains open. Notifications and sound remain subject to browser/OS permissions. The service worker handles call actions; it is not a closed-browser Web Push service. Signed media URLs remain valid until their short expiry even after access changes.
 
 ## Verification and rollback
 
-See [COMPLETION_REPORT.md](COMPLETION_REPORT.md) for the exact checklist and tests. Live tests create disposable accounts/content and remove them afterward. Run browser suites sequentially using isolated Chrome CDP on port 9224 and Vite on port 5176; voice tests require the fake-media launch flags documented in [VOICE_CALLS.md](VOICE_CALLS.md). Tests must never attach to a personal browsing session. To check production bundles, run `npm --prefix CoLearner run preview -- --host 127.0.0.1 --port 4177` and then `node supabase/scripts/verify-production-ui.mjs`.
+See [ADDITIONAL_FIXES_REPORT.md](ADDITIONAL_FIXES_REPORT.md) for the latest checklist and tests, and [COMPLETION_REPORT.md](COMPLETION_REPORT.md) for the preceding functionality release. Live tests create disposable accounts/content and remove them afterward. Run browser suites sequentially using isolated Chrome CDP on port 9224 and Vite on port 5176; voice tests require the fake-media launch flags documented in [VOICE_CALLS.md](VOICE_CALLS.md). Tests must never attach to a personal browsing session. To check production bundles, run `npm --prefix CoLearner run preview -- --host 127.0.0.1 --port 4177` and then `node supabase/scripts/verify-production-ui.mjs`.
 
 After hosting is configured, verify deep links, OAuth, a real reset email, database writes, media upload, realtime messages and audio from two separate networks on the actual HTTPS domain. Database changes in this delivery are additive except for reviewed function replacements and policy/grant changes. Keep backups and use forward migrations for fixes; do not reset the linked database. Roll back the frontend to a known commit if necessary and preserve the existing Django archive until retirement is separately approved.

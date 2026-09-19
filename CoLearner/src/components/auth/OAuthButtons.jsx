@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Code2 } from 'lucide-react'
+import { GitHubMark } from '../ui/BrandMarks'
 import { Button } from '../ui'
 import { supabase } from '../../services/supabase/client'
 import { useAuthStore } from '../../store/authStore'
@@ -63,7 +63,7 @@ export default function OAuthButtons({
         <Button
           type="button"
           variant="outline"
-          icon={Code2}
+          icon={GitHubMark}
           disabled={disabled || !!busy}
           loading={busy === 'github'}
           onClick={() => start('github')}

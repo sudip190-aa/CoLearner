@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Check,
   Clock3,
-  Code2,
   ExternalLink,
   Flame,
   Globe2,
@@ -14,7 +13,6 @@ import {
   Share2,
   Trophy,
   UserPlus,
-  Users,
 } from 'lucide-react'
 import {
   Avatar,
@@ -32,6 +30,8 @@ import { useAuthStore } from '../store/authStore'
 import ProfileShowcase from '../components/profile/ProfileShowcase'
 
 import ThemeToggle from '../components/ui/ThemeToggle'
+import { GitHubMark, LinkedInMark } from '../components/ui/BrandMarks'
+import { externalUrl } from '../lib/externalUrl'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -411,7 +411,7 @@ export default function PublicProfile() {
             <Stat label="Badges" value={stats.badgesCount} icon={Trophy} />
             <Stat
               label="Day streak"
-              value={`${stats.streakDays} days`}
+              value={`${stats.streakDays} ${stats.streakDays === 1 ? 'day' : 'days'}`}
               icon={Flame}
               accent
             />
@@ -591,43 +591,26 @@ function availabilityLabel(value) {
   )
 }
 function SocialLinks({ links }) {
-  return (
-    <>
-      {links?.github && (
-        <a
-          href={links.github}
-          target="_blank"
-          rel="noreferrer"
-          className="text-c-text-muted hover:text-c-blue"
-          aria-label="GitHub"
-        >
-          <Code2 className="h-5 w-5" />
-        </a>
-      )}
-      {links?.linkedin && (
-        <a
-          href={links.linkedin}
-          target="_blank"
-          rel="noreferrer"
-          className="text-c-text-muted hover:text-c-blue"
-          aria-label="LinkedIn"
-        >
-          <Users className="h-5 w-5" />
-        </a>
-      )}
-      {links?.website && (
-        <a
-          href={links.website}
-          target="_blank"
-          rel="noreferrer"
-          className="text-c-text-muted hover:text-c-blue"
-          aria-label="Website"
-        >
-          <Globe2 className="h-5 w-5" />
-        </a>
-      )}
-    </>
-  )
+  return [
+    ['github', 'GitHub', GitHubMark],
+    ['linkedin', 'LinkedIn', LinkedInMark],
+    ['website', 'Website', Globe2],
+  ].map(([key, label, Icon]) => {
+    const href = externalUrl(links?.[key])
+    return href ? (
+      <a
+        key={key}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        title={label}
+        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-c-border text-c-text-muted transition-colors hover:border-c-blue/30 hover:bg-c-blue-soft hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+      >
+        <Icon className="h-[18px] w-[18px]" />
+      </a>
+    ) : null
+  })
 }
 function SectionTitle({ eyebrow, title, className = '' }) {
   return (

@@ -1,5 +1,7 @@
 # CoLearn functionality and UX completion report
 
+This records the preceding functionality release. For the subsequent voice playback, background ringing, reader and branding fixes, see [ADDITIONAL_FIXES_REPORT.md](ADDITIONAL_FIXES_REPORT.md) and [VOICE_SETUP.md](VOICE_SETUP.md).
+
 Verified on 2026-09-20 against the linked cloud project `ghjdpcvnzclfvyosfhoz`. This report covers the complete functionality request, not only its visual changes. External production checks are explicitly marked below.
 
 ## Architecture reviewed

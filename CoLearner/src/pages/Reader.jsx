@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
-  ArrowRight,
   Bookmark,
   BookmarkCheck,
   Check,
@@ -322,7 +321,7 @@ export default function Reader() {
 
   const goToChapter = useCallback(
     (index) => {
-      if (!book) return
+      if (!book || completing) return
       const nextIndex = Math.max(0, Math.min(index, book.chapters.length - 1))
       if (nextIndex === currentIndex) return
       setPdfPage(
@@ -341,7 +340,7 @@ export default function Reader() {
         },
       )
     },
-    [book, currentIndex, navigate],
+    [book, currentIndex, navigate, completing],
   )
 
   // A toggle sent twice cancels itself out, so a second press while one is pending is dropped.
@@ -459,12 +458,15 @@ export default function Reader() {
     })
 
   const complete = async () => {
-    if (!book || !chapter || completing) return
+    if (!book || !chapter || completing || chapter.isCompleted) return
     setCompleting(true)
     try {
       const result = await books.saveProgress(book.slug, chapter.id, {
         completed: true,
       })
+      const search = new URLSearchParams(location.search)
+      search.set('chapter', chapter.order)
+      navigate({ search: `?${search}` }, { replace: true })
       // Reflect the server's answer locally: chapter ticks, book percent, resume pointer.
       setBook((current) => ({
         ...current,
@@ -492,8 +494,6 @@ export default function Reader() {
           xpAwarded: result.xpAwarded,
           badgesEarned: result.badgesEarned,
         })
-      } else if (currentIndex < book.chapters.length - 1) {
-        goToChapter(currentIndex + 1)
       }
     } catch (requestError) {
       toast.error(errorMessage(requestError, 'Could not save your progress'))
@@ -515,7 +515,7 @@ export default function Reader() {
   if (!book || !chapter) return <ReaderSkeleton />
   const isLast = currentIndex === book.chapters.length - 1
   return (
-    <div className="min-h-screen bg-c-surface text-c-text">
+    <div data-reader className="min-h-screen bg-c-surface text-c-text">
       <header className="sticky top-0 z-30 border-b border-c-border bg-c-surface">
         <div className="flex h-14 items-center gap-1.5 px-2 sm:gap-3 sm:px-4">
           <Link
@@ -527,12 +527,18 @@ export default function Reader() {
           </Link>
           <Logo variant="mark" size="xs" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-c-text">
+            <p
+              title={book.title}
+              className="truncate text-sm font-semibold text-c-text"
+            >
               {book.title}
             </p>
-            <p className="text-[11px] text-c-text-muted">
-              Chapter {chapterNumber} of {book.chapters.length} ·{' '}
-              {book.progress}% of the book complete
+            <p className="truncate text-[11px] text-c-text-muted">
+              Chapter {chapterNumber} / {book.chapters.length}
+              <span className="hidden sm:inline">
+                {' '}
+                · {book.progress}% complete
+              </span>
             </p>
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1">
@@ -600,7 +606,7 @@ export default function Reader() {
             onClick={() => setDrawerOpen(false)}
           />
         )}
-        <main className="min-w-0 flex-1 px-5 pb-28 pt-12 sm:px-8">
+        <main className="min-w-0 flex-1 px-5 pb-36 pt-12 sm:px-8">
           <article
             ref={contentRef}
             aria-busy={!chapterData || !positionReady}
@@ -662,39 +668,58 @@ export default function Reader() {
           saving={noteSaving}
         />
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-c-border bg-c-surface/95 px-4 py-3 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2">
+      <nav
+        aria-label="Chapter navigation"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-c-border bg-c-surface/95 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-6"
+      >
+        <div className="mx-auto grid max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-6">
           <Button
             variant="ghost"
-            size="sm"
+            className="min-h-11 justify-self-start !px-2 sm:!px-4"
             icon={ChevronLeft}
+            aria-label="Previous chapter"
             onClick={() => goToChapter(currentIndex - 1)}
-            disabled={currentIndex === 0}
+            disabled={currentIndex === 0 || completing}
           >
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Button>
-          <Button size="sm" onClick={complete} loading={completing}>
-            {chapter.isCompleted
-              ? isLast
-                ? 'Chapter completed'
-                : 'Continue'
-              : isLast
-                ? 'Finish chapter'
-                : 'Mark complete & continue'}{' '}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+          <div className="flex min-w-0 flex-col items-center gap-1.5">
+            <span className="text-[10px] font-medium text-c-text-muted">
+              Chapter {chapterNumber} of {book.chapters.length}
+            </span>
+            {chapter.isCompleted ? (
+              <span
+                role="status"
+                aria-label="Chapter completed"
+                className="inline-flex min-h-11 min-w-40 items-center justify-center gap-2 rounded-xl border border-c-success/20 bg-c-success-soft px-4 text-sm font-semibold text-c-success"
+              >
+                <Check className="h-4 w-4" aria-hidden="true" /> Completed
+              </span>
+            ) : (
+              <Button
+                className="min-h-11 min-w-40"
+                icon={Check}
+                onClick={complete}
+                loading={completing}
+                disabled={!chapterData || !!chapterError}
+              >
+                {completing ? 'Saving…' : 'Mark complete'}
+              </Button>
+            )}
+          </div>
           <Button
             variant="ghost"
-            size="sm"
+            className="min-h-11 justify-self-end !px-2 sm:!px-4"
             icon={ChevronRight}
             iconPosition="right"
+            aria-label="Next chapter"
             onClick={() => goToChapter(currentIndex + 1)}
-            disabled={isLast}
+            disabled={isLast || completing}
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
           </Button>
         </div>
-      </div>
+      </nav>
       {selection && (
         <button
           type="button"
@@ -708,7 +733,7 @@ export default function Reader() {
           Save as note
         </button>
       )}
-      <div className="fixed bottom-24 right-4 z-30 sm:right-6">
+      <div className="fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-4 z-30 sm:right-6">
         <Button size="sm" onClick={() => setAssistantOpen(true)}>
           Ask this book
         </Button>

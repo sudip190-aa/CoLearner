@@ -36,7 +36,11 @@ export function VoiceCallProvider({ children }) {
   const [state, setState] = useState({ phase: 'idle' })
   useEffect(() => {
     if (!me) return
-    const instance = new VoiceCalls(me, setState)
+    const instance = new VoiceCalls(
+      me,
+      setState,
+      () => useAuthStore.getState().user?.notificationSound !== false,
+    )
     // Lifecycle ownership stays outside render; teardown closes every media resource.
     void instance.start().then(() => {
       if (!instance.disposed) {
@@ -81,6 +85,15 @@ export function VoiceCallProvider({ children }) {
               <p className="mt-1 text-sm text-c-text-muted">
                 Connected on CoLearn
               </p>
+              {state.ringBlocked && (
+                <button
+                  type="button"
+                  onClick={() => controller.alerts.unlock()}
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-c-blue hover:bg-c-blue-soft"
+                >
+                  <Volume2 size={15} /> Enable ringtone
+                </button>
+              )}
               <div className="mt-7 flex w-full gap-3">
                 <Button
                   className="flex-1"
@@ -136,6 +149,18 @@ export function VoiceCallProvider({ children }) {
                   <Volume2 size={16} />
                   Enable call audio
                 </button>
+              )}
+              {state.phase === 'connected' && !state.audioBlocked && (
+                <div className="mt-4 flex items-center gap-3 text-[11px] text-c-text-muted">
+                  <span>Incoming audio</span>
+                  <meter
+                    aria-label="Incoming audio level"
+                    min="0"
+                    max="1"
+                    value={state.remoteLevel || 0}
+                    className="h-2 min-w-0 flex-1"
+                  />
+                </div>
               )}
               <div className="mt-5 flex gap-3">
                 <Button

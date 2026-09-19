@@ -1,0 +1,96 @@
+# CoLearn: voice, reader and branding verification
+
+Date: 2026-09-20. Supabase project: `ghjdpcvnzclfvyosfhoz`.
+
+## Changes
+
+Private and project calls now share remote audio playback that accepts streamless tracks, detects blocked playback and offers an explicit recovery control. A playing participant cannot hide another participant's blocked-output warning. Native audio output and decoded sample levels are checked separately from WebRTC connection status. Private calls renegotiate ICE after interruption and report an immediate decline correctly even when setup is still in flight.
+
+Project signaling previously advanced a cursor before successful processing and could lose delayed or failed messages. It now replays a bounded window, retries pending signals, distinguishes negotiation generations, and has an independent connection/heartbeat watchdog. Users can cancel a pending microphone request. Leaving, refresh, microphone loss and membership removal release media resources. Starting an empty project call notifies enrolled teammates.
+
+Incoming private calls have a ringtone, opt-in browser notifications and Answer/Decline handling. One tab owns the sound. All terminal call states close the notification and stop ringing. Settings explains that CoLearn must remain open. Browser notification actions are handled by a small service worker with no cache, push subscription or stored credentials.
+
+The reader's completion control has a visible saved state and separate chapter navigation. Mobile header text stays on one line, and notifications/toasts clear the chapter controls. Branding uses a proportionate, slightly smaller white logo in dark mode, recognizable GitHub/LinkedIn marks and safe per-user social URLs. Signup and password forms use clearer placeholders; labels, validation and signup behavior are preserved. Development refresh reuses the React root.
+
+## Progressive checkpoints
+
+| Checkpoint             | Result                                                                                                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A: private voice       | Passed with two accounts, real synthetic audio, playback, ICE restart, mute, decline, cleanup, device ownership and permission errors.                                |
+| B: project voice       | Passed with three accounts, all six audio directions, streamless tracks, signaling retry, rejoin, refresh, removal, canceled permission prompts and watchdog cleanup. |
+| C: background/ringtone | Passed with unfocused receiver tabs, a real browser notification, one ringtone owner, answer/reject/cancel/expiry cleanup, and blocked-playback recovery.             |
+| D: reader              | Passed saved completion, refresh, next/previous navigation, progress, desktop/mobile and both themes.                                                                 |
+| E: branding/forms      | Passed desktop/tablet/mobile, both themes, per-user links, hidden empty links and signup wording.                                                                     |
+| F: full regression     | Passed 30 integration/browser suites, 23 unit tests, lint, production build/smoke tests, migration parity and database lint.                                          |
+
+## Required checklist
+
+“Passed” for audio means actual WebRTC transport and browser playback using synthetic microphone input in isolated Chromium sessions. It does not mean a human listened on separate physical devices or that TURN relaying has been tested.
+
+| #   | Requirement                           | Verification                                                                                                                                                                                               |
+| --- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Project group voice works             | Passed A/B/C mesh test; physical network test remains external.                                                                                                                                            |
+| 2   | Microphone audio is transmitted       | Passed outbound packets and remote audio energy.                                                                                                                                                           |
+| 3   | Remote participant audio is received  | Passed inbound energy, playing output and decoded levels.                                                                                                                                                  |
+| 4   | Multiple participants hear each other | Passed all six directions for three users.                                                                                                                                                                 |
+| 5   | Private voice still works             | Passed private-call regression.                                                                                                                                                                            |
+| 6   | Background incoming calls             | Passed unfocused open-tab delivery; closed/frozen browser limitations documented.                                                                                                                          |
+| 7   | Ringtone works                        | Passed oscillator playback with browser audio permission.                                                                                                                                                  |
+| 8   | Ringtone stops correctly              | Passed answer, rejection, cancellation and expiry.                                                                                                                                                         |
+| 9   | No duplicate ringtone                 | Passed two receiving tabs with one lock owner.                                                                                                                                                             |
+| 10  | Call errors recover                   | Passed permission, device, disconnect, timeout/watchdog and late permission cleanup.                                                                                                                       |
+| 11  | Unauthorized project access denied    | Passed live PostgreSQL/RLS/RPC checks, including removal and relay access.                                                                                                                                 |
+| 12  | Mark Complete UI fixed                | Passed responsive/theme control checks.                                                                                                                                                                    |
+| 13  | Completion persists                   | Passed saved database state, refresh and chapter navigation.                                                                                                                                               |
+| 14  | Dark logo is white/light              | Passed computed filter and visual review.                                                                                                                                                                  |
+| 15  | Logo size/aspect ratio                | Passed desktop, tablet and mobile dimensions.                                                                                                                                                              |
+| 16  | Genuine GitHub mark                   | Bootstrap Icons GitHub mark; licensed asset attribution included.                                                                                                                                          |
+| 17  | Genuine LinkedIn mark                 | Bootstrap Icons LinkedIn mark; licensed asset attribution included.                                                                                                                                        |
+| 18  | Website icon                          | Recognizable globe retained.                                                                                                                                                                               |
+| 19  | Correct user's social URLs            | Passed separate profiles, safe external targets and empty-link handling.                                                                                                                                   |
+| 20  | Clear signup placeholders             | Passed all existing signup fields without changing validation.                                                                                                                                             |
+| 21  | Major form placeholders reviewed      | Reviewed auth, settings, contact, projects, messages and discovery/search forms.                                                                                                                           |
+| 22  | Dark mode reviewed                    | Passed desktop/tablet/mobile pages and desktop/mobile dialogs, including logo, reader, calls and forms.                                                                                                    |
+| 23  | Light mode reviewed                   | Passed the same page and dialog review. The combined theme sweep covers 123 page states and 16 form/dialog states.                                                                                         |
+| 24  | Previous messaging features           | Passed text/image/voice messages, recording cancellation/retry, persisted history, private storage and unread state.                                                                                       |
+| 25  | Reply-to-message                      | Passed persisted private/project replies, locating originals, reload, and cross-conversation access denial.                                                                                                |
+| 26  | Previous project features             | Passed combined filters, latest-first/tied ordering, pagination, invitation/join/enrollment flow, membership and group chat.                                                                               |
+| 27  | Previous notification features        | Passed navigation counters, recipient isolation, mentions, read/resolution cleanup, deduplication and popup placement.                                                                                     |
+| 28  | Authentication                        | Passed immediate signup, login/logout, persisted sessions, protected routes, recovery/confirmation tokens and expired/reused-state rejection. Real email receipt remains external.                         |
+| 29  | GitHub identity                       | Passed provider handoff/client/callback/state and application account isolation; real GitHub consent with two account owners remains external.                                                             |
+| 30  | Learning/book functionality           | Passed library filters/preferences/saves, reader completion, admin review, PDF processing, embeddings, book-scoped retrieval and rate limits. Live AI generation remains unconfigured.                     |
+| 31  | Production build                      | Passed Vite build and authenticated production-bundle routes, theme persistence, mobile library and protected logout checks.                                                                               |
+| 32  | Secrets protected                     | Source scan found no private provider tokens, service-role JWTs or private keys. Environment files remain ignored.                                                                                         |
+| 33  | Full regression completed             | Passed all 30 integration/browser suites. Private/group audio, background alerts and production bundles were rerun after the last playback fix. External production checks remain explicitly listed below. |
+
+## Test evidence
+
+All runs used disposable test accounts, the linked Supabase project, isolated Chromium contexts and a deterministic synthetic microphone WAV. Browser suites ran sequentially. Fixture accounts/content were removed; local reports and screenshots remain under Git-ignored `.dist/`.
+
+| Area                   | Passing evidence                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Voice                  | 18 private-call groups; 8 project-chat/group-call groups; 7 background/theme/playback groups. Real RTP audio energy, native unmuted playback and decoded levels were asserted.                                                                                                                    |
+| Playback recovery      | A focused unit test first reproduced a successful output hiding another blocked output. It passes after the fix; the browser recovery check covers the same mixed-output case with an actual remote track.                                                                                        |
+| Reader and branding    | 11 reader groups and 3 branding groups, including saved completion, refresh/navigation, social URL ownership and responsive white logos.                                                                                                                                                          |
+| Theme review           | 123 page states, 16 form/dialog states and 12 additional incoming/active/group call states across light/dark and desktop/mobile. Screenshots were inspected; no unexpected browser exceptions, failed network responses or horizontal overflow remained.                                          |
+| Existing functionality | Private/project text and replies, recorded voice messages, images/storage, notification counters/deduplication, community mentions, project filters/membership, public profiles, personal showcases, library preferences and progress.                                                            |
+| Cloud integration      | 16 core integration groups including staff CRUD, account administration, RLS, contact submission, password migration and account deactivation. Book tests cover PDF/EPUB uploads, corrupt/traversal rejection, private storage cleanup, embeddings, retrieval, processing retry and usage limits. |
+| Authentication         | Both provider buttons reach the expected Google/GitHub client and callback with OAuth state. Immediate signup, recovery/confirmation token handling, login/logout, protected routes and account isolation pass. Provider-account consent and email receipt are not claimed.                       |
+| Unit tests             | 14 Node tests and 9 Deno tests pass, including library selection, citation validation, safe URLs, notification action routing, mixed audio playback and TURN credential generation.                                                                                                               |
+| Release checks         | ESLint passes. Vite production build passes. Built authenticated deep links, theme persistence, mobile library, logout protection, service-worker JavaScript and license assets pass. All 46 cloud/local migrations match; dry run is up to date and database lint has no errors.                 |
+
+The 30 suites are `verify-voice-calls`, `verify-project-chat-ui`, `verify-call-alerts`, `verify-book-ui`, `verify-branding-ui`, `verify-message-replies-ui`, `verify-navigation-ui`, `verify-showcases-ui`, `verify-social-ui`, `verify-project-feed-ui`, `verify-dashboard-messages`, `verify-voice-messages`, `verify-messaging`, `verify-theme-ui`, `verify-theme-details`, `verify-production-ui`, `verify-voice-ice`, `verify-project-chat`, `verify-message-replies`, `verify-navigation`, `verify-showcases`, `verify-profiles`, `verify-social`, `verify-project-feed`, `verify-book-learning`, `verify-library`, `verify-live`, `verify-oauth`, `verify-auth-links` and `verify-book-files`, under `supabase/scripts/`.
+
+Call ICE restart is tested through real SDP renegotiation after an injected disconnect event. The watchdog test simulates stalled signaling/heartbeat requests and verifies resource cleanup. These do not substitute for changing networks on physical devices. TURN provider responses are unit-tested with stubs; no live relay account is configured.
+
+## Deployment and remaining configuration
+
+Both new migrations are applied and all 46 local/remote versions match. Linked database lint reports no errors. The authenticated `voice-ice` function is deployed. React still uses Supabase directly; Django is retained but not required for normal operation.
+
+TURN has not been provisioned. Direct calls can be tested now on networks that allow them. Cloudflare's free-tier option and a provider-independent coturn option are implemented. Exact credential names, their source, installation command and production tests are in [VOICE_SETUP.md](VOICE_SETUP.md). `.env.turn` is ignored and has not been created with placeholder secrets.
+
+Production still requires the final HTTPS domain/redirect configuration, a configured TURN service, and physical-device tests across networks, including a call longer than ten minutes and target-browser notification behavior. Native notification action routing has unit coverage; physical OS notification-button behavior is platform-dependent.
+
+The existing user choices are preserved: immediate signup and Supabase's restricted test email sender. The recovery-email test recipient was rejected with `email_address_invalid`; the form displayed that outcome correctly. Generated recovery links exercised the actual reset flow, but this does not prove real mailbox delivery. Public email delivery needs SMTP. Live book AI answers/summaries require server-side `GEMINI_API_KEY` and `AI_MODEL`; document ingestion, retrieval and progress pass independently. No external OAuth account consent, physical microphone listening, live TURN allocation or public frontend hosting deployment is claimed.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment details. Git verification and the pushed commit will be reported with the final delivery.

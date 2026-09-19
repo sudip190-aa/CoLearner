@@ -76,7 +76,8 @@ export function ToastContainer({ toasts, onDismiss }) {
 
   return createPortal(
     <div
-      className="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"
+      data-toast-viewport
+      className="fixed bottom-5 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2.5 pointer-events-none sm:right-5"
       aria-live="polite"
     >
       {toasts.map((item) => {

@@ -11,6 +11,11 @@ const person = (n) => (n.actor?.username ? `/u/${n.actor.username}` : '/people')
 
 // phrase: text that follows the actor's name; `label` (the target's title) is appended when there is one.
 const VERBS = {
+  project_call: {
+    phrase: 'started a team voice call in',
+    to: (n) =>
+      n.target?.slug ? `/projects/${n.target.slug}/chat` : '/projects',
+  },
   project_message: {
     phrase: 'messaged your project',
     to: (n) =>

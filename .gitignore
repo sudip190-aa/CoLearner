@@ -28,3 +28,4 @@ Thumbs.db
 .dist/
 .env.oauth
 .env.ai
+.env.turn

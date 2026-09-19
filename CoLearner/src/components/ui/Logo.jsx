@@ -24,12 +24,12 @@ const INK_BOX = { x: 281, y: 793, w: 1716, h: 773 }
 
 // Requested *visible* height of the lockup, in px.
 const SIZE_MAP = {
-  xs: { height: 20, textClass: 'text-sm' },
-  sm: { height: 24, textClass: 'text-base' },
-  md: { height: 32, textClass: 'text-xl' },
-  nav: { height: 40, textClass: 'text-2xl' },
-  lg: { height: 48, textClass: 'text-2xl' },
-  xl: { height: 64, textClass: 'text-3xl' },
+  xs: { height: 18, textClass: 'text-sm' },
+  sm: { height: 22, textClass: 'text-base' },
+  md: { height: 28, textClass: 'text-xl' },
+  nav: { height: 36, textClass: 'text-2xl' },
+  lg: { height: 42, textClass: 'text-2xl' },
+  xl: { height: 56, textClass: 'text-3xl' },
 }
 
 /** Renders the pristine logo.png with its transparent margin cropped away. */
@@ -49,7 +49,7 @@ function LockupImage({ height, priority }) {
         draggable="false"
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
-        className="absolute max-w-none select-none"
+        className="absolute max-w-none select-none dark:brightness-0 dark:invert"
         style={{
           width: imgSize,
           height: imgSize,

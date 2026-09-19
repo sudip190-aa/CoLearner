@@ -138,6 +138,7 @@ const snapshot = async (name, width, height) => {
     format: "png",
     captureBeyondViewport:
       !name.startsWith("book-reader") &&
+      !name.startsWith("reader-completed") &&
       !name.startsWith("book-assistant") &&
       !name.startsWith("admin-book"),
   });
@@ -293,8 +294,34 @@ try {
   await evaluate(
     "Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('Mark complete')).click()",
   );
+  await wait("!!document.querySelector('[aria-label=\"Chapter completed\"]')");
+  await snapshot("reader-completed-light-mobile", 390, 844);
+  assert(
+    await evaluate(
+      "(()=>{const nav=document.querySelector('nav[aria-label]').getBoundingClientRect();return [...document.querySelectorAll('[data-toast-viewport],[data-notification-popup]')].every(el=>{const r=el.getBoundingClientRect();return r.bottom<=nav.top||r.width===0})})()",
+    ),
+  );
+  await pause(4500);
+  await snapshot("reader-completed-clear-mobile", 390, 844);
+
+  await evaluate("document.documentElement.classList.add('dark')");
+  await snapshot("reader-completed-dark-mobile", 390, 844);
+  await snapshot("reader-completed-dark-desktop", 1440, 1000);
+  await evaluate("document.documentElement.classList.remove('dark')");
+  await send("Page.reload");
+  await wait("!!document.querySelector('[aria-label=\"Chapter completed\"]')");
+  await evaluate(
+    "document.querySelector('[aria-label=\"Next chapter\"]').click()",
+  );
   await wait(
-    "document.querySelector('h1')?.textContent.includes('Functions') || location.search.includes('chapter=2')",
+    "location.search.includes('chapter=2') && !!document.querySelector('article[aria-busy=false]')",
+  );
+  await evaluate(
+    "document.querySelector('[aria-label=\"Previous chapter\"]').click()",
+  );
+  await wait("!!document.querySelector('[aria-label=\"Chapter completed\"]')");
+  pass(
+    "Mark complete stays visibly completed after refresh and next/previous navigation; mobile and desktop fit both themes",
   );
   await pause(800);
   assert(
@@ -318,9 +345,7 @@ try {
     "document.body.innerText.toLowerCase().includes('continue your chapter') && document.body.innerText.includes('JavaScript Foundations')",
   );
   await snapshot("dashboard-book-learning", 1440, 1000);
-  pass(
-    "Chapter completion advances the reader and appears in the dashboard reading card",
-  );
+  pass("Saved chapter completion appears in the dashboard reading card");
   await send("Page.navigate", { url: origin + "/library" });
   await wait("document.body.innerText.includes('JavaScript Foundations')");
   await send("Page.navigate", { url: origin + "/projects" });

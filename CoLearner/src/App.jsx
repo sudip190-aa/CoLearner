@@ -78,8 +78,10 @@ function App() {
       <VoiceCallProvider>
         <NotificationHub
           navigate={(to) => router.navigate(to)}
-          conversationOpen={
-            pathname === '/messages' || pathname.endsWith('/chat')
+          bottomControlsVisible={
+            pathname === '/messages' ||
+            pathname.endsWith('/chat') ||
+            pathname.endsWith('/read')
           }
         />
         <RouterProvider router={router} />

@@ -195,3 +195,8 @@
     }
   }
 }
+
+/* Keep saved-progress feedback clear of the reader navigation. */
+body:has([data-reader]) [data-toast-viewport] {
+  bottom: calc(7rem + env(safe-area-inset-bottom));
+}

@@ -12,7 +12,7 @@ Voice calls are integrated into the existing Messages conversation header. They 
 - `supabase/migrations/20260919091700_voice_call_concurrency.sql`: consistent locking for heartbeat/allocation races and accepted-connection revocation.
 - `supabase/scripts/verify-voice-calls.mjs`: live authorization and two-browser end-to-end verification with disposable accounts.
 
-No new packages or Edge Functions are required. Django is not involved.
+The authenticated `voice-ice` Edge Function supplies STUN and optional short-lived TURN credentials. No new frontend package is required. Django is not involved. See [VOICE_SETUP.md](VOICE_SETUP.md) for the current configuration and background-call behavior.
 
 ## Signaling and authorization
 
@@ -40,6 +40,8 @@ Realtime caches channel authorization at join. Fresh call UUIDs are used for eve
 Run Vite on `http://127.0.0.1:5176` and a separate Chromium profile with remote debugging on port `9224`, then run from the repository root:
 
 ```text
+node supabase/scripts/create-test-audio.mjs
+# Start Chromium with the flags below, then:
 node supabase/scripts/verify-voice-calls.mjs
 ```
 
@@ -49,18 +51,22 @@ Browser flags used by the test:
 --headless=new --remote-debugging-port=9224
 --user-data-dir=<separate disposable testing directory>
 --use-fake-device-for-media-stream --use-fake-ui-for-media-stream
+--use-file-for-fake-audio-capture=<absolute path to .dist/voice-test.wav>
 --autoplay-policy=no-user-gesture-required
 ```
 
-The test obtains the linked project's keys through the authenticated Supabase CLI, keeps credentials in memory, creates temporary accounts, and deletes them with cascading test data cleanup. It uses distinct browser contexts for Alice and Bob, the real application UI, real WebRTC peer connections and real Supabase authorization. Received RTP packets and nonzero `totalAudioEnergy` verify audio transport in both directions using Chromium's synthetic microphone; this is not a claim of human listening on two physical PCs. Permission/no-device errors are deliberately injected to verify their UI paths. Evidence and screenshots are written under ignored `.dist/`; no production credentials are saved.
+The test obtains the linked project's keys through the authenticated Supabase CLI, keeps credentials in memory, creates temporary accounts, and deletes them with cascading test data cleanup. It uses distinct browser contexts for Alice and Bob, the real application UI, real WebRTC peer connections and real Supabase authorization. Received RTP packets and nonzero `totalAudioEnergy` verify audio transport in both directions using the deterministic synthetic microphone fixture; this is not a claim of human listening on two physical PCs. Permission/no-device errors are deliberately injected to verify their UI paths. Evidence and screenshots are written under ignored `.dist/`; no production credentials are saved.
 
 Verified on 2026-09-19 against linked project `ghjdpcvnzclfvyosfhoz`: 17 check groups passed, including private-channel authorization, impersonation denial, concurrent calls/heartbeats, receiver device ownership, lease expiry, connection revocation, bidirectional audio, mobile layouts, mute/unmute, either-party hang-up, decline, microphone/browser errors, refresh/leaving cleanup, late permission cancellation, and existing text delivery. No unexpected console or network errors occurred; the deliberately rejected overlapping-call request returned the expected HTTP 400. All disposable accounts and their data were removed. Production build and targeted ESLint checks also passed; both migrations are applied remotely.
 
-## Network and browser limits
+## Current network and browser behavior
 
-- The free implementation uses Google's public STUN endpoints (`stun.l.google.com:19302` and `stun1.l.google.com:19302`). It has **no TURN relay**. Restrictive NAT, firewalls and some mobile/corporate networks will prevent direct connectivity. The app times out with an actionable connection error rather than remaining stuck.
-- Reliable production coverage requires a TURN service (self-hosted coturn is an option). Supply **short-lived TURN credentials** from an authenticated server/Edge Function and add them to the peer connection's ICE configuration. Never put a TURN shared secret or Supabase service-role key in `VITE_*` variables or browser code. No TURN service has been silently provisioned or claimed to be configured.
-- A recipient must have CoLearn open; there are no background push calls or OS telephone integration. Browser suspension/sleep may terminate calls. After a crash/offline shutdown, lease expiry can take up to 45 seconds.
-- This release is voice-only, one peer per call: no recording, conferencing, screen sharing or call-history UI. Coordination records are minimal metadata, not a recording or a billing-grade duration log.
+- Private and project calls use STUN by default, with optional server-issued TURN credentials. Direct audio, three-user group audio, decoded output, retries, rejoin and authorization have been checked with separate Chromium accounts. TURN allocation and physical cross-network listening still require a configured relay and real devices.
+- Remote tracks are attached even when `RTCTrackEvent.streams` is empty. Native media playback produces the audio; Web Audio measures decoded levels. Blocked playback exposes an explicit enable-audio control instead of claiming success.
+- Private calls retry ICE negotiation after a temporary disconnect. Project signaling replays a bounded window and retries unsent messages; signal IDs are not treated as commit order. Membership revocation, microphone loss, page exit and bounded timeouts clean up resources.
+- Project calls remain a small audio mesh capped at eight members. Starting an empty project call notifies enrolled teammates, with a cooldown against join/leave spam. No audio is recorded.
+- Incoming private calls support one ringtone across tabs and opt-in browser notifications with action handling. An open, running app is required; frozen/closed browsers do not have a push-call service.
+
+The exact provider variables, credential source, free-tier option, test limitations and production checks are documented in [VOICE_SETUP.md](VOICE_SETUP.md).
 
 References: [Supabase Realtime authorization](https://supabase.com/docs/guides/realtime/authorization), [WebRTC peer connections](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection), [microphone security requirements](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).

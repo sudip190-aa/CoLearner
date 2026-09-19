@@ -132,7 +132,7 @@ export default function Contact() {
                       label="Email"
                       autoComplete="email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="Your email"
                       value={form.email}
                       onChange={(event) => update('email', event.target.value)}
                       error={firstMessage(fieldErrors.email)}

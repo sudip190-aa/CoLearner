@@ -79,7 +79,7 @@ function Popup({ item, dismiss, navigate }) {
 
 export default function NotificationHub({
   navigate,
-  conversationOpen = false,
+  bottomControlsVisible = false,
 }) {
   useNotificationSync()
   useNavigationSync()
@@ -152,6 +152,8 @@ export default function NotificationHub({
     setPopups((items) => [...items, ...fresh.reverse()].slice(-3))
     if (
       user.notificationSound !== false &&
+      !call?.busy &&
+      !fresh.every((item) => item.verb === 'voice_call') &&
       audio.current?.state === 'running' &&
       !document.hidden
     ) {
@@ -167,12 +169,12 @@ export default function NotificationHub({
       tone.start()
       tone.stop(context.currentTime + 0.26)
     }
-  }, [notifications, user])
+  }, [notifications, user, call?.busy])
   return (
     <aside
       aria-label="New notifications"
       aria-live="polite"
-      className={`pointer-events-none fixed right-4 z-[80] w-[calc(100%-2rem)] max-w-[420px] space-y-3 lg:right-6 ${call?.busy || conversationOpen ? 'top-24' : 'bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-6'}`}
+      className={`pointer-events-none fixed right-4 z-[80] w-[calc(100%-2rem)] max-w-[420px] space-y-3 lg:right-6 ${call?.busy || bottomControlsVisible ? 'top-24' : 'bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-6'}`}
     >
       {popups.map((item) => (
         <Popup

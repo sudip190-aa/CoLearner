@@ -70,12 +70,13 @@ export default function Login() {
           label="Email"
           type="email"
           leftIcon={Mail}
-          placeholder="you@example.com"
+          placeholder="Your email"
           error={errors.email?.message}
           {...register('email')}
         />
         <Input
           label="Password"
+          placeholder="Enter your password"
           type={showPassword ? 'text' : 'password'}
           leftIcon={Lock}
           rightIcon={showPassword ? EyeOff : Eye}

@@ -266,6 +266,15 @@ export default function ProjectChat() {
                 Enable audio
               </Button>
             )}
+            {voice.phase === 'joining' && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => void controller.current?.leave()}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
           {!!voice.members.length && (
             <div
@@ -279,6 +288,17 @@ export default function ProjectChat() {
                 >
                   {member.person.full_name}
                   {member.user_id === me ? ' (you)' : ''}
+                  {joined &&
+                    member.user_id !== me &&
+                    voice.connections?.includes(member.user_id) && (
+                      <meter
+                        aria-label={`Audio from ${member.person.full_name}`}
+                        min="0"
+                        max="1"
+                        value={voice.levels?.[member.user_id] || 0}
+                        className="ml-2 inline-block h-2 w-10 align-middle"
+                      />
+                    )}
                 </span>
               ))}
             </div>

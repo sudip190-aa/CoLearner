@@ -157,7 +157,7 @@ async function page(account) {
     source: `window.socialSoundCount=0;const RealAudio=window.AudioContext;window.AudioContext=class extends RealAudio{createOscillator(){window.socialSoundCount++;return super.createOscillator()}}`,
   });
   await cmd("Page.addScriptToEvaluateOnNewDocument", {
-    source: `window.groupTest={pcs:[],tracks:[]};const OriginalPC=window.RTCPeerConnection;window.RTCPeerConnection=class extends OriginalPC {constructor(...a){super(...a);window.groupTest.pcs.push(this)}};const originalMic=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async(...a)=>{const stream=await originalMic(...a);window.groupTest.tracks.push(...stream.getTracks());return stream}`,
+    source: `window.groupTest={pcs:[],tracks:[]};const OriginalPC=window.RTCPeerConnection;window.RTCPeerConnection=class extends OriginalPC {constructor(...a){super(...a);window.groupTest.pcs.push(this)} addTrack(track){return super.addTrack(track)} async setRemoteDescription(sdp){if(window.retryFirstOffer && sdp.type==='offer'){window.retryFirstOffer=false;throw new DOMException('Retry test','OperationError')}return super.setRemoteDescription(sdp)}};const originalMic=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async(...a)=>{const stream=await originalMic(...a);window.groupTest.tracks.push(...stream.getTracks());return stream}`,
   });
   await navigate("/login");
   await wait("!!document.querySelector('input[type=email]')");
@@ -274,6 +274,7 @@ try {
   await C.wait(
     "!!document.querySelector('textarea[aria-label=\"Project message\"]')",
   );
+  for (const P of [A, B, C]) await P.evaluate("window.retryFirstOffer=true");
   await A.click("Start voice call");
   await A.wait("document.body.innerText.includes('Leave call')");
   await B.wait(
@@ -296,6 +297,16 @@ try {
     );
     assert.equal(audio.length, 2);
     assert(
+      await P.evaluate(
+        "[...document.querySelectorAll('audio')].filter(a=>a.srcObject&&!a.paused&&!a.muted).length===2",
+      ),
+    );
+    for (let i = 0; i < 2; i++)
+      await P.wait(
+        `[...document.querySelectorAll('meter')][${i}]?.value>0.001`,
+      );
+
+    assert(
       audio.every((s) => s.sent > 0 && s.received > 0 && s.energy > 0),
       JSON.stringify(audio),
     );
@@ -304,6 +315,37 @@ try {
     "Three-member group voice establishes all mesh connections with bidirectional packets and actual audio energy",
   );
   await A.screenshot("project-group-chat-desktop");
+  for (const theme of ["light", "dark"]) {
+    await A.evaluate(
+      `document.querySelector('[aria-label="Switch to ${theme} mode"]')?.click()`,
+    );
+    for (const width of [1440, 390]) {
+      await A.cmd("Emulation.setDeviceMetricsOverride", {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 768,
+      });
+      await pause(150);
+      assert(
+        await A.evaluate("document.documentElement.scrollWidth<=innerWidth+1"),
+      );
+      assert.equal(
+        await A.evaluate("document.documentElement.dataset.theme"),
+        theme,
+      );
+      await A.screenshot(`project-group-call-${theme}-${width}`);
+    }
+  }
+  await A.cmd("Emulation.setDeviceMetricsOverride", {
+    width: 1440,
+    height: 900,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
+  pass(
+    "Active group voice stays readable and fits desktop/mobile in both themes",
+  );
   await A.evaluate(
     "document.querySelector('[aria-label=\"Mute group microphone\"]').click()",
   );
@@ -311,6 +353,7 @@ try {
   await A.evaluate(
     "document.querySelector('[aria-label=\"Unmute group microphone\"]').click()",
   );
+  const removalNetwork = network.length;
   await ok(
     admin
       .from("project_members")
@@ -329,9 +372,39 @@ try {
     await P.wait(
       "window.groupTest.tracks.every(t=>t.readyState==='ended') && window.groupTest.pcs.every(p=>p.connectionState==='closed')",
     );
+  const removedRequests = network.splice(removalNetwork);
+  assert(
+    removedRequests.every(
+      (r) =>
+        r.status === 403 &&
+        [
+          "/rest/v1/rpc/colearn_project_voice",
+          "/rest/v1/project_voice_signals",
+        ].includes(r.path),
+    ),
+  );
   pass(
     "Group mute, leave, microphone cleanup and removal during an active call work",
   );
+  await A.click("Start voice call");
+  await B.click("Join call");
+  for (const P of [A, B])
+    await P.wait(
+      "groupTest.pcs.filter(p=>p.connectionState==='connected').length===1",
+    );
+  await B.cmd("Page.reload");
+  await A.wait("groupTest.pcs.every(p=>p.connectionState==='closed')");
+  await B.click("Join call");
+  for (const P of [A, B])
+    await P.wait(
+      "groupTest.pcs.filter(p=>p.connectionState==='connected').length===1",
+    );
+  await A.click("Leave call");
+  await B.click("Leave call");
+  pass(
+    "Leave, rejoin, refresh and reconnect create fresh working audio sessions",
+  );
+
   await A.evaluate(
     "(()=>{window.savedMic=navigator.mediaDevices.getUserMedia;navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Denied','NotAllowedError')}})()",
   );
@@ -351,6 +424,27 @@ try {
     "document.querySelector('[role=log]').textContent.includes('Text still works after microphone denial.')",
   );
   await A.evaluate("navigator.mediaDevices.getUserMedia=window.savedMic");
+
+  await A.evaluate(
+    "navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>window.resolveGroupMic=resolve)",
+  );
+  await A.click("Start voice call");
+  await A.click("Cancel");
+  await A.evaluate(
+    "window.savedMic({audio:true}).then(stream=>window.resolveGroupMic(stream))",
+  );
+  await A.wait("groupTest.tracks.every(track=>track.readyState==='ended')");
+  await A.evaluate("navigator.mediaDevices.getUserMedia=window.savedMic");
+  pass(
+    "Canceling a pending group microphone prompt stops a late permission grant",
+  );
+  const health = await A.evaluate(
+    "import('/src/services/projectVoice.js').then(async({ProjectVoice})=>{const results=[];for(const kind of ['signal','heartbeat']){const controller=new ProjectVoice(1,'test',()=>{});controller.action=async()=>({});controller.session='test';controller.lastHeartbeat=Date.now()-(kind==='heartbeat'?40000:0);controller.stream=await navigator.mediaDevices.getUserMedia({audio:true});let closed=false;controller.peers.set('other',{pc:{close(){closed=true}},deadline:kind==='signal'?Date.now()-1:null});controller.syncing=true;controller.heartbeating=true;controller.checkHealth();await new Promise(r=>setTimeout(r,50));results.push(!controller.session&&closed&&controller.state.phase==='idle'&&controller.state.error.includes('Audio could not connect'));controller.dispose()}return results})",
+  );
+  assert.deepEqual(health, [true, true]);
+  pass(
+    "Connection watchdog cleans up even when signaling or heartbeat requests never finish",
+  );
   await A.cmd("Emulation.setDeviceMetricsOverride", {
     width: 390,
     height: 844,

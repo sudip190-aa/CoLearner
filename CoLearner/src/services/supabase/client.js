@@ -65,8 +65,11 @@ export const slug = (title) =>
       .replace(/^-|-$/g, '')
       .slice(0, 160) || 'item'
   }-${crypto.randomUUID().slice(0, 8)}`
-export const edge = async (name, body) => {
-  const { data, error } = await supabase.functions.invoke(name, { body })
+export const edge = async (name, body, timeout) => {
+  const { data, error } = await supabase.functions.invoke(name, {
+    body,
+    timeout,
+  })
   if (error) {
     let message = error.message
     try {

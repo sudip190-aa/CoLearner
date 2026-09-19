@@ -42,7 +42,12 @@ function AccountQueries({ children }) {
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// Reuse the root when Vite refreshes a shared service during development.
+const root =
+  import.meta.hot?.data.root ||
+  ReactDOM.createRoot(document.getElementById('root'))
+if (import.meta.hot) import.meta.hot.data.root = root
+root.render(
   <React.StrictMode>
     <AccountQueries>
       <ToastProvider>

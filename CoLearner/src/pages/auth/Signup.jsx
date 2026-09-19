@@ -133,7 +133,7 @@ export default function Signup() {
         <Input
           label="Full name"
           leftIcon={User}
-          placeholder="Maya Chen"
+          placeholder="Your name"
           error={errors.fullName?.message}
           {...register('fullName')}
         />
@@ -141,14 +141,14 @@ export default function Signup() {
           label="Email"
           type="email"
           leftIcon={Mail}
-          placeholder="you@example.com"
+          placeholder="Your email"
           error={errors.email?.message}
           {...register('email')}
         />
         <Input
           label="Username"
           leftIcon={AtSign}
-          placeholder="maya-chen"
+          placeholder="Choose a username"
           hint={
             usernameState === true
               ? 'Username is available.'
@@ -167,6 +167,7 @@ export default function Signup() {
         <div>
           <Input
             label="Password"
+            placeholder="Create a password"
             type={showPassword ? 'text' : 'password'}
             leftIcon={Lock}
             rightIcon={showPassword ? EyeOff : Eye}

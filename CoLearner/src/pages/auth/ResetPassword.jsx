@@ -88,6 +88,7 @@ export default function ResetPassword() {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <Input
           label="New password"
+          placeholder="Create a new password"
           type="password"
           leftIcon={Lock}
           error={errors.password?.message}
@@ -95,6 +96,7 @@ export default function ResetPassword() {
         />
         <Input
           label="Confirm password"
+          placeholder="Confirm your password"
           type="password"
           leftIcon={Lock}
           error={errors.confirmPassword?.message}

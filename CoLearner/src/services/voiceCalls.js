@@ -1,4 +1,7 @@
 import { supabase, result, mediaUrl } from './supabase/client'
+import { CallAudio } from './callAudio'
+import { voiceIce } from './voiceIce'
+import { CallAlerts } from './callAlerts'
 
 const terminal = new Set(['ended', 'declined', 'unavailable', 'failed'])
 const labels = {
@@ -20,15 +23,15 @@ export function microphoneError(error) {
 // One controller per signed-in app. Device IDs are per page, not shared localStorage.
 // The database arbitrates ownership across tabs, devices and simultaneous callers.
 export class VoiceCalls {
-  constructor(me, update) {
+  constructor(me, update, soundEnabled) {
     this.me = me
     this.update = update
     this.device = crypto.randomUUID()
     this.current = null
     this.disposed = false
-    this.audio = document.createElement('audio')
-    this.audio.autoplay = true
-    this.audio.playsInline = true
+    this.output = new CallAudio((blocked) => {
+      if (this.current) this.emit({ audioBlocked: blocked })
+    })
     this.state = {
       phase: 'idle',
       muted: false,
@@ -39,10 +42,32 @@ export class VoiceCalls {
     this.leave = () => this.leavePage()
     this.offline = () =>
       this.finish('Connection failed. Check your internet connection.', 'fail')
+    this.onVisible = () => {
+      void this.sync()
+    }
+    this.alerts = new CallAlerts(
+      me,
+      (action, id) => {
+        if (this.current?.id !== id || this.state.phase !== 'incoming') return
+        if (action === 'answer') void this.accept()
+        else this.finish('Call declined', 'decline')
+      },
+      (ringBlocked) => this.emit({ ringBlocked }),
+      soundEnabled,
+    )
   }
 
   emit(patch) {
     this.state = { ...this.state, ...patch }
+    this.alerts?.sync({
+      phase: this.state.phase,
+      id: this.current?.id,
+      name:
+        this.state.person?.full_name ||
+        this.state.person?.username ||
+        'Your connection',
+      expiresAt: this.current?.expiresAt,
+    })
     if (!this.disposed) this.update(this.state)
   }
 
@@ -81,6 +106,8 @@ export class VoiceCalls {
     this.poll = setInterval(() => void this.sync(), 5000)
     window.addEventListener('pagehide', this.leave)
     window.addEventListener('offline', this.offline)
+    window.addEventListener('focus', this.onVisible)
+    document.addEventListener('visibilitychange', this.onVisible)
     await this.sync()
   }
 
@@ -142,9 +169,20 @@ export class VoiceCalls {
           id: row.id,
           peer: row.caller_id,
           incoming: true,
+          expiresAt: Date.parse(row.created_at) + 45000,
           timers: [],
           channels: [],
         }
+        const incoming = this.current
+        incoming.timers.push(
+          setTimeout(
+            () => {
+              if (this.current === incoming && this.state.phase === 'incoming')
+                this.finish('Missed call')
+            },
+            Math.max(0, Date.parse(row.created_at) + 45000 - Date.now()),
+          ),
+        )
         this.emit({
           phase: 'incoming',
           person: profile,
@@ -193,6 +231,7 @@ export class VoiceCalls {
     if (this.current || this.disposed) return
     const call = { peer: person.id, timers: [], channels: [] }
     this.current = call
+    void this.output.unlock()
     this.emit({
       phase: 'calling',
       person,
@@ -223,7 +262,7 @@ export class VoiceCalls {
       this.repeat(
         call,
         () => {
-          if (!call.pc.remoteDescription)
+          if (call.pc.signalingState === 'have-local-offer')
             void this.signal(call, {
               kind: 'offer',
               description: call.pc.localDescription.toJSON(),
@@ -238,7 +277,7 @@ export class VoiceCalls {
         }, 45000),
       )
     } catch (error) {
-      if (this.current === call) this.finish(microphoneError(error), 'fail')
+      await this.failCall(call, error, 'fail')
     }
   }
 
@@ -246,8 +285,7 @@ export class VoiceCalls {
     const call = this.current
     if (!call || this.state.phase !== 'incoming') return
     this.emit({ phase: 'connecting' })
-    // Unlock the output element during the user's Accept gesture where supported.
-    void this.audio.play().catch(() => {})
+    void this.output.unlock()
     try {
       if (!(await this.microphone(call))) return
       const row = await this.action(call, 'accept')
@@ -273,9 +311,29 @@ export class VoiceCalls {
         2000,
       )
     } catch (error) {
-      if (this.current === call)
-        this.finish(microphoneError(error), call.accepted ? 'fail' : 'decline')
+      await this.failCall(call, error, call.accepted ? 'fail' : 'decline')
     }
+  }
+
+  async failCall(call, error, operation) {
+    if (this.current !== call) return
+    if (call.id) {
+      try {
+        const row = await result(
+          supabase
+            .from('voice_calls')
+            .select('status')
+            .eq('id', call.id)
+            .maybeSingle(),
+        )
+        if (this.current !== call) return
+        if (!row || terminal.has(row.status))
+          return this.finish(labels[row?.status] || 'Call ended')
+      } catch {
+        /* Report the original setup failure if status is unavailable. */
+      }
+    }
+    if (this.current === call) this.finish(microphoneError(error), operation)
   }
 
   action(call, operation) {
@@ -333,17 +391,15 @@ export class VoiceCalls {
   }
 
   async connect(call) {
+    const configuration = await voiceIce({ callId: call.id })
+    if (this.current !== call) return
     const pc = new window.RTCPeerConnection({
-      iceServers: [
-        {
-          urls: [
-            'stun:stun.l.google.com:19302',
-            'stun:stun1.l.google.com:19302',
-          ],
-        },
-      ],
+      iceServers: configuration.iceServers,
     })
+    call.relayAvailable = configuration.relayAvailable
+    call.configuration = configuration
     call.pc = pc
+    this.repeat(call, () => void this.refreshIce(call), 30000)
     call.candidates = []
     call.serial = Promise.resolve()
     call.stream.getTracks().forEach((track) => pc.addTrack(track, call.stream))
@@ -351,36 +407,34 @@ export class VoiceCalls {
       if (candidate)
         void this.signal(call, { kind: 'ice', candidate: candidate.toJSON() })
     }
-    pc.ontrack = ({ streams }) => {
+    pc.ontrack = ({ track }) => {
       if (this.current !== call) return
-      this.audio.srcObject = streams[0]
-      void this.playAudio()
+      this.output.add('remote', track)
     }
+    this.repeat(
+      call,
+      () => {
+        if (this.current === call)
+          this.emit({ remoteLevel: this.output.level('remote') })
+      },
+      250,
+    )
     pc.onconnectionstatechange = () => {
       if (this.current !== call) return
       if (pc.connectionState === 'connected') {
         clearTimeout(call.disconnectTimer)
+        clearTimeout(call.connectTimer)
+        call.connectTimer = null
         this.emit({
           phase: 'connected',
           connectedAt: this.state.connectedAt || Date.now(),
         })
-      } else if (pc.connectionState === 'failed')
-        this.finish(
-          'Connection failed. Try another network; this network may need a relay server.',
-          'fail',
-        )
-      else if (pc.connectionState === 'disconnected') {
+      } else if (['failed', 'disconnected'].includes(pc.connectionState)) {
         this.emit({ phase: 'reconnecting' })
         clearTimeout(call.disconnectTimer)
-        call.disconnectTimer = setTimeout(
-          () =>
-            this.current === call &&
-            this.finish(
-              'Connection failed. Your connection was interrupted.',
-              'fail',
-            ),
-          12000,
-        )
+        call.disconnectTimer = setTimeout(() => {
+          if (this.current === call) void this.restart(call)
+        }, 2500)
         call.timers.push(call.disconnectTimer)
       }
     }
@@ -449,7 +503,13 @@ export class VoiceCalls {
   async receive(call, message) {
     if (this.current !== call || !message || !call.pc) return
     const pc = call.pc
-    if (message.kind === 'ready' && !call.incoming && pc.localDescription) {
+    if (message.kind === 'restart' && !call.incoming) {
+      await this.restart(call)
+    } else if (
+      message.kind === 'ready' &&
+      !call.incoming &&
+      pc.localDescription
+    ) {
       await this.signal(call, {
         kind: 'offer',
         description: pc.localDescription.toJSON(),
@@ -459,7 +519,7 @@ export class VoiceCalls {
       call.incoming &&
       message.description?.type === 'offer'
     ) {
-      if (!pc.remoteDescription) {
+      if (pc.remoteDescription?.sdp !== message.description.sdp) {
         await pc.setRemoteDescription(message.description)
         for (const candidate of call.candidates.splice(0))
           await pc.addIceCandidate(candidate)
@@ -473,17 +533,25 @@ export class VoiceCalls {
       message.kind === 'answer' &&
       !call.incoming &&
       message.description?.type === 'answer' &&
-      !pc.remoteDescription
+      pc.signalingState === 'have-local-offer'
     ) {
       await pc.setRemoteDescription(message.description)
       for (const candidate of call.candidates.splice(0))
         await pc.addIceCandidate(candidate)
       if (this.current !== call) return
-      if (pc.connectionState !== 'connected') this.emit({ phase: 'connecting' })
+      this.emit({
+        phase: pc.connectionState === 'connected' ? 'connected' : 'connecting',
+      })
       this.connectionTimeout(call)
     } else if (message.kind === 'ice' && message.candidate) {
-      if (pc.remoteDescription) await pc.addIceCandidate(message.candidate)
-      else if (call.candidates.length < 100)
+      if (pc.remoteDescription) {
+        const fragment = message.candidate.usernameFragment
+        if (
+          !fragment ||
+          pc.remoteDescription.sdp.includes(`a=ice-ufrag:${fragment}`)
+        )
+          await pc.addIceCandidate(message.candidate)
+      } else if (call.candidates.length < 100)
         call.candidates.push(message.candidate)
     } else if (message.kind === 'end') {
       // End is best effort for speed; authoritative status also arrives through DB Realtime.
@@ -491,13 +559,59 @@ export class VoiceCalls {
     }
   }
 
-  async playAudio() {
+  async restart(call) {
+    if (this.current !== call || call.restarting) return
+    if (call.pc.connectionState !== 'connected')
+      this.emit({ phase: 'reconnecting' })
+    this.connectionTimeout(call)
+    if (call.incoming) return this.signal(call, { kind: 'restart' })
+    call.restarting = true
     try {
-      await this.audio.play()
-      this.emit({ audioBlocked: false })
+      if (call.pc.signalingState !== 'stable') return
+      await call.pc.setLocalDescription(
+        await call.pc.createOffer({ iceRestart: true }),
+      )
+      if (this.current === call)
+        await this.signal(call, {
+          kind: 'offer',
+          description: call.pc.localDescription.toJSON(),
+        })
     } catch {
-      if (this.current) this.emit({ audioBlocked: true })
+      if (this.current === call)
+        this.finish('Audio could not reconnect. Please call again.', 'fail')
+    } finally {
+      call.restarting = false
     }
+  }
+
+  async refreshIce(call) {
+    if (
+      this.current !== call ||
+      call.refreshing ||
+      !call.configuration.relayAvailable ||
+      Date.now() < call.configuration.expiresAt - 120000
+    )
+      return
+    call.refreshing = true
+    try {
+      const configuration = await voiceIce({ callId: call.id })
+      if (this.current !== call) return
+      call.pc.setConfiguration({ iceServers: configuration.iceServers })
+      call.configuration = configuration
+      if (!call.incoming) await this.restart(call)
+    } catch {
+      if (this.current === call && Date.now() >= call.configuration.expiresAt)
+        this.finish(
+          'The audio relay could not renew this call. Please call again.',
+          'fail',
+        )
+    } finally {
+      call.refreshing = false
+    }
+  }
+
+  playAudio() {
+    return this.output.unlock()
   }
 
   mute() {
@@ -531,14 +645,14 @@ export class VoiceCalls {
       })
       call.channels.forEach((channel) => void supabase.removeChannel(channel))
     }
-    this.audio.pause()
-    this.audio.srcObject = null
+    this.output.close()
     this.emit({
       phase: 'finished',
       message,
       connectedAt: null,
       muted: false,
       audioBlocked: false,
+      remoteLevel: 0,
     })
   }
 
@@ -570,11 +684,14 @@ export class VoiceCalls {
 
   dispose() {
     this.leavePage()
+    this.alerts.dispose()
     this.disposed = true
     clearInterval(this.poll)
     this.authSubscription?.unsubscribe()
     if (this.inbox) void supabase.removeChannel(this.inbox)
     window.removeEventListener('pagehide', this.leave)
     window.removeEventListener('offline', this.offline)
+    window.removeEventListener('focus', this.onVisible)
+    document.removeEventListener('visibilitychange', this.onVisible)
   }
 }

@@ -438,6 +438,9 @@ verify_jwt = false
 [functions.book-worker]
 verify_jwt = false
 
+[functions.voice-ice]
+verify_jwt = false
+
 # Enabled in the linked project dashboard. Secrets stay in Supabase.
 # Supply matching environment secrets before pushing provider configuration.
 [auth.external.google]

@@ -153,13 +153,11 @@ try {
   );
   assert(
     (
-      await c.c
-        .from("project_messages")
-        .insert({
-          project_id: project.id,
-          sender_id: cid,
-          body: "Unauthorized",
-        })
+      await c.c.from("project_messages").insert({
+        project_id: project.id,
+        sender_id: cid,
+        body: "Unauthorized",
+      })
     ).error,
   );
   assert(
@@ -182,14 +180,12 @@ try {
   );
   assert(
     (
-      await a.c
-        .from("project_messages")
-        .insert({
-          project_id: other.id,
-          sender_id: aid,
-          body: "Cross-project reply",
-          reply_to_id: message.id,
-        })
+      await a.c.from("project_messages").insert({
+        project_id: other.id,
+        sender_id: aid,
+        body: "Cross-project reply",
+        reply_to_id: message.id,
+      })
     ).error,
   );
   assert.equal(
@@ -231,6 +227,26 @@ try {
       session: sessions[index],
     });
   await ok(call(a, 0, "join"));
+  const invitations = await ok(
+    service
+      .from("notifications")
+      .select("user_id")
+      .eq("verb", "project_call")
+      .eq("target_id", String(project.id)),
+  );
+  assert.deepEqual(
+    invitations.map((n) => n.user_id),
+    [bid],
+  );
+  assert(
+    !(await b.c.rpc("colearn_voice_ice_access", { project_id: project.id }))
+      .error,
+  );
+  assert(
+    (await c.c.rpc("colearn_voice_ice_access", { project_id: project.id }))
+      .error,
+  );
+
   await ok(call(b, 1, "join"));
   assert((await call(c, 2, "join")).error);
   assert(
@@ -289,6 +305,11 @@ try {
     0,
   );
   assert((await call(b, 1, "heartbeat")).error);
+  assert(
+    (await b.c.rpc("colearn_voice_ice_access", { project_id: project.id }))
+      .error,
+  );
+
   assert((await a.c.from("project_voice_signals").insert(payload)).error);
   await ok(call(a, 0, "leave"));
   pass(

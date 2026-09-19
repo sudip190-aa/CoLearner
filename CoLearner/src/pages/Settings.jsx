@@ -12,6 +12,7 @@ import {
 import { PageHeader } from '../components/layout/PageHeader'
 import { auth } from '../services/api'
 import { useAuthStore } from '../store/authStore'
+import { enableCallNotifications } from '../services/callAlerts'
 
 const tabs = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -90,6 +91,7 @@ function ProfileTab() {
   const [errors, setErrors] = useState({})
   const [formError, setFormError] = useState('')
   const [saving, setSaving] = useState(false)
+  const [callAlerts, setCallAlerts] = useState('')
   const fileInput = useRef(null)
 
   const dirty =
@@ -235,6 +237,34 @@ function ProfileTab() {
           />
           Notification sounds
         </label>
+        <div className="rounded-xl border border-c-border bg-c-blue-wash/40 p-4 sm:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium">Incoming call alerts</p>
+              <p className="mt-1 text-xs leading-5 text-c-text-muted">
+                Get a browser alert when CoLearn is open in another tab.
+              </p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={async () =>
+                setCallAlerts(await enableCallNotifications())
+              }
+            >
+              Enable browser call alerts
+            </Button>
+          </div>
+          {callAlerts && (
+            <p
+              role="status"
+              className="mt-3 text-xs leading-5 text-c-text-muted"
+            >
+              {callAlerts}
+            </p>
+          )}
+        </div>
         <Input
           label="Name"
           value={form.fullName}
@@ -296,7 +326,7 @@ function ProfileTab() {
           label="Website"
           value={form.website}
           error={errors.website}
-          placeholder="https://..."
+          placeholder="https://your-website.com"
           onChange={(event) => update('website', event.target.value)}
         />
       </div>
