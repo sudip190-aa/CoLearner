@@ -8,6 +8,7 @@ import {
 import { useAuthStore } from './store/authStore'
 import { Navbar, Footer, AppShell, AuthLayout } from './components/layout'
 import { PageLoader } from './components/ui'
+import { MarketingLayout } from './components/landing/MarketingLayout'
 
 const lazyPage = (title) =>
   lazy(() =>
@@ -16,10 +17,14 @@ const lazyPage = (title) =>
     })),
   )
 const page = (title) => lazyPage(title)
-// Landing page — has its own nav/footer, no public layout wrapper
+// Public marketing pages share a consistent layout.
 const LandingPage = lazy(() =>
   import('./pages/Landing').then((m) => ({ default: m.Landing })),
 )
+
+const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage.jsx'))
+const FeaturesPage = lazy(() => import('./pages/FeaturesPage.jsx'))
+const CommunityOverview = lazy(() => import('./pages/CommunityOverview.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
 const Pricing = lazy(() => import('./pages/Pricing.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
@@ -103,22 +108,22 @@ function AdminRoute() {
 const view = (Component) => <LazyView Component={Component} />
 
 export const router = createBrowserRouter([
-  // Landing has its own nav+footer — rendered outside PublicLayout
   {
-    path: '/',
-    element: (
-      <Suspense fallback={<PageLoader message="Loading Colearn..." />}>
-        <LandingPage />
-      </Suspense>
-    ),
+    element: <MarketingLayout />,
+    children: [
+      { path: '/', element: view(LandingPage) },
+      { path: '/how-it-works', element: view(HowItWorksPage) },
+      { path: '/features', element: view(FeaturesPage) },
+      { path: '/our-community', element: view(CommunityOverview) },
+      { path: '/about', element: view(About) },
+      { path: '/pricing', element: view(Pricing) },
+      { path: '/contact', element: view(Contact) },
+    ],
   },
   { path: '/u/:username', element: view(PublicProfile) },
   {
     element: <PublicLayout />,
     children: [
-      { path: '/about', element: view(About) },
-      { path: '/pricing', element: view(Pricing) },
-      { path: '/contact', element: view(Contact) },
       { path: '/privacy', element: view(Placeholder('Privacy Policy')) },
       { path: '/terms', element: view(Placeholder('Terms of Service')) },
       { path: '/cookies', element: view(Placeholder('Cookie Policy')) },
