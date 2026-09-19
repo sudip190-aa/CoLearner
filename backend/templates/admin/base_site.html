@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="icon" type="image/png" href="{% static 'logo.png' %}">
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}" style="display: inline-flex; align-items: center; gap: 10px;">
+    <img src="{% static 'logo.png' %}" alt="Colearn" width="28" height="28" style="display: inline-block; object-fit: contain;" />
+    <span>Colearn Admin</span>
+  </a>
+</h1>
+{% endblock %}
