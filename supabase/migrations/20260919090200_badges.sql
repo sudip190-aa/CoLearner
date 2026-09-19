@@ -1,0 +1,16 @@
+insert into public.badges(slug,name,description,criteria_key,xp_reward,icon,required,category) values
+('page-turner','Page Turner','Finished your first chapter.','first_chapter',50,'book-open',1,'Learning'),
+('bookworm','Bookworm','Completed a book.','first_book',150,'book-check',1,'Learning'),
+('book-collector','Book Collector','Completed five books.','five_books',250,'library',5,'Learning'),
+('first-project','First Project','Started or joined your first project.','first_project',100,'rocket',1,'Building'),
+('first-task','First Task','Completed your first task.','first_task',100,'circle-check',1,'Building'),
+('ship-it','Ship It','Completed ten tasks.','ten_tasks',300,'package-check',10,'Building'),
+('first-milestone','First Milestone','Completed a project milestone.','first_milestone',150,'flag',1,'Building'),
+('project-complete','Project Complete','Took a project all the way to completed.','project_completed',300,'trophy',1,'Building'),
+('community-builder','Community Builder','Started your first thread.','first_thread',150,'message-square',1,'Community'),
+('reviewer','Reviewer','Left ten comments.','ten_comments',200,'messages-square',10,'Community'),
+('mentor','Mentor','Got five upvotes on your comments.','helpful_5',250,'heart-handshake',5,'Community'),
+('streak-7','Week Streak','Maintained a 7-day learning streak.','streak_7',200,'flame',7,'Consistency'),
+('streak-30','30-Day Streak','Maintained a 30-day learning streak.','streak_30',350,'calendar-check',30,'Consistency'),
+('level-5','Level 5','Reached level 5.','level_5',200,'star',5,'Consistency'),
+('level-10','Level 10','Reached level 10.','level_10',350,'crown',10,'Consistency') on conflict(slug) do nothing;

@@ -1,5 +1,6 @@
+import { useAuthStore } from '../../store/authStore'
 import React, { useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -20,9 +21,7 @@ const schema = z
 const firstMessage = (value) => (Array.isArray(value) ? value[0] : value)
 
 export default function ResetPassword() {
-  const { token } = useParams()
-  const [params] = useSearchParams()
-  const email = params.get('email') || ''
+  const signedIn = useAuthStore((state) => state.isAuthenticated)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
   const {
@@ -34,7 +33,7 @@ export default function ResetPassword() {
   const onSubmit = async ({ password, confirmPassword }) => {
     setError('')
     try {
-      await auth.resetPassword({ email, token, password, confirmPassword })
+      await auth.resetPassword({ password, confirmPassword })
       setDone(true)
     } catch (submitError) {
       const fields = submitError?.fields || {}
@@ -48,7 +47,7 @@ export default function ResetPassword() {
     }
   }
 
-  if (!token || !email)
+  if (!signedIn && !done)
     return (
       <div className="text-center">
         <h1 className="text-2xl font-bold">This reset link isn&apos;t valid</h1>

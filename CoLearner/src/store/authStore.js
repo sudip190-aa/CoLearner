@@ -1,6 +1,11 @@
 import { create } from 'zustand'
+import { supabase, session } from '../services/supabase/client'
 import { auth } from '../services/api'
-import { clearStoredTokens, getStoredTokens, setStoredTokens } from '../services/client'
+import {
+  clearStoredTokens,
+  getStoredTokens,
+  setStoredTokens,
+} from '../services/client'
 
 const normalizeUser = (user = null) => {
   if (!user) return null
@@ -31,7 +36,8 @@ export const useAuthStore = create((set, get) => ({
   setSession: (user, access = null, refresh = null) => {
     const normalizedUser = normalizeUser(user)
     const storedTokens = getStoredTokens()
-    const nextAccess = access ?? storedTokens.access ?? get().accessToken ?? null
+    const nextAccess =
+      access ?? storedTokens.access ?? get().accessToken ?? null
     const nextRefresh = refresh ?? storedTokens.refresh ?? null
 
     if (nextAccess) {
@@ -62,11 +68,28 @@ export const useAuthStore = create((set, get) => ({
   },
 
   hydrate: async () => {
-    const stored = getStoredTokens()
-    const accessToken = stored.access || null
+    let current
+    try {
+      current = await session()
+    } catch {
+      get().clearAuth()
+      set({ isHydrated: true })
+      return false
+    }
+    const accessToken = current?.access_token || null
+    if (current)
+      setStoredTokens({
+        access: current.access_token,
+        refresh: current.refresh_token,
+      })
 
     if (!accessToken) {
-      set({ user: null, accessToken: null, isAuthenticated: false, isHydrated: true })
+      set({
+        user: null,
+        accessToken: null,
+        isAuthenticated: false,
+        isHydrated: true,
+      })
       return false
     }
 
@@ -108,6 +131,7 @@ export const useAuthStore = create((set, get) => ({
       ...data,
       name: data.name || data.fullName,
     })
+    if (result.confirmationRequired) return { confirmationRequired: true }
     const user = normalizeUser(result?.user ?? result)
     const nextAccess = result?.token ?? result?.access ?? null
     const nextRefresh = result?.refresh ?? getStoredTokens().refresh ?? null
@@ -134,3 +158,18 @@ export const useAuthStore = create((set, get) => ({
 }))
 
 export default useAuthStore
+
+// Defer profile fetches outside the Auth callback to avoid holding its session lock.
+supabase.auth.onAuthStateChange((event, current) => {
+  if (event === 'SIGNED_OUT') useAuthStore.getState().clearAuth()
+  if (current) {
+    setStoredTokens({
+      access: current.access_token,
+      refresh: current.refresh_token,
+    })
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')
+      setTimeout(() => {
+        void useAuthStore.getState().hydrate()
+      }, 0)
+  }
+})

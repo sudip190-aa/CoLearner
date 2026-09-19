@@ -1,10 +1,11 @@
+import OAuthButtons from '../../components/auth/OAuthButtons'
 import React, { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Code2, Eye, EyeOff, Lock, Mail } from 'lucide-react'
-import { Button, Checkbox, Input, Tooltip } from '../../components/ui'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Button, Checkbox, Input } from '../../components/ui'
 import { useAuthStore } from '../../store/authStore'
 
 // Only follow same-site paths from ?next= (blocks "//evil.com" and absolute URLs).
@@ -121,24 +122,7 @@ export default function Login() {
           .
         </p>
       </form>
-      <div className="my-5 flex items-center gap-3 text-xs text-c-text-muted">
-        <span className="h-px flex-1 bg-c-border" />
-        or
-        <span className="h-px flex-1 bg-c-border" />
-      </div>
-      <Tooltip content="GitHub sign-in is coming in v2.">
-        <span className="block">
-          <Button
-            type="button"
-            variant="outline"
-            fullWidth
-            disabled
-            icon={Code2}
-          >
-            Continue with GitHub
-          </Button>
-        </span>
-      </Tooltip>
+      <OAuthButtons />
       <p className="mt-6 text-center text-sm text-c-text-muted">
         New to Colearn?{' '}
         <Link

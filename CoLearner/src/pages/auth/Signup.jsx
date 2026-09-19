@@ -1,3 +1,5 @@
+import OAuthButtons from '../../components/auth/OAuthButtons'
+import EmailConfirmation from '../../components/auth/EmailConfirmation'
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm, useWatch } from 'react-hook-form'
@@ -33,6 +35,7 @@ const strength = (value = '') =>
   ].filter(Boolean).length
 
 export default function Signup() {
+  const [confirmationEmail, setConfirmationEmail] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [usernameCheck, setUsernameCheck] = useState({
     name: '',
@@ -94,6 +97,10 @@ export default function Signup() {
     setError('')
     try {
       const user = await signup({ ...data, name: data.fullName })
+      if (user?.confirmationRequired) {
+        setConfirmationEmail(data.email)
+        return
+      }
       const nextPath =
         user?.onboardingCompleted === false ||
         user?.onboardingComplete === false
@@ -115,6 +122,7 @@ export default function Signup() {
       setError(message)
     }
   }
+  if (confirmationEmail) return <EmailConfirmation email={confirmationEmail} />
   return (
     <div>
       <h1 className="text-2xl font-bold">Create your account</h1>
@@ -223,6 +231,10 @@ export default function Signup() {
           Create account
         </Button>
       </form>
+      <OAuthButtons
+        disabled={!acceptedPolicies}
+        acceptedPolicies={acceptedPolicies}
+      />
       <p className="mt-6 text-center text-sm text-c-text-muted">
         Already have an account?{' '}
         <Link to="/login" className="font-semibold text-c-blue">

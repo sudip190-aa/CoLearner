@@ -25,3 +25,5 @@ CoLearner/dist/
 .DS_Store
 Thumbs.db
 *.log
+.dist/
+.env.oauth

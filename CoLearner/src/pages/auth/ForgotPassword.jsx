@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { Button, Input } from '../../components/ui'
 import { auth } from '../../services/api'
+import { emailErrorMessage } from '../../components/auth/emailFeedback'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email address.'),
@@ -26,9 +27,7 @@ export default function ForgotPassword() {
       await auth.forgotPassword(email)
       setSent(true)
     } catch (submitError) {
-      setError(
-        submitError?.message || 'Unable to send a reset link right now.',
-      )
+      setError(emailErrorMessage(submitError))
     }
   }
 
@@ -38,7 +37,8 @@ export default function ForgotPassword() {
         <CheckCircle2 className="mx-auto h-12 w-12 text-c-success" />
         <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
         <p className="mt-2 text-sm leading-6 text-c-text-muted">
-          If an account exists for that email, we sent a password reset link.
+          If an account exists for that email, you will receive a password reset
+          link. Check your spam folder and open the link in this browser.
         </p>
         <Link
           to="/login"
@@ -46,6 +46,13 @@ export default function ForgotPassword() {
         >
           Back to log in
         </Link>
+        <button
+          type="button"
+          onClick={() => setSent(false)}
+          className="mt-4 block w-full text-sm text-c-text-muted"
+        >
+          Try another email
+        </button>
       </div>
     )
   return (

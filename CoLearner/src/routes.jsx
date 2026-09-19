@@ -37,6 +37,7 @@ const Login = lazy(() => import('./pages/auth/Login.jsx'))
 const Signup = lazy(() => import('./pages/auth/Signup.jsx'))
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword.jsx'))
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword.jsx'))
+const AuthCallback = lazy(() => import('./pages/auth/AuthCallback.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Library = lazy(() => import('./pages/Library.jsx'))
@@ -143,6 +144,8 @@ export const router = createBrowserRouter([
       { path: '/signup', element: view(Signup) },
       { path: '/forgot-password', element: view(ForgotPassword) },
       { path: '/reset-password/:token', element: view(ResetPassword) },
+      { path: '/reset-password', element: view(ResetPassword) },
+      { path: '/auth/callback', element: view(AuthCallback) },
     ],
   },
   {

@@ -1,59 +1,44 @@
-# CoLearner
+# CoLearn
 
-CoLearner is a learning and collaboration platform where people learn from curated books, build projects with peers, and share their progress.
+React + Supabase learning and collaboration platform: curated books, peer projects, community discussions, and public portfolios.
 
-## Repository layout
-
-- `backend/`: Django 4.2 and Django REST Framework API
-- `CoLearner/`: React and Vite frontend
-
-## Local development
-
-### Backend
-
-```powershell
-cd backend
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver 127.0.0.1:8000
-```
-
-The API is available at `http://127.0.0.1:8000/`.
-
-### Frontend
-
-In a second terminal:
+## Run locally
 
 ```powershell
 cd CoLearner
-npm install
+npm ci
+# If .env.local is absent, copy .env.example and set the public Supabase key.
 npm run dev -- --host 127.0.0.1 --port 5176
 ```
 
-The frontend is available at `http://127.0.0.1:5176/`.
+Open http://127.0.0.1:5176. Django is not used by the frontend. The linked Supabase project is `ghjdpcvnzclfvyosfhoz` (COlearn). Only its URL and public anon/publishable key belong in `CoLearner/.env.local`; RLS enforces authorization.
 
-Set `VITE_API_URL` in `CoLearner/.env` to override the API URL. The default local API URL follows the browser hostname and uses port `8000`.
+## Layout
 
-## Validation
+- `CoLearner/`: React/Vite; Supabase transport in `src/services/supabase/`.
+- `supabase/migrations/`: schema, relationships, indexes, RLS, business functions, and Storage policies.
+- `supabase/functions/`: protected account administration/password migration and rate-limited contact submissions.
+- `supabase/scripts/`: data migration, configuration, and verification.
+- `backend/`: retained Django source/database for rollback and comparison. Do not use both backends as writable sources.
 
-Frontend:
-
-```powershell
-cd CoLearner
-npm run lint
-npm run build
-```
-
-Backend:
+## Backend deployment
 
 ```powershell
-cd backend
-python -m pytest
+supabase link --project-ref ghjdpcvnzclfvyosfhoz
+supabase db push --linked --yes --skip-vault
+supabase functions deploy account contact --use-api --no-verify-jwt
 ```
 
-## API documentation
+These cloud commands do not require Docker. Edge Functions validate authentication internally; service keys remain private. Email/password uses Supabase Auth. Google/GitHub credentials are read from the ignored `.env.oauth` file by `supabase/scripts/configure-oauth.ps1`.
 
-- Swagger UI: `http://127.0.0.1:8000/api/docs/`
-- OpenAPI schema: `http://127.0.0.1:8000/api/schema/`
+See [the migration runbook](supabase/MIGRATION.md) for data migration, authentication configuration, test results, and Django retirement.
+
+## Checks
+
+```powershell
+npm --prefix CoLearner run lint
+npm --prefix CoLearner run build
+node supabase/scripts/verify-live.mjs
+```
+
+Live checks require an authenticated Supabase CLI. They create isolated temporary accounts/content and remove them afterward. Do not reimport the source snapshot into a live database; the importer refuses repeated imports.

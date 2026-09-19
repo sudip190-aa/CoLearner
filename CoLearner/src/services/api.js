@@ -381,8 +381,10 @@ export const auth = {
       full_name: data.fullName || data.name,
       password: data.password,
       password2: data.password,
+      terms_accepted: data.terms === true,
     })
     const result = snakeToCamel(payload.data || {})
+    if (result.confirmationRequired) return { confirmationRequired: true }
     if (result.access) {
       setStoredTokens({ access: result.access, refresh: result.refresh })
     }
@@ -619,7 +621,7 @@ const taskBody = (data = {}) => {
   })
   if (data.dueDate !== undefined) body.due_date = data.dueDate || null
   if (data.assignee !== undefined)
-    body.assignee_id = data.assignee ? Number(data.assignee) : null
+    body.assignee_id = data.assignee ? String(data.assignee) : null
   return body
 }
 
