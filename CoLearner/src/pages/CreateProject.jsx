@@ -65,6 +65,10 @@ const schema = z.object({
 
 export default function CreateProject() {
   const [step, setStep] = useState(0)
+  const [isShowcase, setIsShowcase] = useState(false)
+  const [demoUrl, setDemoUrl] = useState('')
+  const [repositoryUrl, setRepositoryUrl] = useState('')
+  const [isPublic, setIsPublic] = useState(true)
   const [cover, setCover] = useState('')
   const [coverFile, setCoverFile] = useState(null)
   const [serverErrors, setServerErrors] = useState({})
@@ -118,7 +122,11 @@ export default function CreateProject() {
           techStack,
           lookingForRoles,
           maxMembers,
-          status: 'idea',
+          status: isShowcase ? 'completed' : 'idea',
+          isShowcase,
+          demoUrl,
+          repositoryUrl,
+          isPublic,
           cover: coverFile,
         })
       // Only claim XP the server actually paid (project XP has a daily limit).
@@ -178,6 +186,38 @@ export default function CreateProject() {
               Make the idea easy for a potential teammate to understand.
             </p>
             <div className="mt-6 space-y-5">
+              <label className="flex items-center gap-3 rounded-xl bg-c-blue-wash p-4 text-sm">
+                <input
+                  type="checkbox"
+                  checked={isShowcase}
+                  onChange={(event) => setIsShowcase(event.target.checked)}
+                  className="accent-c-blue"
+                />
+                Showcase a project I have already built
+              </label>
+              <Input
+                label="Live demo URL"
+                type="url"
+                value={demoUrl}
+                onChange={(event) => setDemoUrl(event.target.value)}
+                placeholder="https://your-project.com"
+              />
+              <Input
+                label="Repository URL"
+                type="url"
+                value={repositoryUrl}
+                onChange={(event) => setRepositoryUrl(event.target.value)}
+                placeholder="https://github.com/you/project"
+              />
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(event) => setIsPublic(event.target.checked)}
+                  className="accent-c-blue"
+                />
+                Public project
+              </label>
               <Input
                 label="Project title"
                 placeholder="Open Path"

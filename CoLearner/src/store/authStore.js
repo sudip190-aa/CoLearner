@@ -1,12 +1,16 @@
 import { create } from 'zustand'
 import { supabase, session } from '../services/supabase/client'
 import { auth } from '../services/api'
+import { useNotificationStore } from './notificationStore'
 import {
   clearStoredTokens,
   getStoredTokens,
   setStoredTokens,
 } from '../services/client'
 
+let identityEpoch = 0
+let hydrationRequest = 0
+let signingOut = false
 const normalizeUser = (user = null) => {
   if (!user) return null
 
@@ -63,19 +67,28 @@ export const useAuthStore = create((set, get) => ({
   },
 
   clearAuth: () => {
+    identityEpoch += 1
+    useNotificationStore.getState().reset()
     clearStoredTokens()
     set({ user: null, accessToken: null, isAuthenticated: false })
   },
 
   hydrate: async () => {
+    if (signingOut) return false
+    const epoch = identityEpoch
+    const request = ++hydrationRequest
+    const isCurrent = () =>
+      epoch === identityEpoch && request === hydrationRequest
     let current
     try {
       current = await session()
     } catch {
+      if (!isCurrent()) return false
       get().clearAuth()
       set({ isHydrated: true })
       return false
     }
+    if (!isCurrent()) return false
     const accessToken = current?.access_token || null
     if (current)
       setStoredTokens({
@@ -96,6 +109,14 @@ export const useAuthStore = create((set, get) => ({
     try {
       const response = await auth.getMe()
       const user = normalizeUser(response?.user ?? response)
+      if (!isCurrent()) return false
+      const latest = await session()
+      if (
+        !isCurrent() ||
+        latest?.user?.id !== current.user.id ||
+        user?.id !== current.user.id
+      )
+        return false
       set({
         user,
         accessToken,
@@ -104,6 +125,7 @@ export const useAuthStore = create((set, get) => ({
       })
       return Boolean(user)
     } catch {
+      if (!isCurrent()) return false
       get().clearAuth()
       set({ isHydrated: true })
       return false
@@ -139,12 +161,15 @@ export const useAuthStore = create((set, get) => ({
   },
 
   logout: async () => {
+    signingOut = true
+    identityEpoch += 1
     try {
       await auth.logout()
     } catch {
       // no-op: backend may already have rejected an expired token
     }
     get().clearAuth()
+    signingOut = false
   },
 
   updateUser: (updates = {}) =>
@@ -163,6 +188,9 @@ export default useAuthStore
 supabase.auth.onAuthStateChange((event, current) => {
   if (event === 'SIGNED_OUT') useAuthStore.getState().clearAuth()
   if (current) {
+    const previous = useAuthStore.getState().user?.id
+    if (previous && previous !== current.user.id)
+      useAuthStore.getState().clearAuth()
     setStoredTokens({
       access: current.access_token,
       refresh: current.refresh_token,

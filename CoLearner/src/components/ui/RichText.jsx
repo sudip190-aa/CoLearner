@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { parseChapterContent } from '../../lib/readerContent'
 import { parseInline } from '../../lib/inlineMarkdown'
 
-export function Inline({ text }) {
+export function Inline({ text, mentions }) {
   return parseInline(text).map((token, index) => {
     switch (token.type) {
       case 'bold':
@@ -30,6 +30,13 @@ export function Inline({ text }) {
           </a>
         )
       case 'mention':
+        if (
+          mentions &&
+          !mentions.some(
+            (name) => name.toLowerCase() === token.username.toLowerCase(),
+          )
+        )
+          return <React.Fragment key={index}>{token.text}</React.Fragment>
         return (
           <Link
             key={index}
@@ -47,7 +54,7 @@ export function Inline({ text }) {
 
 // Renders user text: paragraphs, "> quotes", ``` code blocks and the inline formats above.
 // Nothing is injected as HTML, so user input cannot run script.
-export function RichText({ text, className = '' }) {
+export function RichText({ text, className = '', mentions }) {
   const blocks = parseChapterContent(text, { keepLineBreaks: true })
   return (
     <div className={`space-y-4 ${className}`}>
@@ -64,11 +71,11 @@ export function RichText({ text, className = '' }) {
             key={index}
             className="border-l-4 border-c-blue bg-c-blue-wash px-4 py-2 italic"
           >
-            <Inline text={block.text} />
+            <Inline text={block.text} mentions={mentions} />
           </blockquote>
         ) : (
           <p key={index} className="whitespace-pre-line break-words">
-            <Inline text={block.text} />
+            <Inline text={block.text} mentions={mentions} />
           </p>
         ),
       )}

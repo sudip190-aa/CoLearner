@@ -217,7 +217,8 @@ try {
   assert.equal((await ok(admin.from('books').select('status').eq('id',fixture.id).single())).status,'APPROVED');
   await click('Process / reprocess');await wait("document.body.innerText.includes('Processing queued')");
   pass('Admin can save license evidence, manually confirm permission, add a chapter, approve and queue processing');
-  await evaluate("(async()=>{const {useAuthStore}=await import('/src/store/authStore.js');await useAuthStore.getState().logout()})()");
+  await evaluate("document.querySelector('[aria-label=\"Open account menu\"]').click()");
+  await click('Log out');await wait("location.pathname==='/login'");
   await send('Page.navigate',{url:origin+'/'});await wait("document.querySelector('header').innerText.includes('Get started')");
   assert(!(await evaluate("document.querySelector('header').innerText.includes('My Dashboard')")));
   pass('Logout restores signed-out navigation');

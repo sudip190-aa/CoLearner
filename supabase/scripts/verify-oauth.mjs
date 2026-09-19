@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
 const origin = "http://127.0.0.1:5176";
 const ref = "ghjdpcvnzclfvyosfhoz";
-const tabs = await (await fetch("http://127.0.0.1:9223/json")).json();
+const tabs = await (await fetch("http://127.0.0.1:9224/json")).json();
 const ws = new WebSocket(
   tabs.find((t) => t.type === "page").webSocketDebuggerUrl,
 );
@@ -92,6 +92,7 @@ try {
       `https://${ref}.supabase.co/auth/v1/callback`,
     );
     assert(target.searchParams.get("state"), "OAuth state is missing");
+    assert.equal(target.searchParams.get("prompt"), "select_account");
     await wait("document.readyState==='complete'");
     const page = await evaluate(
       "({title:document.title,body:document.body.innerText})",

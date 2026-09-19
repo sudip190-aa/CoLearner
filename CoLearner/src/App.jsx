@@ -4,6 +4,7 @@ import router from './routes'
 import { ErrorBoundary, PageLoader, useToast } from './components/ui'
 import { useAuthStore } from './store/authStore'
 import { VoiceCallProvider } from './components/calls/VoiceCallProvider'
+import NotificationHub from './components/notifications/NotificationHub'
 
 function OfflineBanner() {
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
@@ -59,7 +60,7 @@ function App() {
   const hydrate = useAuthStore((state) => state.hydrate)
 
   useEffect(() => {
-    void hydrate()
+    if (!useAuthStore.getState().isHydrated) void hydrate()
   }, [hydrate])
 
   if (!isHydrated) {
@@ -70,6 +71,7 @@ function App() {
     <ErrorBoundary>
       <OfflineBanner />
       <SessionExpiredListener />
+      <NotificationHub navigate={(to) => router.navigate(to)} />
       <VoiceCallProvider>
         <RouterProvider router={router} />
       </VoiceCallProvider>

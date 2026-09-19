@@ -23,6 +23,7 @@ import {
   project,
   thread,
   comment,
+  commentPage,
   page,
   filterText,
   newest,
@@ -30,7 +31,6 @@ import {
   profileList,
   bookList,
   projectList,
-  threadList,
 } from './read-models'
 const fields = (body, allowed) =>
   Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)))
@@ -47,8 +47,13 @@ const profileFields = [
   'website',
   'availability',
   'interests',
+  'notification_sound',
 ]
 const projectFields = [
+  'demo_url',
+  'repository_url',
+  'gallery',
+  'is_showcase',
   'title',
   'summary',
   'description',
@@ -89,11 +94,16 @@ const requireStaff = async () => {
 }
 const rawBody = (body) =>
   body instanceof FormData ? Object.fromEntries(body.entries()) : body || {}
-const authResponse = async (data) => ({
-  user: await me(),
-  access: data.session?.access_token,
-  refresh: data.session?.refresh_token,
-})
+const authResponse = async (data) => {
+  const user = await me()
+  if (data.session?.user?.id && data.session.user.id !== user.id)
+    throw new Error('Your account changed while signing in. Please try again.')
+  return {
+    user,
+    access: data.session?.access_token,
+    refresh: data.session?.refresh_token,
+  }
+}
 async function dispatch(method, path, body = {}, params = {}) {
   body = rawBody(body)
   const parts = path.split('/').filter(Boolean).map(decodeURIComponent),
@@ -328,6 +338,29 @@ async function dispatch(method, path, body = {}, params = {}) {
       return project(p)
     }
     if (!key) {
+      if (!admin) {
+        const feed = await result(
+          supabase.rpc('colearn_project_feed', { filters: params }),
+        )
+        feed.results = await Promise.all(
+          feed.results.map(async (project) => ({
+            ...project,
+            cover: await mediaUrl('project-covers', project.cover),
+            owner: {
+              ...project.owner,
+              avatar: await mediaUrl('avatars', project.owner.avatar),
+            },
+            members: await Promise.all(
+              project.members.map(async (person) => ({
+                ...person,
+                avatar: await mediaUrl('avatars', person.avatar),
+              })),
+            ),
+          })),
+        )
+        return feed
+      }
+
       let all = await projectList(newest(await rows('projects')))
       all = filterText(all, params.search || params.q, [
         'title',
@@ -358,9 +391,13 @@ async function dispatch(method, path, body = {}, params = {}) {
         return action(sub, { ...body, slug: id })
       if (sub === 'requests')
         return (
-          await rows('join_requests', '*,user:profiles(*)', {
-            project_id: p.id,
-          })
+          await rows(
+            'join_requests',
+            '*,user:profiles!join_requests_user_id_fkey(*)',
+            {
+              project_id: p.id,
+            },
+          )
         ).map((r) => ({ ...r, project_slug: p.slug, project_title: p.title }))
       if (sub === 'members')
         return action(method === 'delete' ? 'remove_member' : 'member_role', {
@@ -464,6 +501,13 @@ async function dispatch(method, path, body = {}, params = {}) {
     }
     if (id) {
       const t = await one('threads', 'slug', id)
+      if (sub === 'comment-history')
+        return commentPage(
+          t.id,
+          params.before || null,
+          params.parent || null,
+          params.focus || null,
+        )
       if (sub === 'comments') {
         const c = await insert('comments', {
           author_id: uid,
@@ -480,17 +524,19 @@ async function dispatch(method, path, body = {}, params = {}) {
       await action('view_thread', { id: t.id })
       return thread(await one('threads', 'id', t.id))
     }
-    let all = await threadList(newest(await rows('threads')))
-    all = filterText(all, params.search, ['title', 'body'])
-    if (params.category) all = all.filter((t) => t.category === params.category)
-    if (params.tag) all = all.filter((t) => t.tags.includes(params.tag))
-    if (params.mine) all = all.filter((t) => t.author_id === uid)
-    if (params.answered) all = all.filter((t) => t.comment_count > 0)
-    if (params.ordering === 'unanswered')
-      all = all.filter((t) => !t.comment_count)
-    if (params.ordering === 'top')
-      all.sort((a, b) => b.vote_score - a.vote_score)
-    return all.sort((a, b) => Number(b.is_pinned) - Number(a.is_pinned))
+    const feed = await result(
+      supabase.rpc('colearn_thread_feed', { filters: params }),
+    )
+    feed.results = await Promise.all(
+      feed.results.map(async (item) => ({
+        ...item,
+        author: {
+          ...item.author,
+          avatar: await mediaUrl('avatars', item.author.avatar),
+        },
+      })),
+    )
+    return feed
   }
   if (resource === 'comments') {
     if (method === 'delete') {
@@ -536,11 +582,14 @@ async function dispatch(method, path, body = {}, params = {}) {
       }),
     )
   if (resource === 'notifications') {
-    if (id === 'unread-count')
-      return {
-        unread_count: (await rows('notifications', '*', { is_read: false }))
-          .length,
-      }
+    if (id === 'unread-count') {
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_read', false)
+      if (error) throw error
+      return { unread_count: count }
+    }
     if (id === 'read-all') {
       await result(
         supabase
@@ -554,13 +603,19 @@ async function dispatch(method, path, body = {}, params = {}) {
       await update('notifications', id, { is_read: true })
       return {}
     }
-    let all = newest(
-      await rows(
-        'notifications',
-        '*,actor:profiles!notifications_actor_id_fkey(*)',
-      ),
-    )
-    if (params.unread) all = all.filter((n) => !n.is_read)
+    let query = supabase
+      .from('notifications')
+      .select('*,actor:profiles!notifications_actor_id_fkey(*)')
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(
+        Number(params.offset || 0),
+        Number(params.offset || 0) +
+          Math.min(Number(params.limit || 50), 100) -
+          1,
+      )
+    if (params.unread) query = query.eq('is_read', false)
+    const all = await result(query)
     return all.slice(0, params.limit || 50).map((n) => ({
       ...n,
       target: n.target_type

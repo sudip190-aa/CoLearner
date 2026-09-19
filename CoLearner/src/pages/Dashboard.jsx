@@ -558,16 +558,20 @@ export default function Dashboard() {
                     )}
                     <div className="space-y-1">
                       {contacts.slice(0, 4).map((person) => (
-                        <Link
+                        <div
                           key={person.id}
-                          to={`/messages?to=${person.id}`}
                           className="flex items-center gap-3 rounded-xl px-1 py-3 hover:bg-c-blue-wash"
                         >
-                          <Avatar
-                            name={person.full_name}
-                            src={person.avatar}
-                            size="md"
-                          />
+                          <Link
+                            to={`/u/${person.username}`}
+                            aria-label={`View ${person.full_name} profile`}
+                          >
+                            <Avatar
+                              name={person.full_name}
+                              src={person.avatar}
+                              size="md"
+                            />
+                          </Link>
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-xs font-semibold">
                               {person.full_name || person.username}
@@ -578,14 +582,23 @@ export default function Dashboard() {
                                 'Start a conversation'}
                             </p>
                           </div>
-                          {person.unread_count > 0 ? (
-                            <span className="rounded-full bg-c-blue px-2 py-1 text-[10px] text-white">
-                              {person.unread_count}
-                            </span>
-                          ) : (
-                            <MessageCircle size={16} className="text-c-blue" />
-                          )}
-                        </Link>
+                          <Link
+                            to={`/messages?to=${person.id}`}
+                            aria-label={`Message ${person.full_name}`}
+                            className="rounded-lg p-2 hover:bg-c-blue-soft"
+                          >
+                            {person.unread_count > 0 ? (
+                              <span className="rounded-full bg-c-blue px-2 py-1 text-[10px] text-white">
+                                {person.unread_count}
+                              </span>
+                            ) : (
+                              <MessageCircle
+                                size={16}
+                                className="text-c-blue"
+                              />
+                            )}
+                          </Link>
+                        </div>
                       ))}
                     </div>
                   </section>

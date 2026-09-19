@@ -28,7 +28,66 @@ export const messages = {
       )
     return (await result(query)).reverse()
   },
-  send: async (peer, body, id = crypto.randomUUID()) => {
+  uploadImage: async (peer, file, id) => {
+    if (
+      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+      file.size > 5 * 1024 * 1024
+    )
+      throw new Error('Choose one JPEG, PNG or WebP image under 5 MB.')
+    // Decode before upload; do not trust a renamed file or its supplied MIME type.
+    const bitmap = await window.createImageBitmap(file).catch(() => {
+      throw new Error('This image cannot be opened. Choose another file.')
+    })
+    if (bitmap.width * bitmap.height > 24000000) {
+      bitmap.close()
+      throw new Error('Choose an image smaller than 24 megapixels.')
+    }
+    bitmap.close()
+    const sender = await viewerId()
+    const path = `${sender}/${peer}/${id}.${{ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[file.type]}`
+    const response = await supabase.storage
+      .from('chat-images')
+      .upload(path, file, { upsert: false, contentType: file.type })
+    if (
+      response.error &&
+      response.error.statusCode !== '409' &&
+      response.error.statusCode !== 409
+    )
+      throw new Error(response.error.message)
+    return path
+  },
+  uploadAudio: async (peer, blob, id, durationMs) => {
+    const extension = {
+      'audio/webm': 'webm',
+      'audio/mp4': 'm4a',
+      'audio/ogg': 'ogg',
+    }[blob.type]
+    if (
+      !extension ||
+      !blob.size ||
+      blob.size > 5 * 1024 * 1024 ||
+      !Number.isInteger(durationMs) ||
+      durationMs < 1 ||
+      durationMs > 120000
+    )
+      throw new Error('Record a voice message up to two minutes and 5 MB.')
+    const sender = await viewerId()
+    const path = `${sender}/${peer}/${id}.${extension}`
+    const { error } = await supabase.storage
+      .from('chat-audio')
+      .upload(path, blob, { upsert: false, contentType: blob.type })
+    if (error && String(error.statusCode) !== '409')
+      throw new Error(error.message)
+    return path
+  },
+  discardAudio: (path) => supabase.storage.from('chat-audio').remove([path]),
+  send: async (
+    peer,
+    body,
+    id = crypto.randomUUID(),
+    imagePath = null,
+    audio = null,
+  ) => {
     const sender = await viewerId()
     const response = await supabase
       .from('direct_messages')
@@ -37,6 +96,9 @@ export const messages = {
         sender_id: sender,
         recipient_id: peer,
         body: body.trim(),
+        image_path: imagePath,
+        audio_path: audio?.path || null,
+        audio_duration_ms: audio?.durationMs || null,
       })
       .select()
       .single()
@@ -48,7 +110,10 @@ export const messages = {
       if (
         saved.sender_id === sender &&
         saved.recipient_id === peer &&
-        saved.body === body.trim()
+        saved.body === body.trim() &&
+        saved.image_path === imagePath &&
+        saved.audio_path === (audio?.path || null) &&
+        saved.audio_duration_ms === (audio?.durationMs || null)
       )
         return saved
     }

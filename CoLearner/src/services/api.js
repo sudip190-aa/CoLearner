@@ -1,7 +1,6 @@
 import api, {
   camelToSnakeKeys,
   clearStoredTokens,
-  getStoredTokens,
   setStoredTokens,
   snakeToCamel,
 } from './client.js'
@@ -30,6 +29,7 @@ const normalizeUser = (entry = {}) => {
     fullName: user.fullName || user.name || user.username || 'Colearn user',
     username: user.username || '',
     role: user.role || 'learner',
+    notificationSound: user.notificationSound !== false,
     avatar: user.avatar || '',
     headline: user.headline || '',
     bio: user.bio || '',
@@ -326,6 +326,10 @@ const normalizeComment = (entry = {}) => {
     parentId: comment.parent ? String(comment.parent) : null,
     author: normalizeAuthor(comment.author),
     body: comment.body || '',
+    mentions: (comment.mentions || [])
+      .map((mention) => mention.user?.username)
+      .filter(Boolean),
+    replyCount: Number(comment.replyCount || 0),
     votes: Number(comment.voteScore ?? 0),
     userVote: Number(comment.userVote ?? 0),
     replies: (comment.replies || []).map(normalizeComment),
@@ -402,12 +406,9 @@ export const auth = {
     return Boolean(payload.data?.available)
   },
   logout: async () => {
-    // Tokens are stored as plain strings (not JSON), so read them through the shared helper.
-    const { refresh } = getStoredTokens()
     try {
-      if (refresh) {
-        await api.post('/auth/logout/', { refresh })
-      }
+      // Supabase owns the persisted session, even if the compatibility tokens are empty.
+      await api.post('/auth/logout/')
     } catch {
       // no-op: backend may be unavailable or token already expired
     }
@@ -655,8 +656,25 @@ export const projects = {
   // Filtering and ordering run on the server:
   // { search, status, category, tech: ['React'], looking, mine, ordering: 'newest' | 'active' | 'fewest' }
   getProjects: async (params = {}) => {
-    const { search, status, category, tech, looking, mine, ordering } = params
-    const query = { search, status, category, ordering }
+    const {
+      search,
+      status,
+      category,
+      tech,
+      looking,
+      mine,
+      ordering,
+      page = 1,
+      pageSize = 50,
+    } = params
+    const query = {
+      search,
+      status,
+      category,
+      ordering,
+      page,
+      page_size: pageSize,
+    }
     if (looking) query.looking = 'true'
     if (mine) query.mine = 'true'
     Object.keys(query).forEach((key) => !query[key] && delete query[key])
@@ -665,7 +683,11 @@ export const projects = {
       params: query,
       paramsSerializer: { indexes: null },
     })
-    return { projects: arrayFromPayload(payload.data).map(normalizeProject) }
+    return {
+      projects: arrayFromPayload(payload.data).map(normalizeProject),
+      count: payload.data.count ?? arrayFromPayload(payload.data).length,
+      facets: payload.data.facets,
+    }
   },
   getProject: async (slug) => {
     const payload = await api.get(`/projects/${encodeURIComponent(slug)}/`)
@@ -824,13 +846,35 @@ export const community = {
   // Filtering, search and ordering happen on the server:
   // { category, tag, search, ordering: 'latest' | 'top' | 'unanswered', mine, answered }
   getThreads: async (params = {}) => {
-    const { category, tag, search, ordering, mine, answered } = params
-    const query = { category, tag, search, ordering }
+    const {
+      category,
+      tag,
+      search,
+      ordering,
+      mine,
+      answered,
+      page = 1,
+      pageSize = 12,
+    } = params
+    const query = { category, tag, search, ordering, page, page_size: pageSize }
     if (mine) query.mine = 'true'
     if (answered) query.answered = 'true'
     Object.keys(query).forEach((key) => !query[key] && delete query[key])
     const payload = await api.get('/threads/', { params: query })
-    return { threads: arrayFromPayload(payload.data).map(normalizeThread) }
+    return {
+      threads: arrayFromPayload(payload.data).map(normalizeThread),
+      count: payload.data.count ?? arrayFromPayload(payload.data).length,
+    }
+  },
+  getCommentHistory: async (slug, params = {}) => {
+    const payload = await api.get(
+      `/threads/${encodeURIComponent(slug)}/comment-history/`,
+      { params },
+    )
+    return {
+      comments: payload.data.comments.map(normalizeComment),
+      nextCursor: payload.data.next_cursor,
+    }
   },
   getThread: async (slug) => {
     const payload = await api.get(`/threads/${encodeURIComponent(slug)}/`)
@@ -941,6 +985,7 @@ const normalizeServerNotification = (entry = {}) => {
   return {
     id: String(item.id),
     verb: item.verb || '',
+    targetAnchor: item.targetAnchor || '',
     actor: item.actor ? normalizeAuthor(item.actor) : null,
     target: target
       ? {
@@ -986,8 +1031,8 @@ export const game = {
 }
 
 export const notifs = {
-  getNotifications: async ({ limit = 50, unread = false } = {}) => {
-    const params = { limit }
+  getNotifications: async ({ limit = 50, unread = false, offset = 0 } = {}) => {
+    const params = { limit, offset }
     if (unread) params.unread = 1
     const payload = await api.get('/notifications/', { params })
     return {

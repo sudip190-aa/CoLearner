@@ -134,6 +134,10 @@ export const router = createBrowserRouter([
       { path: '/privacy', element: view(Privacy) },
     ],
   },
+  {
+    path: '/showcase/:slug',
+    element: <div className="container py-10">{view(Project)}</div>,
+  },
   { path: '/u/:username', element: view(PublicProfile) },
   {
     element: <PublicLayout />,

@@ -63,6 +63,10 @@ export default function Notifications() {
   const markRead = useNotificationStore((state) => state.markRead)
   const markAllRead = useNotificationStore((state) => state.markAllRead)
   const [tab, setTab] = useState('all')
+  const [historyError, setHistoryError] = useState('')
+  const hasMore = useNotificationStore((state) => state.hasMore)
+  const loadingMore = useNotificationStore((state) => state.loadingMore)
+  const loadMore = useNotificationStore((state) => state.loadMore)
 
   const filtered = useMemo(
     () =>
@@ -153,6 +157,31 @@ export default function Notifications() {
             ) : null
           })}
         </div>
+      )}
+      {hasMore && (
+        <div className="mt-5 text-center">
+          <Button
+            variant="outline"
+            loading={loadingMore}
+            onClick={async () => {
+              try {
+                setHistoryError('')
+                await loadMore()
+              } catch {
+                setHistoryError(
+                  'Earlier notifications could not load. Try again.',
+                )
+              }
+            }}
+          >
+            Load earlier notifications
+          </Button>
+        </div>
+      )}
+      {historyError && (
+        <p role="alert" className="mt-3 text-sm text-c-danger">
+          {historyError}
+        </p>
       )}
     </div>
   )

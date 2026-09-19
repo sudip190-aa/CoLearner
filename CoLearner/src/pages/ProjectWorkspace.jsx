@@ -11,7 +11,6 @@ import {
   Settings2,
   Trash2,
   UserMinus,
-  UserPlus,
 } from 'lucide-react'
 import {
   Avatar,
@@ -35,6 +34,9 @@ import {
 import { PageHeader } from '../components/layout/PageHeader'
 import { formatDate, formatRelative } from '../lib/formatters.js'
 import { projects } from '../services/api.js'
+import ProjectInvitations from '../components/projects/ProjectInvitations'
+import ProjectGalleryEditor from '../components/projects/ProjectGalleryEditor'
+import { supabase } from '../services/supabase/client'
 import { useInFlight } from '../hooks/useInFlight.js'
 import { useAuthStore } from '../store/authStore'
 import {
@@ -319,9 +321,6 @@ export default function ProjectWorkspace() {
   const [updateText, setUpdateText] = useState('')
   const [posting, setPosting] = useState(false)
   const [requests, setRequests] = useState([])
-  const [inviteName, setInviteName] = useState('')
-  const [inviteError, setInviteError] = useState('')
-  const [inviting, setInviting] = useState(false)
   const [confirm, setConfirm] = useState(null) // { title, description, label, run }
   const [confirmBusy, setConfirmBusy] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -334,6 +333,8 @@ export default function ProjectWorkspace() {
 
   const applySettings = (result) =>
     setSettings({
+      demoUrl: result.demoUrl || '',
+      repositoryUrl: result.repositoryUrl || '',
       title: result.title,
       summary: result.summary,
       description: result.description,
@@ -378,6 +379,36 @@ export default function ProjectWorkspace() {
       active = false
     }
   }, [slug])
+
+  useEffect(() => {
+    if (!project?.id) return
+    let timer
+    const update = () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        void refresh().catch(() => {})
+      }, 200)
+    }
+    const channel = supabase
+      .channel(`project-requests:${project.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'join_requests',
+          filter: `project_id=eq.${project.id}`,
+        },
+        update,
+      )
+      .subscribe()
+    const poll = setInterval(update, 30000)
+    return () => {
+      clearTimeout(timer)
+      clearInterval(poll)
+      void supabase.removeChannel(channel)
+    }
+  }, [project?.id, refresh])
 
   if (error)
     return (
@@ -548,29 +579,6 @@ export default function ProjectWorkspace() {
       failure(requestError, 'Could not answer that request')
     }
   }
-  const invite = async (event) => {
-    event.preventDefault()
-    if (!inviteName.trim()) return
-    setInviting(true)
-    setInviteError('')
-    try {
-      await projects.invite(project.slug, inviteName.trim().replace(/^@/, ''))
-      setInviteName('')
-      await refresh()
-      toast.success(
-        'Invitation sent',
-        'They will see it in their notifications',
-      )
-    } catch (requestError) {
-      setInviteError(
-        firstError(requestError, 'username') ||
-          requestError?.message ||
-          'Could not send the invitation.',
-      )
-    } finally {
-      setInviting(false)
-    }
-  }
   const changeRole = (member, role) =>
     inFlight(`role-${member.id}`, () => saveRole(member, role))
   const saveRole = async (member, role) => {
@@ -628,6 +636,8 @@ export default function ProjectWorkspace() {
     setSettingsError('')
     try {
       const { project: saved } = await projects.updateProject(project.slug, {
+        demoUrl: settings.demoUrl,
+        repositoryUrl: settings.repositoryUrl,
         title: settings.title,
         summary: settings.summary,
         description: settings.description,
@@ -687,7 +697,6 @@ export default function ProjectWorkspace() {
   const pendingRequests = requests.filter(
     (request) => request.status === 'pending',
   )
-  const sentInvites = requests.filter((request) => request.status === 'invited')
   const setting = (key) => (event) =>
     setSettings((current) => ({ ...current, [key]: event.target.value }))
 
@@ -926,57 +935,9 @@ export default function ProjectWorkspace() {
               </Button>
             </div>
           )}
+          <ProjectInvitations project={project} onChange={refresh} />
           {isOwner && (
             <>
-              <section className="mt-8">
-                <h2 className="text-xl font-bold text-c-text">
-                  Invite someone
-                </h2>
-                <form
-                  onSubmit={invite}
-                  className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start"
-                >
-                  <div className="flex-1">
-                    <Input
-                      aria-label="Username to invite"
-                      placeholder="Their username, e.g. maya-chen"
-                      value={inviteName}
-                      onChange={(event) => setInviteName(event.target.value)}
-                      error={inviteError}
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    icon={UserPlus}
-                    loading={inviting}
-                    disabled={!inviteName.trim()}
-                  >
-                    Send invitation
-                  </Button>
-                </form>
-                {sentInvites.length > 0 && (
-                  <ul className="mt-4 space-y-2">
-                    {sentInvites.map((invitation) => (
-                      <li
-                        key={invitation.id}
-                        className="flex items-center gap-3 text-sm text-c-text-muted"
-                      >
-                        <Avatar
-                          src={invitation.user.avatar}
-                          name={invitation.user.fullName}
-                          size="sm"
-                        />
-                        <span>
-                          <strong className="text-c-text">
-                            {invitation.user.fullName}
-                          </strong>{' '}
-                          was invited and hasn&apos;t answered yet
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
               <section className="mt-8">
                 <h2 className="text-xl font-bold text-c-text">Join requests</h2>
                 <div className="mt-4 space-y-3">
@@ -1090,6 +1051,7 @@ export default function ProjectWorkspace() {
         </TabContent>
         {isOwner && settings && (
           <TabContent value="settings">
+            <ProjectGalleryEditor project={project} onChange={setProject} />
             <form
               onSubmit={saveSettings}
               className="max-w-2xl space-y-5 rounded-brand-lg border border-c-border bg-white p-6 shadow-sm"
@@ -1097,6 +1059,18 @@ export default function ProjectWorkspace() {
               <h2 className="text-xl font-bold text-c-text">
                 Project settings
               </h2>
+              <Input
+                label="Live demo URL"
+                type="url"
+                value={settings.demoUrl}
+                onChange={setting('demoUrl')}
+              />
+              <Input
+                label="Repository URL"
+                type="url"
+                value={settings.repositoryUrl}
+                onChange={setting('repositoryUrl')}
+              />
               <Input
                 label="Project name"
                 value={settings.title}
@@ -1158,7 +1132,7 @@ export default function ProjectWorkspace() {
                   }
                   className="h-4 w-4 accent-c-blue"
                 />
-                Public project (anyone signed in can find it)
+                Public project (anyone can view the showcase)
               </label>
               <div>
                 <input

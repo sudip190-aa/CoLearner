@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Code2 } from 'lucide-react'
 import { Button } from '../ui'
 import { supabase } from '../../services/supabase/client'
+import { useAuthStore } from '../../store/authStore'
 
 export default function OAuthButtons({
   disabled = false,
@@ -13,16 +14,31 @@ export default function OAuthButtons({
     setError('')
     setBusy(provider)
     try {
+      // CoLearn logout cannot clear provider cookies. Ask the provider to let
+      // the person choose their account, and discard our old local session.
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: 'local',
+      })
+      if (signOutError) throw signOutError
+      useAuthStore.getState().clearAuth()
+      sessionStorage.setItem(
+        'colearn:oauth-attempt',
+        JSON.stringify({ provider, startedAt: Date.now() }),
+      )
       if (acceptedPolicies)
         sessionStorage.setItem('colearn:accept-policies', 'true')
       else sessionStorage.removeItem('colearn:accept-policies')
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${location.origin}/auth/callback` },
+        options: {
+          redirectTo: `${location.origin}/auth/callback`,
+          queryParams: { prompt: 'select_account' },
+        },
       })
       if (error) throw error
     } catch (error) {
       sessionStorage.removeItem('colearn:accept-policies')
+      sessionStorage.removeItem('colearn:oauth-attempt')
       setError(error.message || 'Unable to connect. Please try again.')
       setBusy('')
     }

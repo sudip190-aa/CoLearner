@@ -100,6 +100,7 @@ export const task = async (t) => ({
   xp_awarded: 0,
 })
 export const project = async (p, context) => {
+  const authenticated = Boolean(await viewerId())
   const [members, milestones, updates, tasks, requests, uid, owner] = context
     ? [
         context.members.filter((m) => m.project_id === p.id),
@@ -112,22 +113,38 @@ export const project = async (p, context) => {
       ]
     : await Promise.all([
         rows('project_members', '*,user:profiles(*)', { project_id: p.id }),
-        rows('milestones', '*', { project_id: p.id }),
-        rows('project_updates', '*,author:profiles(*)', { project_id: p.id }),
-        rows('tasks', '*,assignee:profiles(*)', { project_id: p.id }),
-        rows('join_requests', '*,user:profiles(*)', { project_id: p.id }),
+        authenticated ? rows('milestones', '*', { project_id: p.id }) : [],
+        authenticated
+          ? rows('project_updates', '*,author:profiles(*)', {
+              project_id: p.id,
+            })
+          : [],
+        authenticated
+          ? rows('tasks', '*,assignee:profiles(*)', { project_id: p.id })
+          : [],
+        authenticated
+          ? rows(
+              'join_requests',
+              '*,user:profiles!join_requests_user_id_fkey(*)',
+              { project_id: p.id },
+            )
+          : [],
         viewerId(),
         personById(p.owner_id),
       ])
   const member = members.find((m) => m.user_id === uid),
     done = tasks.filter((t) => t.status === 'done').length
   const counters =
-    context?.counters || (await result(supabase.rpc('colearn_project_stats')))
+    context?.counters ||
+    (authenticated ? await result(supabase.rpc('colearn_project_stats')) : [])
   for (const m of members)
     m.user && (m.user.avatar = await mediaUrl('avatars', m.user.avatar))
   return {
     ...p,
     cover: await mediaUrl('project-covers', p.cover),
+    gallery_urls: await Promise.all(
+      (p.gallery || []).map((path) => mediaUrl('project-covers', path)),
+    ),
     owner: { ...owner, avatar: await mediaUrl('avatars', owner?.avatar) },
     members,
     member_count: members.length,
@@ -162,39 +179,64 @@ export const comment = async (c, votes, uid) => {
       ...c.author,
       avatar: await mediaUrl('avatars', c.author?.avatar),
     },
-    vote_score: v.reduce((sum, v) => sum + v.value, 0),
-    user_vote: v.find((v) => v.user_id === uid)?.value || 0,
+    vote_score: c.vote_score ?? v.reduce((sum, v) => sum + v.value, 0),
+    user_vote: c.user_vote ?? (v.find((v) => v.user_id === uid)?.value || 0),
     replies: [],
   }
 }
-export const thread = async (t, context) => {
-  const [comments, votes, uid, tags, author] = context
-    ? [
-        context.comments.filter((c) => c.thread_id === t.id),
-        context.votes,
-        context.uid,
-        context.tags.filter((c) => c.thread_id === t.id),
-        context.people.find((p) => p.id === t.author_id),
-      ]
-    : await Promise.all([
-        rows('comments', '*,author:profiles(*)', { thread_id: t.id }),
-        rows('votes'),
-        viewerId(),
-        rows('thread_tags', 'tag:tags(*)', { thread_id: t.id }),
-        personById(t.author_id),
-      ])
-  const all = await Promise.all(comments.map((c) => comment(c, votes, uid)))
+export const commentPage = async (
+  discussion,
+  before = null,
+  parent = null,
+  focus = null,
+) => {
+  const response = await result(
+    supabase.rpc('colearn_comment_page', {
+      discussion,
+      before_id: before,
+      parent,
+      focus,
+    }),
+  )
+  const all = await Promise.all(
+    response.results.map((c) => comment(c, [], null)),
+  )
+  if (parent)
+    return {
+      comments: all,
+      next_cursor: response.next_cursor,
+      count: response.count,
+    }
   const roots = all.filter((c) => !c.parent_id)
-  for (const c of roots) c.replies = all.filter((r) => r.parent_id === c.id)
-  const v = votes.filter((v) => v.thread_id === t.id)
+  for (const c of roots)
+    c.replies = all.filter((reply) => reply.parent_id === c.id)
+  return {
+    comments: roots,
+    next_cursor: response.next_cursor,
+    count: response.count,
+  }
+}
+export const thread = async (t) => {
+  const focus =
+    typeof location !== 'undefined' && /^#comment-\d+$/.test(location.hash)
+      ? Number(location.hash.slice(9))
+      : null
+  const [discussion, votes, uid, tags, author] = await Promise.all([
+    commentPage(t.id, null, null, focus),
+    rows('votes', '*', { thread_id: t.id }),
+    viewerId(),
+    rows('thread_tags', 'tag:tags(*)', { thread_id: t.id }),
+    personById(t.author_id),
+  ])
   return {
     ...t,
     author: { ...author, avatar: await mediaUrl('avatars', author?.avatar) },
     tags: tags.map((t) => t.tag.slug),
-    comments: roots,
-    comment_count: all.length,
-    vote_score: v.reduce((s, v) => s + v.value, 0),
-    user_vote: v.find((v) => v.user_id === uid)?.value || 0,
+    comments: discussion.comments,
+    next_comment_cursor: discussion.next_cursor,
+    comment_count: discussion.count,
+    vote_score: votes.reduce((sum, v) => sum + v.value, 0),
+    user_vote: votes.find((v) => v.user_id === uid)?.value || 0,
   }
 }
 export const page = (items, params = {}) => {
@@ -315,7 +357,7 @@ export const projectList = async (list) => {
       rows('milestones'),
       rows('project_updates', '*,author:profiles(*)'),
       rows('tasks', '*,assignee:profiles(*)'),
-      rows('join_requests', '*,user:profiles(*)'),
+      rows('join_requests', '*,user:profiles!join_requests_user_id_fkey(*)'),
       viewerId(),
       rows('profiles'),
       result(supabase.rpc('colearn_project_stats')),
@@ -337,7 +379,7 @@ export const projectList = async (list) => {
 }
 export const threadList = async (list) => {
   const [comments, votes, uid, tags, people] = await Promise.all([
-    rows('comments', '*,author:profiles(*)'),
+    rows('comments', '*,author:profiles!comments_author_id_fkey(*)'),
     rows('votes'),
     viewerId(),
     rows('thread_tags', 'thread_id,tag:tags(*)'),

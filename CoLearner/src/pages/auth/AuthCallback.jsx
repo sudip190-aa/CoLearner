@@ -47,10 +47,29 @@ export default function AuthCallback() {
           await verification.current
         }
         // OAuth PKCE codes are exchanged once by the client during initialization.
-        if (!(await session()))
+        const current = await session()
+        if (!current)
           throw new Error(
             'This link has expired. Please sign in or request a new email.',
           )
+        const attempt = JSON.parse(
+          sessionStorage.getItem('colearn:oauth-attempt') || 'null',
+        )
+        if (
+          !tokenHash &&
+          attempt &&
+          (!current.user.identities?.some(
+            (identity) => identity.provider === attempt.provider,
+          ) ||
+            Date.now() - attempt.startedAt > 20 * 60 * 1000)
+        )
+          throw new Error(
+            'This sign-in could not be matched to your provider. Please start again.',
+          )
+        const verified = await result(supabase.auth.getUser())
+        if (verified.user.id !== current.user.id)
+          throw new Error('Your account changed. Please sign in again.')
+        sessionStorage.removeItem('colearn:oauth-attempt')
         if (sessionStorage.getItem('colearn:accept-policies') === 'true') {
           await action('accept_policies')
           sessionStorage.removeItem('colearn:accept-policies')

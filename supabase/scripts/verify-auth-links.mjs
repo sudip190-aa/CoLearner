@@ -41,7 +41,7 @@ const ok = async (p) => {
   return r.data;
 };
 let user, confirmationUser, recoveryResponse;
-const tabs = await (await fetch("http://127.0.0.1:9223/json")).json(),
+const tabs = await (await fetch("http://127.0.0.1:9224/json")).json(),
   ws = new WebSocket(tabs.find((t) => t.type === "page").webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let id = 0;
@@ -92,7 +92,7 @@ const wait = async (predicate) => {
 try {
   await send("Network.enable");
   const clear = await send("Page.addScriptToEvaluateOnNewDocument", {
-    source: "localStorage.clear()",
+    source: "localStorage.clear(); sessionStorage.clear()",
   });
   await send("Page.navigate", { url: "http://127.0.0.1:5176/signup" });
   await wait("!!document.querySelector('input[name=terms]')");
@@ -151,6 +151,10 @@ try {
     );
   console.log(
     "PASS forgot-password form reports the actual email-service outcome",
+  );
+  // An abandoned provider login must not block a later password-recovery email.
+  await evalJS(
+    "sessionStorage.setItem('colearn:oauth-attempt',JSON.stringify({provider:'github',startedAt:Date.now()-3600000}))",
   );
   const recovery = await ok(
     admin.auth.admin.generateLink({ type: "recovery", email }),

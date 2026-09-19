@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { AlertTriangle, Lock, User, Trash2 } from 'lucide-react'
-import { Avatar, Button, Input, Modal, Textarea, useToast } from '../components/ui'
+import {
+  Avatar,
+  Button,
+  Input,
+  Modal,
+  Select,
+  Textarea,
+  useToast,
+} from '../components/ui'
 import { PageHeader } from '../components/layout/PageHeader'
 import { auth } from '../services/api'
 import { useAuthStore } from '../store/authStore'
@@ -22,6 +30,8 @@ const fieldErrorsFor = (error, mapping) =>
   )
 
 const profileFromUser = (user) => ({
+  role: user?.role || 'learner',
+  notificationSound: user?.notificationSound !== false,
   fullName: user?.fullName || '',
   username: user?.username || '',
   headline: user?.headline || '',
@@ -82,7 +92,8 @@ function ProfileTab() {
   const [saving, setSaving] = useState(false)
   const fileInput = useRef(null)
 
-  const dirty = Boolean(avatarFile) || JSON.stringify(form) !== JSON.stringify(saved)
+  const dirty =
+    Boolean(avatarFile) || JSON.stringify(form) !== JSON.stringify(saved)
 
   useEffect(() => {
     const handler = (event) => {
@@ -95,9 +106,13 @@ function ProfileTab() {
     return () => window.removeEventListener('beforeunload', handler)
   }, [dirty])
 
-  useEffect(() => () => avatarPreview && URL.revokeObjectURL(avatarPreview), [avatarPreview])
+  useEffect(
+    () => () => avatarPreview && URL.revokeObjectURL(avatarPreview),
+    [avatarPreview],
+  )
 
-  const update = (key, value) => setForm((current) => ({ ...current, [key]: value }))
+  const update = (key, value) =>
+    setForm((current) => ({ ...current, [key]: value }))
   const pickAvatar = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -111,6 +126,8 @@ function ProfileTab() {
     setFormError('')
     try {
       const { user: updated } = await auth.updateMe({
+        role: form.role,
+        notificationSound: form.notificationSound,
         fullName: form.fullName,
         username: form.username,
         headline: form.headline,
@@ -195,6 +212,29 @@ function ProfileTab() {
         </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
+        <Select
+          label="CoLearn role"
+          value={form.role}
+          onChange={(event) => update('role', event.target.value)}
+          options={[
+            { value: 'learner', label: 'Learner' },
+            { value: 'mentor', label: 'Mentor' },
+            ...(['learner', 'mentor'].includes(form.role)
+              ? []
+              : [{ value: form.role, label: form.role }]),
+          ]}
+        />
+        <label className="flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={form.notificationSound}
+            onChange={(event) =>
+              update('notificationSound', event.target.checked)
+            }
+            className="accent-c-blue"
+          />
+          Notification sounds
+        </label>
         <Input
           label="Name"
           value={form.fullName}
@@ -264,7 +304,11 @@ function ProfileTab() {
   )
 }
 
-const emptyPasswords = { currentPassword: '', newPassword: '', confirmPassword: '' }
+const emptyPasswords = {
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+}
 
 function AccountTab() {
   const toast = useToast()

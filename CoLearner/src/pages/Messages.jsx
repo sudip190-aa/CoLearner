@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -7,6 +7,10 @@ import {
   Check,
   CheckCheck,
   Info,
+  ImagePlus,
+  Mic,
+  Square,
+  X,
   MessageCircle,
   Phone,
   Search,
@@ -15,6 +19,10 @@ import {
 } from 'lucide-react'
 import { Avatar, Button, Modal } from '../components/ui'
 import ContactDetails from '../components/messages/ContactDetails'
+import MessageImage from '../components/messages/MessageImage'
+import MessageAudio from '../components/messages/MessageAudio'
+import VoiceMessagePlayer from '../components/messages/VoiceMessagePlayer'
+import { useVoiceRecorder } from '../hooks/useVoiceRecorder'
 import { useAuthStore } from '../store/authStore'
 import { useMessageInbox } from '../hooks/useMessages'
 import { messages } from '../services/messages'
@@ -29,14 +37,55 @@ function Conversation({
   onDraftChange,
 }) {
   const voice = useVoiceCall()
+  const recording = useVoiceRecorder(voice?.busy)
   const cache = useQueryClient()
   const setDraft = onDraftChange
   const [sending, setSending] = useState(false)
+  const [attachment, setAttachment] = useState(null)
+  const [preview, setPreview] = useState('')
+  const fileInput = useRef(null)
+  const messageInput = useRef(null)
+  useLayoutEffect(() => {
+    const input = messageInput.current
+    const resize = () => {
+      input.style.height = 'auto'
+      input.style.height = `${Math.min(input.scrollHeight, 144)}px`
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
+  }, [draft])
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview)
+    },
+    [preview],
+  )
+  const selectAttachment = (file) => {
+    setAttachment(file)
+    setPreview(file ? URL.createObjectURL(file) : '')
+  }
   const [error, setError] = useState('')
   const [visible, setVisible] = useState(!document.hidden)
   const [atBottom, setAtBottom] = useState(true)
   const bottom = useRef(null)
   const pendingSend = useRef(null)
+  const mounted = useRef(true)
+  const discardVoice = () => {
+    if (pendingSend.current?.audioPath) {
+      void messages.discardAudio(pendingSend.current.audioPath)
+      pendingSend.current = null
+    }
+    recording.cancel()
+  }
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+      if (pendingSend.current?.audioPath && !pendingSend.current.sending)
+        void messages.discardAudio(pendingSend.current.audioPath)
+    }
+  }, [])
   const history = useInfiniteQuery({
     queryKey: ['messages', me, person.id],
     queryFn: ({ pageParam }) => messages.history(person.id, pageParam),
@@ -76,22 +125,66 @@ function Conversation({
   }, [person.id, unread, visible, atBottom, cache, me])
   const send = async (event) => {
     event.preventDefault()
-    if (!draft.trim() || sending) return
+    if (
+      (!draft.trim() && !attachment && !recording.blob) ||
+      sending ||
+      recording.busy
+    )
+      return
     setSending(true)
     setError('')
     const body = draft.trim()
-    if (pendingSend.current?.body !== body)
-      pendingSend.current = { body, id: crypto.randomUUID() }
+    if (
+      pendingSend.current?.body !== body ||
+      pendingSend.current?.file !== attachment ||
+      pendingSend.current?.audio !== recording.blob
+    ) {
+      if (pendingSend.current?.audioPath)
+        void messages.discardAudio(pendingSend.current.audioPath)
+      pendingSend.current = {
+        body,
+        file: attachment,
+        audio: recording.blob,
+        id: crypto.randomUUID(),
+      }
+    }
+    const attempt = pendingSend.current
+    attempt.sending = true
     try {
-      await messages.send(person.id, body, pendingSend.current.id)
+      if (attachment && !attempt.imagePath)
+        attempt.imagePath = await messages.uploadImage(
+          person.id,
+          attachment,
+          attempt.id,
+        )
+      if (recording.blob && !attempt.audioPath)
+        attempt.audioPath = await messages.uploadAudio(
+          person.id,
+          recording.blob,
+          attempt.id,
+          recording.durationMs,
+        )
+      await messages.send(
+        person.id,
+        body,
+        attempt.id,
+        attempt.imagePath || null,
+        attempt.audioPath
+          ? { path: attempt.audioPath, durationMs: recording.durationMs }
+          : null,
+      )
       setDraft('')
+      selectAttachment(null)
       setAtBottom(true)
       pendingSend.current = null
+      recording.cancel()
       await Promise.all([
         cache.invalidateQueries({ queryKey: ['messages', me, person.id] }),
         cache.invalidateQueries({ queryKey: ['message-contacts', me] }),
       ])
     } catch (e) {
+      if (!mounted.current && attempt.audioPath)
+        void messages.discardAudio(attempt.audioPath)
       setError(
         e.code === '42501'
           ? 'You can only message accepted connections. Refresh your connections to continue.'
@@ -99,6 +192,7 @@ function Conversation({
               'Message was not sent. Your draft is still here; try again.',
       )
     } finally {
+      attempt.sending = false
       setSending(false)
     }
   }
@@ -137,7 +231,7 @@ function Conversation({
               ? 'Finish your current call first'
               : 'Start a voice call'
           }
-          disabled={!voice?.available || voice.busy}
+          disabled={!voice?.available || voice.busy || recording.busy}
           onClick={() => void voice.call(person)}
           className="rounded-xl bg-c-blue-wash p-2.5 text-c-blue transition hover:bg-c-blue-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:cursor-not-allowed disabled:opacity-40"
         >
@@ -243,6 +337,13 @@ function Conversation({
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 sm:max-w-[80%] ${mine ? 'rounded-br-md bg-c-blue-soft text-c-text' : 'rounded-bl-md bg-slate-50 text-c-text'}`}
                 >
+                  {entry.image_path && <MessageImage path={entry.image_path} />}
+                  {entry.audio_path && (
+                    <MessageAudio
+                      path={entry.audio_path}
+                      durationMs={entry.audio_duration_ms}
+                    />
+                  )}
                   <p className="whitespace-pre-wrap break-words text-[13px] leading-6 [overflow-wrap:anywhere]">
                     {entry.body}
                   </p>
@@ -288,19 +389,159 @@ function Conversation({
         </button>
       )}
       <form onSubmit={send} className="border-t border-c-border/70 p-3 lg:p-4">
-        {error && (
+        {recording.busy && (
+          <div
+            className="mb-3 flex items-center gap-3 rounded-xl bg-c-blue-wash px-3 py-3"
+            aria-label="Voice recording"
+          >
+            <span
+              className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-red-500 motion-reduce:animate-none"
+              aria-hidden="true"
+            />
+            <div className="min-w-0 flex-1 text-xs">
+              <p role="status" className="font-semibold">
+                {recording.phase === 'requesting'
+                  ? 'Allow microphone access…'
+                  : recording.phase === 'processing'
+                    ? 'Preparing your recording…'
+                    : 'Recording voice message'}
+              </p>
+              <p className="mt-1 tabular-nums text-c-text-muted">
+                {Math.floor(recording.durationMs / 60000)}:
+                {String(Math.floor(recording.durationMs / 1000) % 60).padStart(
+                  2,
+                  '0',
+                )}{' '}
+                / 2:00
+              </p>
+            </div>
+            {recording.phase === 'recording' && (
+              <button
+                type="button"
+                aria-label="Stop recording"
+                onClick={recording.stop}
+                className="rounded-lg bg-c-blue p-2 text-white"
+              >
+                <Square size={16} fill="currentColor" />
+              </button>
+            )}
+            <button
+              type="button"
+              aria-label="Cancel recording"
+              onClick={discardVoice}
+              className="rounded-lg p-2 text-c-text-muted hover:bg-white"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
+        {recording.blob && recording.url && (
+          <div
+            className="mb-3 rounded-xl border border-c-border bg-c-blue-wash px-3 py-2"
+            aria-label="Voice message preview"
+          >
+            <div className="mb-1 flex items-center justify-between gap-3">
+              <span className="text-xs font-medium">Ready to send</span>
+              <button
+                type="button"
+                disabled={sending}
+                aria-label="Discard voice message"
+                onClick={discardVoice}
+                className="rounded p-1 text-c-text-muted hover:bg-white"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <VoiceMessagePlayer
+              src={recording.url}
+              durationMs={recording.durationMs}
+              label="Preview voice message"
+            />
+          </div>
+        )}
+        {preview && (
+          <div className="mb-3 flex items-center gap-3">
+            <img
+              src={preview}
+              alt="Image ready to send"
+              className="h-20 w-20 rounded-xl object-cover"
+            />
+            <span className="min-w-0 flex-1 truncate text-xs text-c-text-muted">
+              {attachment.name}
+            </span>
+            <button
+              type="button"
+              disabled={sending}
+              aria-label="Remove image"
+              onClick={() => selectAttachment(null)}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
+        {(error || recording.error) && (
           <p role="alert" className="mb-2 text-sm text-c-danger">
-            {error}
+            {error || recording.error}
           </p>
         )}
-        <div className="flex items-end gap-2 rounded-xl border border-c-border bg-c-blue-wash/50 p-2 focus-within:border-c-blue/40 focus-within:ring-2 focus-within:ring-c-blue/10">
+        <div className="flex items-end gap-1 rounded-xl border border-c-border bg-c-blue-wash/50 p-1.5 transition-colors focus-within:border-c-blue/50 sm:p-2">
+          <input
+            ref={fileInput}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
+            aria-label="Attach one image"
+            disabled={sending || recording.busy || !!recording.blob}
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              if (file) {
+                selectAttachment(file)
+                setError('')
+              }
+              event.target.value = ''
+            }}
+          />
+          <button
+            type="button"
+            disabled={sending || recording.busy || !!recording.blob}
+            aria-label="Attach image"
+            title="Attach image"
+            onClick={() => fileInput.current?.click()}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-c-blue transition-colors hover:bg-c-blue-soft disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ImagePlus size={19} />
+          </button>
+          <button
+            type="button"
+            aria-label="Record voice message"
+            title={
+              voice?.busy
+                ? 'Finish the call before recording'
+                : 'Record a voice message'
+            }
+            disabled={
+              sending ||
+              recording.busy ||
+              !!recording.blob ||
+              !!attachment ||
+              voice?.busy
+            }
+            onClick={() => {
+              setError('')
+              void recording.start()
+            }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-c-blue transition-colors hover:bg-c-blue-soft disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Mic size={19} />
+          </button>
           <textarea
+            ref={messageInput}
             aria-label="Message"
             placeholder={`Message ${person.full_name.split(' ')[0] || person.username}…`}
             value={draft}
-            disabled={sending}
+            disabled={sending || recording.busy}
             maxLength={4000}
-            rows={2}
+            rows={1}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (
@@ -312,20 +553,26 @@ function Conversation({
                 e.currentTarget.form.requestSubmit()
               }
             }}
-            className="max-h-36 min-w-0 flex-1 resize-none bg-transparent px-2 py-1 text-sm leading-6 outline-none"
+            className="min-h-10 max-h-36 min-w-0 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-1 py-2 text-sm leading-6 outline-none focus-visible:outline-none sm:px-2"
           />
           <Button
             type="submit"
             aria-label="Send message"
-            disabled={!draft.trim()}
+            disabled={
+              recording.busy ||
+              (!draft.trim() && !attachment && !recording.blob)
+            }
             loading={sending}
             icon={Send}
-            className="!h-9 !w-9 !rounded-xl !p-0"
+            title="Send message"
+            className="!h-10 !w-10 shrink-0 !rounded-lg !p-0 !shadow-none"
           />
         </div>
-        <div className="mt-2 flex justify-between gap-3 text-[10px] text-c-text-muted">
-          <span>Enter to send · Shift + Enter for a new line</span>
-          <span>{draft.length}/4000</span>
+        <div className="mt-1.5 flex items-center justify-end gap-3 px-1 text-[10px] leading-4 text-c-text-muted sm:justify-between">
+          <span className="hidden sm:inline">
+            Enter to send · Shift + Enter for a new line
+          </span>
+          <span className="shrink-0 tabular-nums">{draft.length}/4000</span>
         </div>
       </form>
     </section>

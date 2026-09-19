@@ -133,12 +133,13 @@ export default function ProjectDetail() {
   const full = project.spotsLeft <= 0
   const closed = isClosedProject(project)
 
-  const run = async (work, success) => {
+  const run = async (work, success, leavePrivate = false) => {
     if (busy) return
     setBusy(true)
     try {
       await work()
-      await load()
+      if (leavePrivate) navigate('/projects', { replace: true })
+      else await load()
       if (success) toast.success(...success)
     } catch (requestError) {
       toast.error(requestError?.message || 'That did not work')
@@ -160,6 +161,7 @@ export default function ProjectDetail() {
       action === 'accept'
         ? ['Welcome aboard', 'You joined the team']
         : ['Invitation declined'],
+      action === 'decline' && !project.isPublic,
     )
   const leave = async () => {
     setBusy(true)
@@ -217,7 +219,14 @@ export default function ProjectDetail() {
   ) : full ? (
     <Button disabled>Team is full</Button>
   ) : (
-    <Button icon={Users} onClick={() => setRequestOpen(true)}>
+    <Button
+      icon={Users}
+      onClick={() =>
+        currentUserId
+          ? setRequestOpen(true)
+          : navigate(`/login?next=/projects/${project.slug}`)
+      }
+    >
       Request to join
     </Button>
   )
@@ -266,10 +275,49 @@ export default function ProjectDetail() {
                 </span>
               </div>
             </div>
-            <div className="shrink-0">{action}</div>
+            <div className="flex shrink-0 flex-wrap items-center gap-3">
+              {project.demoUrl && (
+                <a
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-c-blue px-4 py-2.5 text-sm font-semibold text-white"
+                >
+                  View Live Demo <ExternalLink size={15} />
+                </a>
+              )}
+              {project.repositoryUrl && (
+                <a
+                  href={project.repositoryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-c-blue"
+                >
+                  Repository ?
+                </a>
+              )}
+              {action}
+            </div>
           </div>
         </div>
       </section>
+      {!!project.galleryUrls?.length && (
+        <section
+          aria-label="Project gallery"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {project.galleryUrls.map((url, index) => (
+            <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={url}
+                alt={`${project.title} screenshot ${index + 1}`}
+                loading="lazy"
+                className="h-52 w-full rounded-2xl border border-c-border bg-white object-contain"
+              />
+            </a>
+          ))}
+        </section>
+      )}
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
           <Tabs value={tab} onChange={setTab}>

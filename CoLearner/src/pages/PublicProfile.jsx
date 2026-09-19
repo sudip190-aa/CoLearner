@@ -54,10 +54,30 @@ const roleLabels = {
 }
 // Connection state (from the API) -> button look and the action a click performs.
 const connectionStates = {
-  none: { label: 'Connect', icon: UserPlus, variant: 'primary', action: 'connect' },
-  pending_sent: { label: 'Request sent', icon: Clock3, variant: 'secondary', action: 'cancel' },
-  pending_received: { label: 'Accept request', icon: Check, variant: 'primary', action: 'accept' },
-  accepted: { label: 'Connected', icon: Check, variant: 'secondary', action: null },
+  none: {
+    label: 'Connect',
+    icon: UserPlus,
+    variant: 'primary',
+    action: 'connect',
+  },
+  pending_sent: {
+    label: 'Request sent',
+    icon: Clock3,
+    variant: 'secondary',
+    action: 'cancel',
+  },
+  pending_received: {
+    label: 'Accept request',
+    icon: Check,
+    variant: 'primary',
+    action: 'accept',
+  },
+  accepted: {
+    label: 'Connected',
+    icon: Check,
+    variant: 'secondary',
+    action: null,
+  },
 }
 
 function Stat({ label, value, icon: Icon, accent = false }) {
@@ -103,7 +123,7 @@ function ProjectCard({ project }) {
         <div className="mt-5 flex items-center justify-between text-xs text-c-text-muted">
           <span>{project.category}</span>
           <Link
-            to={`/projects/${project.slug}`}
+            to={`/showcase/${project.slug}`}
             className="inline-flex items-center gap-1 font-semibold text-c-blue hover:text-c-blue-hover"
           >
             View project <ExternalLink className="h-3 w-3" />
@@ -168,11 +188,15 @@ export default function PublicProfile() {
   const signedInUser = useAuthStore((state) => state.user)
   // The result is tagged with the username it was fetched for, so navigating between profiles
   // shows the loading state instead of the previous person's data.
-  const [result, setResult] = useState({ username: null, data: null, error: null })
+  const [result, setResult] = useState({
+    username: null,
+    data: null,
+    error: null,
+  })
   const [busy, setBusy] = useState(false)
   const isOwnProfile = Boolean(
     signedInUser?.username &&
-      signedInUser.username.toLowerCase() === username.toLowerCase(),
+    signedInUser.username.toLowerCase() === username.toLowerCase(),
   )
 
   useEffect(() => {
@@ -195,7 +219,9 @@ export default function PublicProfile() {
     return (
       <div className="min-h-screen bg-white px-6 py-16">
         <EmptyState
-          title={notFound ? 'Profile not found' : 'We could not load this profile'}
+          title={
+            notFound ? 'Profile not found' : 'We could not load this profile'
+          }
           description={
             notFound
               ? 'This public profile may have moved or no longer exists.'
@@ -210,10 +236,19 @@ export default function PublicProfile() {
   }
   if (!data) return <ProfileSkeleton />
 
-  const { profile: person, skills, projects, badges, books, heatmap, stats } = data
+  const {
+    profile: person,
+    skills,
+    projects,
+    badges,
+    books,
+    heatmap,
+    stats,
+  } = data
   const completedProjects = projects.filter((p) => p.status === 'completed')
   const contributions = heatmap.reduce((sum, week) => sum + week.activity, 0)
-  const state = connectionStates[person.connectionStatus] || connectionStates.none
+  const state =
+    connectionStates[person.connectionStatus] || connectionStates.none
 
   const share = async () => {
     try {
@@ -231,10 +266,14 @@ export default function PublicProfile() {
         ...previous,
         data: {
           ...previous.data,
-          profile: { ...previous.data.profile, connectionStatus: outcome.connectionStatus },
+          profile: {
+            ...previous.data.profile,
+            connectionStatus: outcome.connectionStatus,
+          },
         },
       }))
-      if (state.action === 'connect') toast.success('Request sent', `We let ${person.fullName} know`)
+      if (state.action === 'connect')
+        toast.success('Request sent', `We let ${person.fullName} know`)
     } catch (requestError) {
       toast.error(requestError?.message || 'Could not update the connection')
     } finally {
@@ -249,7 +288,12 @@ export default function PublicProfile() {
         <div className="mx-auto flex h-14 max-w-content items-center justify-between px-6">
           <Logo variant="full" size="sm" to="/" />
           {signedInUser ? (
-            <Button size="sm" variant="outline" to="/dashboard" className="join-button">
+            <Button
+              size="sm"
+              variant="outline"
+              to="/dashboard"
+              className="join-button"
+            >
               Back to Colearn
             </Button>
           ) : (
@@ -372,7 +416,10 @@ export default function PublicProfile() {
           </section>
           <section className="public-section grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div>
-              <SectionTitle eyebrow="About" title="A little about this learner" />
+              <SectionTitle
+                eyebrow="About"
+                title="A little about this learner"
+              />
               <p className="mt-5 max-w-3xl text-base leading-8 text-c-text-muted">
                 {person.bio || 'This member has not written a bio yet.'}
               </p>
@@ -394,7 +441,9 @@ export default function PublicProfile() {
                     </Chip>
                   ))
                 ) : (
-                  <p className="text-sm text-c-text-muted">No skills listed yet.</p>
+                  <p className="text-sm text-c-text-muted">
+                    No skills listed yet.
+                  </p>
                 )}
               </div>
             </div>
@@ -429,9 +478,7 @@ export default function PublicProfile() {
                 ))}
               </div>
             ) : (
-              <p className="mt-6 text-sm text-c-text-muted">
-                No projects yet.
-              </p>
+              <p className="mt-6 text-sm text-c-text-muted">No projects yet.</p>
             )}
           </section>
           <section className="public-section border-t border-c-border py-14">

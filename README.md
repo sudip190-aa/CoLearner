@@ -35,6 +35,10 @@ See [the migration runbook](supabase/MIGRATION.md) for data migration, authentic
 
 See [the educational library runbook](supabase/BOOK_LEARNING.md) for the public book catalog, licensed source collection, admin publishing, document uploads, saved reading positions, background indexing and book assistant setup.
 
+See [social features and UX](supabase/SOCIAL_UX.md) for messaging images, notifications, mentions, project invitations, public showcases and account isolation. The [implementation report](supabase/SOCIAL_UX_REPORT.md) records verification, configuration limits and every changed file.
+
+Recorded [voice messages](supabase/VOICE_MESSAGES.md) are available through the microphone beside the chat composer, with preview, private delivery and playback controls.
+
 ## Checks
 
 ```powershell

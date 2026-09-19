@@ -17,7 +17,6 @@ import { Avatar } from '../ui/Avatar'
 import { Dropdown, DropdownDivider, DropdownItem } from '../ui/Dropdown'
 import Container from './Container'
 import { useNotificationStore } from '../../store/notificationStore.js'
-import { useNotificationSync } from '../../hooks/useNotificationSync.js'
 import { describeNotification } from '../../lib/notifications.js'
 import { useAuthStore } from '../../store/authStore.js'
 import { formatRelative } from '../../lib/formatters.js'
@@ -39,7 +38,6 @@ export function AppNavbar() {
   const notifications = useNotificationStore((state) => state.notifications)
   const markRead = useNotificationStore((state) => state.markRead)
   const unreadCount = useNotificationStore((state) => state.unreadCount)
-  useNotificationSync()
   useMessageSync()
   const inbox = useMessageInbox()
   const unreadMessages = (inbox.data || []).reduce(

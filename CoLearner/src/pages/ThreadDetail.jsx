@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import {
   Flag,
   MessageCircle,
@@ -22,6 +22,8 @@ import {
   Textarea,
   useToast,
 } from '../components/ui'
+import MentionTextarea from '../components/community/MentionTextarea'
+import { supabase } from '../services/supabase/client'
 import { community } from '../services/api.js'
 import { useInFlight } from '../hooks/useInFlight.js'
 import { formatRelative } from '../lib/formatters.js'
@@ -75,7 +77,11 @@ function Comment({ comment, ctx }) {
   const canManage = isOwn || me.isStaff
   const editing = ctx.editing?.id === comment.id
   return (
-    <div className="flex gap-3" data-comment-id={comment.id}>
+    <div
+      id={`comment-${comment.id}`}
+      className="flex scroll-mt-24 gap-3 rounded-xl p-2 target:bg-c-yellow-soft"
+      data-comment-id={comment.id}
+    >
       <Avatar
         src={comment.author.avatar}
         name={comment.author.fullName}
@@ -100,7 +106,7 @@ function Comment({ comment, ctx }) {
         </div>
         {editing ? (
           <form onSubmit={ctx.saveEdit} className="mt-2 space-y-2">
-            <Textarea
+            <MentionTextarea
               value={ctx.editing.body}
               onChange={(event) =>
                 ctx.setEditing({ ...ctx.editing, body: event.target.value })
@@ -129,6 +135,7 @@ function Comment({ comment, ctx }) {
         ) : (
           <RichText
             text={comment.body}
+            mentions={comment.mentions || []}
             className="mt-2 text-sm leading-6 text-c-text"
           />
         )}
@@ -190,7 +197,7 @@ function Comment({ comment, ctx }) {
             onSubmit={(event) => ctx.submitComment(event, comment.id)}
             className="mt-3 space-y-2"
           >
-            <Textarea
+            <MentionTextarea
               value={replyBody}
               onChange={(event) => setReplyBody(event.target.value)}
               rows={3}
@@ -225,6 +232,16 @@ function Comment({ comment, ctx }) {
             ))}
           </div>
         )}
+        {comment.replyCount > (comment.replies?.length || 0) && (
+          <Button
+            size="sm"
+            variant="ghost"
+            loading={ctx.loadingHistory}
+            onClick={() => ctx.loadHistory(comment)}
+          >
+            Load earlier replies
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -243,6 +260,7 @@ export default function ThreadDetail() {
   const navigate = useNavigate()
   const toast = useToast()
   const inFlight = useInFlight()
+  const location = useLocation()
   const user = useAuthStore((state) => state.user)
   const me = { id: String(user?.id), isStaff: Boolean(user?.isStaff) }
   const [thread, setThread] = useState(null)
@@ -257,6 +275,7 @@ export default function ThreadDetail() {
   const [reason, setReason] = useState(reportReasons[0])
   const [details, setDetails] = useState('')
   const [busy, setBusy] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   const load = useCallback(async () => {
     const { thread: result } = await community.getThread(slug)
@@ -279,9 +298,85 @@ export default function ThreadDetail() {
     return () => {
       active = false
     }
-  }, [slug])
+  }, [slug, location.hash])
 
-  const voteThread = (value) => inFlight('vote-thread', () => castThreadVote(value))
+  useEffect(() => {
+    if (!thread?.id) return
+    let timer
+    const channel = supabase
+      .channel(`comments:${thread.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'comments',
+          filter: `thread_id=eq.${thread.id}`,
+        },
+        () => {
+          clearTimeout(timer)
+          timer = setTimeout(() => void load().catch(() => {}), 250)
+        },
+      )
+      .subscribe()
+    return () => {
+      clearTimeout(timer)
+      void supabase.removeChannel(channel)
+    }
+  }, [thread?.id, load])
+  useEffect(() => {
+    if (location.hash.startsWith('#comment-') && thread)
+      document
+        .getElementById(location.hash.slice(1))
+        ?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }, [location.hash, thread])
+
+  const loadHistory = async (parentComment = null) => {
+    if (loadingHistory) return
+    setLoadingHistory(true)
+    try {
+      const before = parentComment
+        ? Math.min(...parentComment.replies.map((reply) => Number(reply.id)))
+        : thread.nextCommentCursor
+      const result = await community.getCommentHistory(slug, {
+        before,
+        parent: parentComment?.id,
+      })
+      setThread((current) =>
+        parentComment
+          ? {
+              ...current,
+              comments: mapComments(current.comments, parentComment.id, {
+                replies: [
+                  ...parentComment.replies,
+                  ...result.comments.filter(
+                    (reply) =>
+                      !parentComment.replies.some((old) => old.id === reply.id),
+                  ),
+                ],
+              }),
+            }
+          : {
+              ...current,
+              comments: [
+                ...current.comments,
+                ...result.comments.filter(
+                  (comment) =>
+                    !current.comments.some((old) => old.id === comment.id),
+                ),
+              ],
+              nextCommentCursor: result.nextCursor,
+            },
+      )
+    } catch (e) {
+      toast.error(e.message || 'Earlier comments could not load')
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
+
+  const voteThread = (value) =>
+    inFlight('vote-thread', () => castThreadVote(value))
   const castThreadVote = async (value) => {
     try {
       const { score, userVote } = await community.vote(
@@ -295,7 +390,9 @@ export default function ThreadDetail() {
     }
   }
   const voteComment = (comment, value) =>
-    inFlight(`vote-comment-${comment.id}`, () => castCommentVote(comment, value))
+    inFlight(`vote-comment-${comment.id}`, () =>
+      castCommentVote(comment, value),
+    )
   const castCommentVote = async (comment, value) => {
     try {
       const { score, userVote } = await community.vote(
@@ -438,6 +535,8 @@ export default function ThreadDetail() {
   const isOwnThread = thread.author.id === me.id
   const ctx = {
     thread,
+    loadHistory,
+    loadingHistory,
     me,
     replyTo,
     setReplyTo,
@@ -551,24 +650,32 @@ export default function ThreadDetail() {
             </p>
           )}
         </div>
+        {thread.nextCommentCursor && (
+          <Button
+            className="mt-5"
+            variant="outline"
+            loading={loadingHistory}
+            onClick={() => loadHistory()}
+          >
+            Load earlier comments
+          </Button>
+        )}
       </section>
       <form
         onSubmit={(event) => submitComment(event, null)}
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-c-border bg-white/95 px-4 py-3 shadow-md backdrop-blur sm:px-6"
+        className="mt-8 rounded-2xl border border-c-border bg-white p-4 sm:p-5"
       >
         <div className="mx-auto flex max-w-4xl items-center gap-3">
           <Avatar src={user?.avatar} name={user?.fullName || 'You'} size="sm" />
-          <input
-            value={topBody}
-            onChange={(event) => setTopBody(event.target.value)}
-            placeholder="Share a helpful answer... (use @username to mention someone)"
-            className="min-w-0 flex-1 rounded-brand border border-c-border px-3 py-2 text-sm focus:border-c-blue focus:outline-none focus:ring-2 focus:ring-c-blue/20"
-            aria-label="Write a comment"
-            maxLength={5000}
-          />
-          <span className="hidden text-xs text-c-text-muted md:block">
-            Helpful comments earn XP
-          </span>
+          <div className="min-w-0 flex-1">
+            <MentionTextarea
+              value={topBody}
+              onChange={(event) => setTopBody(event.target.value)}
+              rows={2}
+              placeholder="Add to the conversation. Type @ to mention a connection."
+              aria-label="Write a comment"
+            />
+          </div>
           <Button
             type="submit"
             icon={Send}

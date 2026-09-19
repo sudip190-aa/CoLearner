@@ -1,38 +1,37 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Eye,
+  ArrowRight,
   MessageCircle,
   Pin,
   Plus,
+  SlidersHorizontal,
   ThumbsDown,
   ThumbsUp,
-  Trophy,
+  X,
 } from 'lucide-react'
 import {
   Avatar,
   Button,
-  Chip,
   EmptyState,
   Pagination,
   SearchBar,
+  Select,
   Skeleton,
   Tabs,
   TabsList,
   TabTrigger,
   useToast,
 } from '../components/ui'
-import { PageHeader } from '../components/layout/PageHeader'
-import { community, users } from '../services/api.js'
+import { community } from '../services/api.js'
 import { useInFlight } from '../hooks/useInFlight.js'
 import { formatRelative } from '../lib/formatters.js'
 import { toPlainText } from '../lib/inlineMarkdown.js'
 import { useAuthStore } from '../store/authStore'
 
 const PAGE_SIZE = 6
-// The category filter values are the backend's thread categories.
 const categories = [
-  { value: '', label: 'All discussions' },
+  { value: '', label: 'All topics' },
   { value: 'frontend', label: 'Frontend' },
   { value: 'backend', label: 'Backend' },
   { value: 'product', label: 'Product' },
@@ -42,17 +41,21 @@ const categories = [
 
 function ThreadSkeleton() {
   return (
-    <div className="space-y-3">
-      {[1, 2, 3, 4].map((item) => (
+    <div
+      className="grid gap-5 lg:grid-cols-2"
+      aria-label="Loading discussions"
+      aria-busy="true"
+    >
+      {Array.from({ length: PAGE_SIZE }, (_, i) => (
         <div
-          key={item}
-          className="flex gap-4 rounded-brand-lg border border-c-border bg-white p-5"
+          key={i}
+          className="overflow-hidden rounded-2xl border border-c-border bg-white"
         >
-          <Skeleton width="42px" height="80px" />
-          <div className="flex-1 space-y-3">
-            <Skeleton width="70%" height="20px" />
-            <Skeleton width="100%" height="32px" />
-            <Skeleton width="40%" height="16px" />
+          <Skeleton height="44px" className="rounded-none" />
+          <div className="space-y-4 p-5">
+            <Skeleton width="85%" height="48px" />
+            <Skeleton height="20px" />
+            <Skeleton width="60%" height="32px" />
           </div>
         </div>
       ))}
@@ -61,10 +64,11 @@ function ThreadSkeleton() {
 }
 
 function VotePill({ votes, userVote, onVote, disabled }) {
-  const voted = userVote !== 0
   return (
     <div
-      className={`flex shrink-0 flex-col items-center rounded-brand border px-2 py-1 ${voted ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border text-c-text-muted'}`}
+      className="flex shrink-0 items-center rounded-lg border border-c-border text-c-text-muted"
+      role="group"
+      aria-label="Discussion votes"
       title={disabled ? "You can't vote on your own post" : undefined}
     >
       <button
@@ -73,11 +77,14 @@ function VotePill({ votes, userVote, onVote, disabled }) {
         onClick={() => onVote(userVote === 1 ? 0 : 1)}
         aria-label="Upvote"
         aria-pressed={userVote === 1}
-        className="disabled:opacity-40"
+        className={`flex h-8 w-8 items-center justify-center rounded-l-lg transition-colors hover:bg-c-blue-wash disabled:cursor-not-allowed disabled:opacity-40 ${userVote === 1 ? 'bg-c-blue-soft text-c-blue' : ''}`}
       >
-        <ThumbsUp className="h-3.5 w-3.5" />
+        <ThumbsUp size={14} />
       </button>
-      <span className="my-0.5 text-sm font-bold" aria-label="Score">
+      <span
+        className={`min-w-5 text-center text-xs font-semibold tabular-nums ${userVote ? 'text-c-blue' : ''}`}
+        aria-label="Score"
+      >
         {votes}
       </span>
       <button
@@ -86,147 +93,86 @@ function VotePill({ votes, userVote, onVote, disabled }) {
         onClick={() => onVote(userVote === -1 ? 0 : -1)}
         aria-label="Downvote"
         aria-pressed={userVote === -1}
-        className="disabled:opacity-40"
+        className={`flex h-8 w-8 items-center justify-center rounded-r-lg transition-colors hover:bg-c-blue-wash disabled:cursor-not-allowed disabled:opacity-40 ${userVote === -1 ? 'bg-c-blue-soft text-c-blue' : ''}`}
       >
-        <ThumbsDown className="h-3.5 w-3.5" />
+        <ThumbsDown size={14} />
       </button>
     </div>
   )
 }
 
 function ThreadCard({ thread, onVote, isOwn }) {
+  const topic =
+    categories.find((item) => item.value === thread.category)?.label ||
+    thread.category
   return (
-    <article
-      className={`rounded-brand-lg border border-c-border bg-white p-5 shadow-sm ${thread.pinned ? 'border-l-4 border-l-c-yellow' : ''}`}
-    >
-      <div className="flex gap-4">
-        <VotePill
-          votes={thread.votes}
-          userVote={thread.userVote}
-          disabled={isOwn}
-          onVote={(value) => onVote(thread, value)}
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start gap-2">
-            {thread.pinned && (
-              <Pin
-                className="mt-1 h-4 w-4 shrink-0 text-c-warning"
-                aria-label="Pinned"
-              />
-            )}
-            <Link
-              to={`/community/${thread.slug}`}
-              className="line-clamp-2 text-lg font-bold leading-6 text-c-text hover:text-c-blue"
-            >
-              {thread.title}
-            </Link>
-          </div>
-          <p className="mt-2 line-clamp-2 text-sm leading-5 text-c-text-muted">
-            {toPlainText(thread.body)}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {thread.tags.map((tag) => (
-              <Chip key={tag}>{tag}</Chip>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-c-text-muted">
-            <Link
-              to={`/u/${thread.author.username}`}
-              className="flex items-center gap-2 hover:text-c-blue"
-            >
-              <Avatar
-                src={thread.author.avatar}
-                name={thread.author.fullName}
-                size="sm"
-              />
-              {thread.author.fullName}
-            </Link>
-            <span>{formatRelative(thread.createdAt)}</span>
-            <span className="flex items-center gap-1">
-              <MessageCircle className="h-3.5 w-3.5" />
-              {thread.commentCount}
-            </span>
-            <span className="flex items-center gap-1">
-              <Eye className="h-3.5 w-3.5" />
-              {thread.views}
-            </span>
-          </div>
+    <article className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white shadow-sm transition-[border-color,box-shadow] hover:border-c-blue/25 hover:shadow-md">
+      <div className="flex h-11 items-center justify-between gap-3 bg-c-blue-wash px-5">
+        <span className="truncate text-[10px] font-bold uppercase tracking-[0.1em] text-c-blue">
+          {topic}
+        </span>
+        {thread.pinned && (
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-c-yellow-soft px-2 py-1 text-[10px] font-medium text-c-text">
+            <Pin size={11} aria-hidden="true" />
+            Pinned
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <Link
+          to={`/community/${thread.slug}`}
+          className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+        >
+          <h2 className="min-h-12 line-clamp-2 break-words !text-lg !font-semibold !leading-6 !tracking-tight transition-colors hover:text-c-blue">
+            {thread.title}
+          </h2>
+        </Link>
+        <p className="mt-2 line-clamp-1 break-words text-sm leading-6 text-c-text-muted">
+          {toPlainText(thread.body)}
+        </p>
+        <div className="mb-4 mt-4 flex min-w-0 items-center gap-2.5">
+          <Link
+            to={`/u/${thread.author.username}`}
+            className="flex min-w-0 items-center gap-2 text-xs text-c-text-muted hover:text-c-blue"
+          >
+            <Avatar
+              src={thread.author.avatar}
+              name={thread.author.fullName}
+              size="sm"
+            />
+            <span className="truncate">{thread.author.fullName}</span>
+          </Link>
+          <span aria-hidden="true" className="text-c-border">
+            &middot;
+          </span>
+          <time
+            dateTime={thread.createdAt}
+            className="shrink-0 text-[11px] text-c-text-muted"
+          >
+            {formatRelative(thread.createdAt)}
+          </time>
+        </div>
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-c-border/70 pt-3">
+          <VotePill
+            votes={thread.votes}
+            userVote={thread.userVote}
+            disabled={isOwn}
+            onVote={(value) => onVote(thread, value)}
+          />
+          <Link
+            to={`/community/${thread.slug}`}
+            aria-label={`Open discussion: ${thread.title}, ${thread.commentCount} replies`}
+            className="inline-flex items-center gap-2 rounded-lg py-2 text-xs font-medium text-c-blue hover:text-c-blue-hover"
+          >
+            <MessageCircle size={15} aria-hidden="true" />
+            {thread.commentCount
+              ? `${thread.commentCount} ${thread.commentCount === 1 ? 'reply' : 'replies'}`
+              : 'Join in'}
+            <ArrowRight size={14} aria-hidden="true" className="ml-1" />
+          </Link>
         </div>
       </div>
     </article>
-  )
-}
-
-function FilterSidebar({
-  category,
-  setCategory,
-  tag,
-  setTag,
-  tags,
-  myThreads,
-  setMyThreads,
-  answered,
-  setAnswered,
-}) {
-  return (
-    <aside className="space-y-6">
-      <div>
-        <h2 className="text-xs font-bold uppercase tracking-wide text-c-text-muted">
-          Categories
-        </h2>
-        <nav className="mt-3 space-y-1">
-          {categories.map((item) => (
-            <button
-              type="button"
-              key={item.value}
-              onClick={() => setCategory(item.value)}
-              className={`block w-full rounded-brand px-3 py-2 text-left text-sm ${category === item.value ? 'bg-c-blue-soft font-semibold text-c-blue' : 'text-c-text-muted hover:bg-c-blue-wash'}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-      {tags.length > 0 && (
-        <div>
-          <h2 className="text-xs font-bold uppercase tracking-wide text-c-text-muted">
-            Popular tags
-          </h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {tags.map((item) => (
-              <button
-                type="button"
-                key={item.slug}
-                onClick={() => setTag(tag === item.slug ? '' : item.slug)}
-                className={`rounded-full px-2.5 py-1 text-xs ${tag === item.slug ? 'bg-c-blue text-white' : 'bg-c-blue-wash text-c-text-muted hover:text-c-blue'}`}
-              >
-                #{item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="space-y-3 border-t border-c-border pt-4">
-        <label className="flex items-center gap-2 text-sm text-c-text">
-          <input
-            type="checkbox"
-            checked={myThreads}
-            onChange={(event) => setMyThreads(event.target.checked)}
-            className="h-4 w-4 accent-c-blue"
-          />
-          My threads
-        </label>
-        <label className="flex items-center gap-2 text-sm text-c-text">
-          <input
-            type="checkbox"
-            checked={answered}
-            onChange={(event) => setAnswered(event.target.checked)}
-            className="h-4 w-4 accent-c-blue"
-          />
-          Answered
-        </label>
-      </div>
-    </aside>
   )
 }
 
@@ -235,7 +181,7 @@ export default function Community() {
   const inFlight = useInFlight()
   const currentUserId = useAuthStore((state) => state.user?.id)
   const [threads, setThreads] = useState(null)
-  const [contributors, setContributors] = useState([])
+  const [total, setTotal] = useState(0)
   const [popularTags, setPopularTags] = useState([])
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
@@ -247,14 +193,13 @@ export default function Community() {
   const [page, setPage] = useState(1)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  // Side panels: real tags and the members with the most XP. Optional, so failures stay quiet.
+  // Tags are optional; discussions still load if this request fails.
   useEffect(() => {
     let active = true
-    Promise.all([community.getTags(), users.getUsers({ ordering: 'xp' })])
-      .then(([tagResult, people]) => {
-        if (!active) return
-        setPopularTags(tagResult.tags.slice(0, 8))
-        setContributors(people.items.slice(0, 5))
+    community
+      .getTags()
+      .then((tagResult) => {
+        if (active) setPopularTags(tagResult.tags.slice(0, 8))
       })
       .catch(() => {})
     return () => {
@@ -273,10 +218,13 @@ export default function Community() {
         ordering: sort,
         mine: myThreads,
         answered,
+        page,
+        pageSize: PAGE_SIZE,
       })
-      .then(({ threads: result }) => {
+      .then(({ threads: result, count }) => {
         if (!active) return
         setThreads(result)
+        setTotal(count)
         setError('')
       })
       .catch((requestError) => {
@@ -286,7 +234,7 @@ export default function Community() {
     return () => {
       active = false
     }
-  }, [category, tag, query, sort, myThreads, answered])
+  }, [category, tag, query, sort, myThreads, answered, page])
 
   const resetPage = useCallback(() => setPage(1), [])
   const handleSearch = useCallback(
@@ -300,14 +248,12 @@ export default function Community() {
     resetPage()
     setter(value)
   }
-  const visible = (threads || []).slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  )
-  const totalPages = Math.ceil((threads || []).length / PAGE_SIZE)
+  const visible = threads || []
+  const totalPages = Math.ceil(total / PAGE_SIZE)
 
   // A vote is a toggle on the server, so a double-click would silently undo itself.
-  const vote = (thread, value) => inFlight(`vote-${thread.id}`, () => castVote(thread, value))
+  const vote = (thread, value) =>
+    inFlight(`vote-${thread.id}`, () => castVote(thread, value))
   const castVote = async (thread, value) => {
     try {
       const { score, userVote } = await community.vote(
@@ -324,16 +270,33 @@ export default function Community() {
       toast.error(requestError?.message || 'Could not record your vote')
     }
   }
-  const sidebarProps = {
-    category,
-    setCategory: filtering(setCategory),
-    tag,
-    setTag: filtering(setTag),
-    tags: popularTags,
-    myThreads,
-    setMyThreads: filtering(setMyThreads),
-    answered,
-    setAnswered: filtering(setAnswered),
+  const activeFilters = [
+    category && {
+      label:
+        categories.find((item) => item.value === category)?.label || category,
+      clear: () => filtering(setCategory)(''),
+    },
+    tag && {
+      label: `#${popularTags.find((item) => item.slug === tag)?.name || tag}`,
+      clear: () => filtering(setTag)(''),
+    },
+    myThreads && {
+      label: 'My threads',
+      clear: () => filtering(setMyThreads)(false),
+    },
+    answered && {
+      label: 'Answered',
+      clear: () => filtering(setAnswered)(false),
+    },
+  ].filter(Boolean)
+  const hasFilters = activeFilters.length > 0 || Boolean(query.trim())
+  const clearFilters = () => {
+    setCategory('')
+    setTag('')
+    setMyThreads(false)
+    setAnswered(false)
+    setQuery('')
+    resetPage()
   }
 
   if (error && !threads)
@@ -346,58 +309,185 @@ export default function Community() {
       />
     )
   return (
-    <div>
-      <PageHeader
-        title="Community"
-        subtitle="Ask better questions, share what you are learning, and help someone move forward."
-        actions={
-          <Button to="/community/new" icon={Plus}>
-            Start a discussion
-          </Button>
-        }
-      />
-      <div className="mb-5 xl:hidden">
-        <Button
-          variant="outline"
-          onClick={() => setFiltersOpen((open) => !open)}
-        >
-          Filters {filtersOpen ? '↑' : '↓'}
-        </Button>
-        {filtersOpen && (
-          <div className="mt-4 rounded-brand-lg border border-c-border bg-white p-4">
-            <FilterSidebar {...sidebarProps} />
-          </div>
-        )}
-      </div>
-      <div className="grid items-start gap-8 xl:grid-cols-[190px_minmax(0,1fr)_220px]">
-        <div className="hidden xl:block">
-          <FilterSidebar {...sidebarProps} />
+    <div className="mx-auto max-w-6xl">
+      <header className="mb-7 flex flex-wrap items-start justify-between gap-4 sm:mb-9">
+        <div>
+          <h1 className="!text-3xl !font-bold !tracking-tight sm:!text-4xl">
+            Community
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-c-text-muted sm:text-base">
+            Ask a question. Share what you're learning.
+          </p>
         </div>
-        <main className="min-w-0">
-          <div className="mb-5 space-y-4">
-            <SearchBar
-              value={query}
-              onChange={handleSearch}
-              placeholder="Search discussions..."
+        <Button to="/community/new" icon={Plus} className="!rounded-xl sm:mt-1">
+          Start a discussion
+        </Button>
+      </header>
+
+      <div className="flex items-center gap-3">
+        <SearchBar
+          value={query}
+          onChange={handleSearch}
+          placeholder="Search discussions..."
+          aria-label="Search discussions"
+          containerClassName="min-w-0 flex-1"
+          className="!h-12 !rounded-xl"
+        />
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((open) => !open)}
+          aria-expanded={filtersOpen}
+          aria-controls="community-filters"
+          aria-label={`Filter discussions${activeFilters.length ? `, ${activeFilters.length} active` : ''}`}
+          className={`relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-medium transition-colors ${filtersOpen || activeFilters.length ? 'border-c-blue/40 bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue/40 hover:text-c-blue'}`}
+        >
+          <SlidersHorizontal size={18} />
+          <span className="hidden sm:inline">Filters</span>
+          {activeFilters.length > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-c-blue px-1 text-[10px] text-white">
+              {activeFilters.length}
+            </span>
+          )}
+        </button>
+      </div>
+      {filtersOpen && (
+        <section
+          id="community-filters"
+          aria-label="Community filters"
+          className="mt-4 rounded-xl border border-c-border bg-white p-4 sm:p-5"
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Select
+              label="Topic"
+              value={category}
+              onChange={(e) => filtering(setCategory)(e.target.value)}
+              options={categories}
             />
-            <Tabs
-              value={sort}
-              onChange={(value) => {
-                resetPage()
-                setSort(value)
-              }}
-            >
-              <TabsList>
-                <TabTrigger value="latest">Latest</TabTrigger>
-                <TabTrigger value="top">Top</TabTrigger>
-                <TabTrigger value="unanswered">Unanswered</TabTrigger>
-              </TabsList>
-            </Tabs>
+            <Select
+              label="Tag"
+              value={tag}
+              onChange={(e) => filtering(setTag)(e.target.value)}
+              options={[
+                { value: '', label: 'All tags' },
+                ...popularTags.map((item) => ({
+                  value: item.slug,
+                  label: item.name,
+                })),
+              ]}
+            />
           </div>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={myThreads}
+                onChange={(e) => filtering(setMyThreads)(e.target.checked)}
+                className="h-4 w-4 accent-c-blue"
+              />
+              My threads
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={answered}
+                onChange={(e) => {
+                  filtering(setAnswered)(e.target.checked)
+                  if (e.target.checked && sort === 'unanswered')
+                    setSort('latest')
+                }}
+                className="h-4 w-4 accent-c-blue"
+              />
+              Answered
+            </label>
+          </div>
+        </section>
+      )}
+      {hasFilters && (
+        <div
+          className="mt-4 flex flex-wrap items-center gap-2"
+          aria-label="Active filters"
+        >
+          {activeFilters.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={item.clear}
+              aria-label={`Remove ${item.label} filter`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-white px-3 py-1.5 text-xs text-c-blue hover:bg-c-blue-soft"
+            >
+              {item.label}
+              <X size={12} aria-hidden="true" />
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="px-2 py-1.5 text-xs font-medium text-c-text-muted hover:text-c-blue"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
+      <Tabs
+        value={sort}
+        onChange={(value) => {
+          resetPage()
+          setSort(value)
+          if (value === 'unanswered') setAnswered(false)
+        }}
+        className="mt-7"
+      >
+        <div className="mb-5 flex items-end justify-between gap-3 border-b border-c-border">
+          <TabsList
+            aria-label="Discussion order"
+            className="!gap-5 !border-0 sm:!gap-7"
+          >
+            <TabTrigger
+              id="community-tab-latest"
+              aria-controls="community-results"
+              value="latest"
+              className="!pb-4"
+            >
+              Latest
+            </TabTrigger>
+            <TabTrigger
+              id="community-tab-top"
+              aria-controls="community-results"
+              value="top"
+              className="!pb-4"
+            >
+              Top
+            </TabTrigger>
+            <TabTrigger
+              id="community-tab-unanswered"
+              aria-controls="community-results"
+              value="unanswered"
+              className="!pb-4"
+            >
+              Unanswered
+            </TabTrigger>
+          </TabsList>
+          {threads && (
+            <span
+              className="mb-4 hidden shrink-0 text-xs tabular-nums text-c-text-muted sm:inline"
+              aria-live="polite"
+            >
+              {total} {total === 1 ? 'discussion' : 'discussions'}
+            </span>
+          )}
+        </div>
+        <section
+          id="community-results"
+          role="tabpanel"
+          aria-labelledby={`community-tab-${sort}`}
+          tabIndex={0}
+          className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+        >
           {error && (
             <p
               role="alert"
-              className="mb-4 rounded-brand bg-red-50 px-3 py-2 text-sm text-c-danger"
+              className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
             >
               {error}
             </p>
@@ -406,7 +496,7 @@ export default function Community() {
             <ThreadSkeleton />
           ) : visible.length ? (
             <>
-              <div className="space-y-3">
+              <div className="grid gap-5 lg:grid-cols-2">
                 {visible.map((thread) => (
                   <ThreadCard
                     key={thread.id}
@@ -425,59 +515,20 @@ export default function Community() {
             </>
           ) : (
             <EmptyState
-              title="No discussions found"
-              description="Try another filter or start a new conversation."
-              actionLabel="Start a discussion"
-              actionTo="/community/new"
+              icon={MessageCircle}
+              title="No discussions yet"
+              description={
+                hasFilters
+                  ? 'Try another topic or clear your filters.'
+                  : 'Have a question? Start a conversation.'
+              }
+              actionLabel={hasFilters ? 'Clear filters' : 'Start a discussion'}
+              onAction={hasFilters ? clearFilters : undefined}
+              actionTo={hasFilters ? undefined : '/community/new'}
             />
           )}
-        </main>
-        <aside className="hidden space-y-5 xl:block">
-          <Link
-            to="/community/new"
-            className="flex w-full items-center justify-center gap-2 rounded-brand bg-c-blue px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-c-blue-hover"
-          >
-            <Plus className="h-4 w-4" />
-            Start a discussion
-          </Link>
-          {contributors.length > 0 && (
-            <div className="rounded-brand-lg border border-c-border bg-white p-4">
-              <div className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-c-warning" />
-                <h2 className="text-sm font-bold text-c-text">
-                  Top contributors
-                </h2>
-              </div>
-              <div className="mt-4 space-y-4">
-                {contributors.map((person, index) => (
-                  <Link
-                    key={person.id}
-                    to={`/u/${person.username}`}
-                    className="flex items-center gap-3 hover:text-c-blue"
-                  >
-                    <span className="w-4 text-xs font-bold text-c-text-muted">
-                      {index + 1}
-                    </span>
-                    <Avatar
-                      src={person.avatar}
-                      name={person.fullName}
-                      size="sm"
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-c-text">
-                        {person.fullName}
-                      </p>
-                      <p className="text-xs text-c-text-muted">
-                        {person.xp.toLocaleString()} XP
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
-      </div>
+        </section>
+      </Tabs>
     </div>
   )
 }

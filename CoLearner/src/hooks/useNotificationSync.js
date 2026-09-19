@@ -1,27 +1,46 @@
 import { useEffect } from 'react'
-import { useAuthStore } from '../store/authStore.js'
-import { useNotificationStore } from '../store/notificationStore.js'
+import { useAuthStore } from '../store/authStore'
+import { useNotificationStore } from '../store/notificationStore'
+import { supabase } from '../services/supabase/client'
 
-// Keeps the bell current while the app is open: on mount, when the tab becomes visible again, and every minute.
-// A different person signing in (no page reload) starts from an empty list, never the previous person's.
-export function useNotificationSync(intervalMs = 60000) {
+export function useNotificationSync() {
   const userId = useAuthStore((state) => state.user?.id)
-  const refresh = useNotificationStore((state) => state.refresh)
-  const reset = useNotificationStore((state) => state.reset)
   useEffect(() => {
-    if (!userId) return undefined
-    reset()
-    void refresh()
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') void refresh()
+    const store = useNotificationStore.getState()
+    store.reset()
+    if (!userId) return
+    let debounce
+    const refresh = () => {
+      clearTimeout(debounce)
+      debounce = setTimeout(() => void store.refresh(), 150)
     }
-    const timer = window.setInterval(onVisible, intervalMs)
-    document.addEventListener('visibilitychange', onVisible)
+    const channel = supabase
+      .channel(`notifications:${userId}:${crypto.randomUUID()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        refresh,
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') refresh()
+      })
+    void store.refresh()
+    const visible = () => {
+      if (!document.hidden) refresh()
+    }
+    const interval = setInterval(visible, 15000)
+    document.addEventListener('visibilitychange', visible)
     return () => {
-      window.clearInterval(timer)
-      document.removeEventListener('visibilitychange', onVisible)
+      clearTimeout(debounce)
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', visible)
+      void supabase.removeChannel(channel)
+      store.reset()
     }
-  }, [userId, refresh, reset, intervalMs])
+  }, [userId])
 }
-
-export default useNotificationSync

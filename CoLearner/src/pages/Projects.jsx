@@ -41,6 +41,7 @@ function SkeletonGrid() {
 
 export default function Projects() {
   const [projects, setProjects] = useState(null)
+  const [total, setTotal] = useState(0)
   const [facets, setFacets] = useState({ categories: [], tech: [] })
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
@@ -52,28 +53,6 @@ export default function Projects() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1)
-
-  // Filter options come from the projects that exist, loaded once without filters.
-  useEffect(() => {
-    let active = true
-    projectsApi
-      .getProjects()
-      .then(({ projects: everything }) => {
-        if (!active) return
-        setFacets({
-          categories: [
-            ...new Set(everything.map((project) => project.category)),
-          ].sort(),
-          tech: [...new Set(everything.flatMap((project) => project.techStack))]
-            .sort()
-            .slice(0, 12),
-        })
-      })
-      .catch(() => {})
-    return () => {
-      active = false
-    }
-  }, [])
 
   // The list itself is filtered, searched and ordered by the backend.
   useEffect(() => {
@@ -87,10 +66,14 @@ export default function Projects() {
         looking,
         mine,
         ordering: sort,
+        page,
+        pageSize: PAGE_SIZE,
       })
-      .then(({ projects: result }) => {
+      .then(({ projects: result, count, facets: options }) => {
         if (!active) return
         setProjects(result)
+        setTotal(count)
+        if (options) setFacets(options)
         setError('')
       })
       .catch((requestError) => {
@@ -102,7 +85,7 @@ export default function Projects() {
     return () => {
       active = false
     }
-  }, [query, category, status, tech, looking, mine, sort])
+  }, [query, category, status, tech, looking, mine, sort, page])
 
   const resetPage = useCallback(() => setPage(1), [])
   const handleSearch = useCallback(
@@ -126,12 +109,9 @@ export default function Projects() {
     setSort('newest')
     resetPage()
   }
-  const totalPages = Math.max(1, Math.ceil((projects || []).length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
-  const visible = (projects || []).slice(
-    (safePage - 1) * PAGE_SIZE,
-    safePage * PAGE_SIZE,
-  )
+  const visible = projects || []
 
   const tab = mine ? 'mine' : looking ? 'open' : 'all'
   const tabs = [
@@ -346,8 +326,7 @@ export default function Projects() {
           <>
             <div className="mb-4 flex items-center justify-between gap-3 text-xs text-c-text-muted">
               <p role="status">
-                {projects.length}{' '}
-                {projects.length === 1 ? 'project' : 'projects'}
+                {total} {total === 1 ? 'project' : 'projects'}
               </p>
               {(query || filterCount > 0) && (
                 <button
