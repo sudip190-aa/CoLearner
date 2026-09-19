@@ -1,0 +1,1261 @@
+id,slug,owner_id,title,summary,description,category,tech_stack,looking_for_roles,cover,status,max_members,is_public,created_at,updated_at
+112,quiet-seat-map,d9fbcbde-376a-5f82-9fb5-268a24b02d57,Quiet-seat map,Show which study rooms are quiet without asking people to share their exact location.,"Show which study rooms are quiet without asking people to share their exact location.
+
+Scope
+Room-level reports expire after two hours; no individual tracking.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Niruta Adhikari: frontend developer
+Sahana Rao: backend developer
+Yanis Benali: product designer
+Sander Berg: frontend developer
+
+Fictional student project for the CoLearn demo.",Web Development,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]",[],,completed,6,true,2026-07-05T02:30:00+00:00,2026-07-17T02:30:00+00:00
+113,borrowbox,001e944b-e64e-5742-afb7-5e04327e41ee,Borrowbox,Help students lend calculators and lab coats for a few days instead of buying another one.,"Help students lend calculators and lab coats for a few days instead of buying another one.
+
+Scope
+Borrowers and lenders agree on pickup in person; the app does not handle deposits.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+We are still checking the scope before building.
+
+Team contributions
+Kritika Joshi: backend developer
+Lerato Mokoena: research partner
+
+Fictional student project for the CoLearn demo.",Community,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,idea,4,true,2026-07-14T22:30:00+00:00,2026-09-17T10:30:00+00:00
+114,deadline-fridge,a992f17b-79b6-5dcf-aed4-2aebaa5775c7,Deadline fridge,Put shared flat bills and university deadlines on one small calendar.,"Put shared flat bills and university deadlines on one small calendar.
+
+Scope
+Keep personal and shared reminders separate, even when they fall on the same day.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Mahnoor Siddiqui: full-stack developer
+Yanis Benali: product designer
+Priyanka Shah: frontend developer
+Layan Al Harbi: product designer
+
+Fictional student project for the CoLearn demo.",Productivity,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]",[],,archived,7,true,2026-08-16T00:30:00+00:00,2026-09-05T00:30:00+00:00
+115,repair-cafe-notes,f22a7317-9c2b-5d13-99b9-1a1622094bb3,Repair café notes,Keep a useful record of repairs at a neighbourhood repair session.,"Keep a useful record of repairs at a neighbourhood repair session.
+
+Scope
+Photograph objects only with permission and avoid storing customer details.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Tashi Wangchuk: product designer
+Oliver Tran: research partner
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""Figma"",""User Research"",""Accessibility""]","[""Data analyst""]",,active,4,true,2026-07-24T19:30:00+00:00,2026-09-15T10:30:00+00:00
+116,receipt-split-notebook,daa36188-60fd-56a2-938b-70b1b51084b0,Receipt split notebook,Split grocery receipts when flatmates did not buy equal amounts.,"Split grocery receipts when flatmates did not buy equal amounts.
+
+Scope
+Use manual entry first and show rounding differences before saving.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+We are still checking the scope before building.
+
+Team contributions
+Zhou Xinyi: database developer
+Yanis Benali: product designer
+Siriporn Saelim: product designer
+Reem Al Ghamdi: mobile developer
+Mateo Rivera: research partner
+
+Fictional student project for the CoLearn demo.",FinTech,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]","[""Mobile developer""]",,idea,8,true,2026-08-27T05:30:00+00:00,2026-09-14T10:30:00+00:00
+117,lunch-leftovers-board,1bc15434-bc22-56cc-a890-336efd2a11e5,Lunch leftovers board,Let student groups offer unopened surplus food after an event.,"Let student groups offer unopened surplus food after an event.
+
+Scope
+Listings need an expiry time and allergen notes; no claims about food safety.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Kavya Reddy: frontend developer
+Maja Wiśniewska: backend developer
+Mateo Rivera: research partner
+Onni Nieminen: frontend developer
+Alva Lindberg: research partner
+James Rangi: research partner
+
+Fictional student project for the CoLearn demo.",Climate,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]",[],,completed,7,true,2026-08-25T05:30:00+00:00,2026-09-07T05:30:00+00:00
+118,fieldwork-logbook,36016ab9-3cc9-5f6a-8bc7-1d138ad9cb43,Fieldwork logbook,Record water sampling notes when field trips have no mobile signal.,"Record water sampling notes when field trips have no mobile signal.
+
+Scope
+Store measurements with units and export the original readings unchanged.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Liu Yifan: gis contributor
+Aisha Ibrahim: gis contributor
+Mikkel Jensen: content designer
+
+Fictional student project for the CoLearn demo.",Research,"[""QGIS"",""Statistics"",""Technical Writing""]","[""Content designer""]",,active,4,true,2026-08-21T08:30:00+00:00,2026-09-12T10:30:00+00:00
+119,workshop-waitlist,f0f4eb8c-a1ed-50a1-bc7d-2863700a31a5,Workshop waitlist,Fill empty seats when someone cancels a student workshop place.,"Fill empty seats when someone cancels a student workshop place.
+
+Scope
+Offer the seat to one person at a time so two confirmations cannot collide.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Sota Ishikawa: backend developer
+Daan Bakker: backend developer
+James Rangi: research partner
+Zoya Ansari: research partner
+Sander Berg: frontend developer
+
+Fictional student project for the CoLearn demo.",Web Development,"[""Python"",""Django"",""PostgreSQL"",""React""]",[],,completed,6,true,2026-06-28T02:30:00+00:00,2026-07-17T02:30:00+00:00
+120,first-shift-guide,6ab0c42d-0ad5-5b3d-9c6c-4ab9eaa47586,First shift guide,Make a short onboarding guide for students working their first café shift.,"Make a short onboarding guide for students working their first café shift.
+
+Scope
+The shop owner can edit checklists without learning a content management system.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Haruka Fujimoto: research partner
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]","[""Motion designer""]",,active,4,true,2026-08-08T00:30:00+00:00,2026-09-17T10:30:00+00:00
+121,bus-stop-shade-atlas,19e81afb-74c1-5b4a-9af3-469f3b610235,Bus stop shade atlas,Map which bus stops offer shade during a summer commute.,"Map which bus stops offer shade during a summer commute.
+
+Scope
+Use observation times instead of pretending shade is the same all day.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Nattapong Chaiyaporn: gis contributor
+
+Fictional student project for the CoLearn demo.",Climate,"[""QGIS"",""Statistics"",""Technical Writing""]","[""Content designer""]",,idea,3,true,2026-07-03T19:30:00+00:00,2026-09-16T10:30:00+00:00
+122,practice-partner-cards,a36cd93c-2f0c-5956-9a51-8094e39a7bed,Practice partner cards,Help language learners find someone free for a short speaking session.,"Help language learners find someone free for a short speaking session.
+
+Scope
+Match overlapping time windows and preferred language, not a made-up score.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Do-yun Lee: frontend developer
+Sahana Rao: backend developer
+Ethan Lim: frontend developer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]","[""Backend developer""]",,active,5,true,2026-07-29T01:30:00+00:00,2026-09-15T10:30:00+00:00
+123,tiny-grant-tracker,bb4b0d34-59a4-5948-a9be-a1aa6caece55,Tiny grant tracker,Track small student society grants and the receipts needed for reimbursement.,"Track small student society grants and the receipts needed for reimbursement.
+
+Scope
+Every balance must be explainable from an expense row.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Lê Thu Hà: database developer
+Sumaiya Akter: frontend developer
+Avery Campbell: frontend developer
+
+Fictional student project for the CoLearn demo.",Research,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]","[""Mobile developer""]",,active,4,true,2026-08-29T20:30:00+00:00,2026-09-14T10:30:00+00:00
+124,caption-draft-desk,6690668c-e73d-51ff-9ca4-36bec9b8c175,Caption draft desk,Turn lecture-club video transcripts into captions that volunteers can correct.,"Turn lecture-club video transcripts into captions that volunteers can correct.
+
+Scope
+Editing and export are local; do not upload recorded students to an external model.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Miguel Dela Cruz: motion designer
+Emre Yılmaz: full-stack developer
+Priyanka Shah: frontend developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Blender"",""Video Editing"",""Figma""]",[],,completed,6,true,2026-08-16T05:30:00+00:00,2026-09-03T05:30:00+00:00
+125,garden-sensor-diary,baa8ef70-5b01-5a49-84cb-71c353290705,Garden sensor diary,Compare soil readings from two planters in the student garden.,"Compare soil readings from two planters in the student garden.
+
+Scope
+Show missing sensor readings clearly instead of joining gaps with a line.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Amirul Hakim: hardware builder
+Arjun Nair: hardware builder
+Omar Mostafa: frontend developer
+Thea Nilsen: research partner
+Mariana Silva: product designer
+
+Fictional student project for the CoLearn demo.",Climate,"[""Python"",""Arduino"",""Git""]","[""Security reviewer""]",,active,7,true,2026-08-14T15:30:00+00:00,2026-09-12T10:30:00+00:00
+126,paper-queue,95927b04-f214-5c26-878d-fb55176e41bc,Paper queue,Keep a reading list for a small research group with notes on why each paper matters.,"Keep a reading list for a small research group with notes on why each paper matters.
+
+Scope
+Store public paper links and original notes, not copyrighted PDF copies.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Intan Permata: data analyst
+Lerato Mokoena: research partner
+Võ Hoàng Nam: product designer
+
+Fictional student project for the CoLearn demo.",Research,"[""Python"",""SQL"",""Data Visualization""]",[],,completed,4,true,2026-07-15T23:30:00+00:00,2026-07-28T23:30:00+00:00
+127,peer-review-rota,a60d0128-bffa-5d2d-9915-36693e6bc3ba,Peer review rota,Give each class project two reviewers without pairing the same people every week.,"Give each class project two reviewers without pairing the same people every week.
+
+Scope
+Review history is visible so assignments can be checked by the group.
+
+Beginner: a small working flow before adding extra features.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Niamh Byrne: full-stack developer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]",[],,archived,3,true,2026-08-26T02:30:00+00:00,2026-09-18T10:30:00+00:00
+128,lab-kit-checklist,20b63262-d3e6-555a-95b2-84fc87694a19,Lab kit checklist,Check lab kits in and out before practical sessions.,"Check lab kits in and out before practical sessions.
+
+Scope
+A kit can be incomplete; missing parts must not disappear when it is returned.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Grace Nguyen: backend developer
+Sara Koskinen: research partner
+
+Fictional student project for the CoLearn demo.",Productivity,"[""Python"",""Django"",""PostgreSQL"",""React""]",[],,completed,4,true,2026-07-03T22:30:00+00:00,2026-07-30T22:30:00+00:00
+129,portfolio-screenshot-studio,8ecc0792-3789-53b2-a26e-fc6daa886eb7,Portfolio screenshot studio,Arrange project screenshots into consistent portfolio images.,"Arrange project screenshots into consistent portfolio images.
+
+Scope
+Keep screenshot text readable and offer an export with no decorative frame.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Inès Laurent: motion designer
+Naomi Brooks: frontend developer
+Thando Nkosi: backend developer
+Efua Osei: research partner
+Su-bin Choi: research partner
+Niruta Adhikari: frontend developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Blender"",""Video Editing"",""Figma""]",[],,completed,8,true,2026-08-29T09:30:00+00:00,2026-09-18T10:30:00+00:00
+130,reading-pace-journal,e747fee0-a84b-5f51-98a3-7481903c9023,Reading pace journal,Let students record a reading session and one thing they understood.,"Let students record a reading session and one thing they understood.
+
+Scope
+There is no speed ranking; skipped days should not wipe out the journal.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Hannah Richter: mobile developer
+Inês Costa: backend developer
+Alva Lindberg: research partner
+Onni Nieminen: frontend developer
+Aditya Menon: ml contributor
+Jonas Weber: product designer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""Flutter"",""Dart"",""Git""]",[],,completed,8,true,2026-08-08T02:30:00+00:00,2026-08-31T02:30:00+00:00
+131,accessible-poster-checker,651ce25b-8132-52d9-8f74-889f22c3bb5c,Accessible poster checker,Flag tiny text and low contrast in student event posters.,"Flag tiny text and low contrast in student event posters.
+
+Scope
+This is a prototype helper, not an accessibility certification tool.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Evie Bennett: ml contributor
+Rafiul Islam: ml contributor
+
+Fictional student project for the CoLearn demo.",AI,"[""Python"",""Machine Learning"",""Statistics""]","[""Research partner""]",,active,5,true,2026-08-31T21:30:00+00:00,2026-09-13T10:30:00+00:00
+132,club-handover-folder,e3efd234-c7f9-5957-937f-661b1c3981ef,Club handover folder,Help an outgoing club committee leave useful notes for the next team.,"Help an outgoing club committee leave useful notes for the next team.
+
+Scope
+Separate public event guides from committee-only notes.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Saoirse Kelly: content designer
+Mateo Rivera: research partner
+Freya Collins: content designer
+Avery Campbell: frontend developer
+Su-bin Choi: research partner
+
+Fictional student project for the CoLearn demo.",Community,"[""Figma"",""Content Strategy"",""Photography""]","[""Frontend developer""]",,active,7,true,2026-07-17T07:30:00+00:00,2026-09-12T10:30:00+00:00
+133,bike-repair-pricebook,bf54d417-d834-5d3e-a7f9-106377fe05a5,Bike repair pricebook,Compare parts costs for a small community bike workshop.,"Compare parts costs for a small community bike workshop.
+
+Scope
+Record the date of each price rather than presenting old quotes as current.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Alva Lindberg: research partner
+Tomás Benítez: product designer
+Yui Matsuda: motion designer
+Omar Hassan: backend developer
+Kacper Zieliński: motion designer
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]","[""Motion designer""]",,idea,8,true,2026-07-11T02:30:00+00:00,2026-09-18T10:30:00+00:00
+134,seminar-question-wall,53f78f7e-e2df-586b-b483-5748c92d0f9f,Seminar question wall,Collect questions during a seminar without interrupting the speaker.,"Collect questions during a seminar without interrupting the speaker.
+
+Scope
+Moderators can hide personal information before a question is displayed.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Priyanka Shah: frontend developer
+Efua Osei: research partner
+Salma Adel: research partner
+
+Fictional student project for the CoLearn demo.",Web Development,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]",[],,completed,6,true,2026-08-26T20:30:00+00:00,2026-09-18T10:30:00+00:00
+135,rain-route-diary,ffe47fd1-7989-5728-addd-50b504edd889,Rain route diary,Record which walking routes stayed usable after heavy rain.,"Record which walking routes stayed usable after heavy rain.
+
+Scope
+Reports are observations, not navigation guarantees.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Freja Nielsen: mobile developer
+Reem Al Ghamdi: mobile developer
+Tashi Wangchuk: product designer
+Ruby Fletcher: frontend developer
+Sagar Tamang: research partner
+
+Fictional student project for the CoLearn demo.",Mobile,"[""Flutter"",""Dart"",""Git""]",[],,archived,7,true,2026-07-25T03:30:00+00:00,2026-08-13T03:30:00+00:00
+136,volunteer-hour-ledger,7624f38b-fbca-546f-af04-c9dda9318f82,Volunteer hour ledger,Keep volunteer hours for a student-run tutoring group.,"Keep volunteer hours for a student-run tutoring group.
+
+Scope
+Coordinators confirm sessions; users cannot approve their own hours.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Beatriz Sousa: database developer
+Kritika Joshi: backend developer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]",[],,completed,4,true,2026-08-08T07:30:00+00:00,2026-08-28T07:30:00+00:00
+137,open-dataset-postcard,20b4182c-90f7-51da-99e8-97ade4d19a92,Open dataset postcard,Explain one public dataset with a chart and a note about its limitations.,"Explain one public dataset with a chart and a note about its limitations.
+
+Scope
+Preserve units, source dates and missing values in the final chart.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+We are still checking the scope before building.
+
+Team contributions
+Alma Sørensen: data analyst
+Chiara Moretti: product designer
+Regina Flores: frontend developer
+Dewi Lestari: product designer
+Ruby Fletcher: frontend developer
+
+Fictional student project for the CoLearn demo.",Data Science,"[""Python"",""SQL"",""Data Visualization""]","[""Research partner""]",,idea,8,true,2026-07-28T20:30:00+00:00,2026-09-14T10:30:00+00:00
+138,reading-room-occupancy,1b1e4344-fde4-5cc2-b82c-4fb458696522,Reading room occupancy,Estimate quiet-room demand from anonymous hourly counts.,"Estimate quiet-room demand from anonymous hourly counts.
+
+Scope
+Use aggregated counts and compare the model with last week's pattern.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Sofia Virtanen: ml contributor
+Zoya Ansari: research partner
+Maja Nyström: research partner
+Isabel Santos: backend developer
+Abena Owusu: ml contributor
+Efua Osei: research partner
+
+Fictional student project for the CoLearn demo.",Machine Learning,"[""Python"",""Machine Learning"",""Statistics""]","[""Research partner""]",,active,8,true,2026-08-22T03:30:00+00:00,2026-09-13T10:30:00+00:00
+139,dorm-energy-notebook,2e2e8079-6c9e-51c9-bc7e-1475045fd514,Dorm energy notebook,Compare plug-meter readings for shared appliances.,"Compare plug-meter readings for shared appliances.
+
+Scope
+Use manual readings and keep the measurement interval visible.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Emil Larsen: hardware builder
+Sumaiya Akter: frontend developer
+Róisín Doyle: hardware builder
+Wang Zihan: backend developer
+
+Fictional student project for the CoLearn demo.",Climate,"[""Python"",""Arduino"",""Git""]",[],,completed,5,true,2026-08-20T14:30:00+00:00,2026-09-11T14:30:00+00:00
+140,interview-practice-recorder,bdc5faf6-386d-5338-99a0-32d156bcbd68,Interview practice recorder,Let students record a practice answer and write their own feedback.,"Let students record a practice answer and write their own feedback.
+
+Scope
+Recordings stay on the device unless the student exports them.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Sofia Greco: mobile developer
+Daan Bakker: backend developer
+
+Fictional student project for the CoLearn demo.",Career,"[""Flutter"",""Dart"",""Git""]","[""ML contributor""]",,active,3,true,2026-08-11T04:30:00+00:00,2026-09-18T10:30:00+00:00
+141,office-hours-planner,45abfe15-6e8d-57cf-bda3-b7ae2b5c0bc7,Office-hours planner,Make it easier to book a tutor slot without long group-chat threads.,"Make it easier to book a tutor slot without long group-chat threads.
+
+Scope
+Changing a slot must not silently move existing bookings.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Lorenzo Bianchi: full-stack developer
+Camila Ruiz: hardware builder
+Lucía Navarro: product designer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]","[""Hardware builder""]",,active,6,true,2026-08-23T05:30:00+00:00,2026-09-17T10:30:00+00:00
+142,print-quota-companion,693ebb02-ab3f-5d60-b798-d4d4df4900d2,Print quota companion,Track a student's print jobs against a monthly allowance.,"Track a student's print jobs against a monthly allowance.
+
+Scope
+Import a sample job log; do not connect to a real campus printer.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Sahana Rao: backend developer
+Thando Nkosi: backend developer
+Niruta Adhikari: frontend developer
+
+Fictional student project for the CoLearn demo.",Productivity,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,idea,6,true,2026-07-26T16:30:00+00:00,2026-09-16T10:30:00+00:00
+143,studio-critique-board,88820056-e901-59a1-b2ca-c4e813b34f7b,Studio critique board,Collect feedback on a design draft around specific questions.,"Collect feedback on a design draft around specific questions.
+
+Scope
+Comments refer to a version so old feedback is not attached to a new image.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Tomás Benítez: product designer
+Thea Nilsen: research partner
+Niruta Adhikari: frontend developer
+Anika Patel: frontend developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Figma"",""User Research"",""Accessibility""]","[""Data analyst""]",,active,6,true,2026-07-17T17:30:00+00:00,2026-09-15T10:30:00+00:00
+144,local-shop-stock-cards,878bb7d9-5569-5efb-bbd1-5e39d62d594d,Local shop stock cards,Make a simple stock-count tool for a shop with a small catalogue.,"Make a simple stock-count tool for a shop with a small catalogue.
+
+Scope
+Work with item counts first, with no payment processing.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Mateo Rivera: research partner
+Yanis Benali: product designer
+Maja Wiśniewska: backend developer
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]",[],,completed,6,true,2026-07-27T16:30:00+00:00,2026-08-24T16:30:00+00:00
+145,meal-budget-worksheet,6ac5a7a4-ae0d-5e31-8a7c-d85b63a96c46,Meal budget worksheet,Compare the cost of a week's meal plan using manually entered prices.,"Compare the cost of a week's meal plan using manually entered prices.
+
+Scope
+Keep currency and package sizes explicit so comparisons are fair.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Faith Wambui: database developer
+Giulia Conti: database developer
+Tobiloba Adeyemi: database developer
+Lê Thu Hà: database developer
+
+Fictional student project for the CoLearn demo.",FinTech,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]","[""Mobile developer""]",,idea,5,true,2026-07-06T18:30:00+00:00,2026-09-13T10:30:00+00:00
+146,consent-form-sandbox,4ec67eb8-4fda-5cbc-bbd1-a6afc7ce8130,Consent form sandbox,Help classmates see what information a survey is asking them to share.,"Help classmates see what information a survey is asking them to share.
+
+Scope
+Use fictional forms and point out unnecessary fields.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Malik Thompson: security reviewer
+Sumaiya Akter: frontend developer
+Ruby Fletcher: frontend developer
+Anika Patel: frontend developer
+Daan Bakker: backend developer
+Sipho Dlamini: security reviewer
+
+Fictional student project for the CoLearn demo.",Cybersecurity,"[""Linux"",""Python"",""Networking""]","[""Database developer""]",,active,8,true,2026-08-25T19:30:00+00:00,2026-09-12T10:30:00+00:00
+147,phishing-practice-lab,4ec67eb8-4fda-5cbc-bbd1-a6afc7ce8130,Phishing practice lab,Teach students to inspect suspicious messages using safe examples.,"Teach students to inspect suspicious messages using safe examples.
+
+Scope
+All examples are fictional and links are inert; never collect credentials.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+We are still checking the scope before building.
+
+Team contributions
+Malik Thompson: security reviewer
+Bea Mendoza: security reviewer
+Thea Nilsen: research partner
+Yanis Benali: product designer
+Sumaiya Akter: frontend developer
+Daan Bakker: backend developer
+
+Fictional student project for the CoLearn demo.",Cybersecurity,"[""Linux"",""Python"",""Networking""]","[""Database developer""]",,idea,8,true,2026-06-28T02:30:00+00:00,2026-09-18T10:30:00+00:00
+148,dependency-update-journal,373cd20e-25d5-5a46-a0ae-18157cf68a55,Dependency update journal,Document why a student project accepted or postponed a package update.,"Document why a student project accepted or postponed a package update.
+
+Scope
+Store release links and test results without claiming to audit packages.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Folake Adebayo: full-stack developer
+Salma Adel: research partner
+Omar Hassan: backend developer
+Tasnim Sultana: hardware builder
+
+Fictional student project for the CoLearn demo.",Developer Tools,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]","[""Hardware builder""]",,idea,7,true,2026-07-25T04:30:00+00:00,2026-09-17T10:30:00+00:00
+149,small-api-status-page,f4793612-bd5c-52c4-b29e-226fe28a77ca,Small API status page,Show whether a class project's API health check is responding.,"Show whether a class project's API health check is responding.
+
+Scope
+Show recent failures and stale checks; do not promise production uptime.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Thando Nkosi: backend developer
+Sumaiya Akter: frontend developer
+
+Fictional student project for the CoLearn demo.",Developer Tools,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,active,5,true,2026-08-06T15:30:00+00:00,2026-09-16T10:30:00+00:00
+150,commute-cost-comparison,1873645b-b54c-51dc-a41a-7131e831a64f,Commute cost comparison,Compare a monthly travel pass with pay-as-you-go trips.,"Compare a monthly travel pass with pay-as-you-go trips.
+
+Scope
+Prices are entered by the user and carry an effective date.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Elif Demir: database developer
+Sofia Chen: research partner
+Kritika Joshi: backend developer
+Thea Nilsen: research partner
+Isabel Santos: backend developer
+Salma Adel: research partner
+
+Fictional student project for the CoLearn demo.",FinTech,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]",[],,archived,7,true,2026-08-16T23:30:00+00:00,2026-09-09T23:30:00+00:00
+151,public-toilet-access-notes,9edec740-5de6-5c27-8233-5cf72946b182,Public toilet access notes,Map public facility access information from community observations.,"Map public facility access information from community observations.
+
+Scope
+Accessibility details need a date and an uncertainty note.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Eren Kaya: gis contributor
+Faisal Al Otaibi: content designer
+Mikkel Jensen: content designer
+Lucía Fernández: content designer
+Grace Nguyen: backend developer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""QGIS"",""Statistics"",""Technical Writing""]","[""Content designer""]",,active,8,true,2026-07-28T00:30:00+00:00,2026-09-14T10:30:00+00:00
+152,reading-list-translator-notes,7298015b-9105-595a-b879-3013c08053f7,Reading list translator notes,Keep a bilingual glossary alongside a shared reading list.,"Keep a bilingual glossary alongside a shared reading list.
+
+Scope
+Contributors explain terms in their own words rather than copying chapters.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Saeed Al Nuaimi: content designer
+James Rangi: research partner
+Maja Wiśniewska: backend developer
+Kelechi Nnamdi: product designer
+Tashi Wangchuk: product designer
+Lucía Fernández: content designer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""Figma"",""Content Strategy"",""Photography""]","[""Frontend developer""]",,active,7,true,2026-08-14T20:30:00+00:00,2026-09-13T10:30:00+00:00
+153,exam-revision-calendar,06657aeb-b604-5b0d-9281-d2e5afb78a9d,Exam revision calendar,Schedule spaced revision around actual exam dates.,"Schedule spaced revision around actual exam dates.
+
+Scope
+Allow rescheduling when someone misses a session instead of adding guilt messages.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+We are still checking the scope before building.
+
+Team contributions
+Omar Mostafa: frontend developer
+Kritika Joshi: backend developer
+Priyanka Shah: frontend developer
+Kelechi Nnamdi: product designer
+Sander Berg: frontend developer
+Chloe Goh: research partner
+
+Fictional student project for the CoLearn demo.",EdTech,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]","[""Backend developer""]",,idea,8,true,2026-08-25T22:30:00+00:00,2026-09-12T10:30:00+00:00
+154,research-interview-scheduler,082b47e7-5a06-5a34-bd49-595c82b2b196,Research interview scheduler,Coordinate interviews for a student research project.,"Coordinate interviews for a student research project.
+
+Scope
+Use participant codes in the calendar and keep contact details outside the prototype.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Dilan Jayasinghe: product designer
+Tashi Wangchuk: product designer
+Inês Costa: backend developer
+
+Fictional student project for the CoLearn demo.",Research,"[""Figma"",""User Research"",""Accessibility""]","[""Data analyst""]",,active,4,true,2026-08-17T01:30:00+00:00,2026-09-18T10:30:00+00:00
+155,open-source-issue-notebook,783491ec-2857-52e8-a102-766d7abba6d2,Open-source issue notebook,Track questions and reproduction steps before opening an issue.,"Track questions and reproduction steps before opening an issue.
+
+Scope
+Use links to public issues and original notes; do not copy entire discussions.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Arda Yıldız: full-stack developer
+Camila Santos: hardware builder
+
+Fictional student project for the CoLearn demo.",Developer Tools,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]","[""Hardware builder""]",,active,5,true,2026-07-29T06:30:00+00:00,2026-09-17T10:30:00+00:00
+156,food-label-reading-aid,3d016498-e16a-5ad9-95c7-b633dfc6a142,Food label reading aid,Help students compare the information printed on food labels.,"Help students compare the information printed on food labels.
+
+Scope
+Explain units without giving personalised dietary advice.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Ritesh Poudel: research partner
+James Rangi: research partner
+
+Fictional student project for the CoLearn demo.",HealthTech,"[""Excel"",""User Research"",""Data Visualization""]",[],,completed,3,true,2026-07-19T07:30:00+00:00,2026-08-07T07:30:00+00:00
+157,campus-step-free-audit,f22a7317-9c2b-5d13-99b9-1a1622094bb3,Campus step-free audit,"Organise a volunteer audit of ramps, entrances and lifts.","Organise a volunteer audit of ramps, entrances and lifts.
+
+Scope
+Keep audit findings separate from verified access information.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Tashi Wangchuk: product designer
+Naomi Brooks: frontend developer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""Figma"",""User Research"",""Accessibility""]",[],,completed,4,true,2026-07-04T14:30:00+00:00,2026-07-26T14:30:00+00:00
+158,tide-cleanup-planner,4cf03b5a-e2ca-57f2-95b8-16a3b92247e6,Tide cleanup planner,Help a small coastal cleanup team plan equipment and meeting points.,"Help a small coastal cleanup team plan equipment and meeting points.
+
+Scope
+Weather and tide checks remain external and need a visible source date.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+We are still checking the scope before building.
+
+Team contributions
+Sonam Lhamo: gis contributor
+Kavya Reddy: frontend developer
+Dewi Lestari: product designer
+Ethan Lim: frontend developer
+
+Fictional student project for the CoLearn demo.",Climate,"[""QGIS"",""Statistics"",""Technical Writing""]","[""Content designer""]",,idea,5,true,2026-08-11T18:30:00+00:00,2026-09-14T10:30:00+00:00
+159,neighbourhood-sound-diary,1767869f-381f-59b9-acac-01da2d539e40,Neighbourhood sound diary,Visualise sound-level readings collected during a class exercise.,"Visualise sound-level readings collected during a class exercise.
+
+Scope
+Keep no audio recordings or precise home locations.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Ishita Kulkarni: hardware builder
+Tomás Benítez: product designer
+Salma Adel: research partner
+Efua Osei: research partner
+Malik Thompson: security reviewer
+
+Fictional student project for the CoLearn demo.",Research,"[""Python"",""Arduino"",""Git""]",[],,completed,7,true,2026-07-02T19:30:00+00:00,2026-07-23T19:30:00+00:00
+160,shared-camera-bookings,eb397f92-99ac-5f0f-8f81-3540865f0477,Shared camera bookings,Book a student club's cameras without double-booking equipment.,"Book a student club's cameras without double-booking equipment.
+
+Scope
+A late return should flag the next booking rather than cancel it silently.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Nguyễn Khánh An: backend developer
+Su-bin Choi: research partner
+Layan Al Harbi: product designer
+Brian Otieno: backend developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,active,6,true,2026-08-24T05:30:00+00:00,2026-09-12T10:30:00+00:00
+161,small-museum-audio-guide,25797954-b022-582e-8349-e1e2c141368c,Small museum audio guide,Create short original audio descriptions for a student exhibition.,"Create short original audio descriptions for a student exhibition.
+
+Scope
+Use original scripts and transcripts; do not assume visitors can hear audio.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Trần Gia Huy: motion designer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Blender"",""Video Editing"",""Figma""]","[""Full-stack developer""]",,active,2,true,2026-08-21T03:30:00+00:00,2026-09-18T10:30:00+00:00
+162,accessible-chart-gallery,1bc15434-bc22-56cc-a890-336efd2a11e5,Accessible chart gallery,Compare ways to show the same dataset accessibly.,"Compare ways to show the same dataset accessibly.
+
+Scope
+Every chart includes a data table and a short written takeaway.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Kavya Reddy: frontend developer
+Wang Zihan: backend developer
+Thando Nkosi: backend developer
+Siriporn Saelim: product designer
+
+Fictional student project for the CoLearn demo.",Web Development,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]",[],,completed,7,true,2026-06-28T03:30:00+00:00,2026-07-15T03:30:00+00:00
+163,study-snack-preorders,6ab0c42d-0ad5-5b3d-9c6c-4ab9eaa47586,Study snack preorders,Plan quantities for a student fundraiser using non-binding interest forms.,"Plan quantities for a student fundraiser using non-binding interest forms.
+
+Scope
+No card data or payments; organisers confirm orders offline.
+
+Beginner: a small working flow before adding extra features.
+
+We are still checking the scope before building.
+
+Team contributions
+Haruka Fujimoto: research partner
+Chloe Goh: research partner
+Zoya Ansari: research partner
+Mateo Rivera: research partner
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]","[""Motion designer""]",,idea,7,true,2026-07-20T20:30:00+00:00,2026-09-16T10:30:00+00:00
+164,second-hand-desk-finder,e0b64119-ecb0-52a5-852d-39c211ce337a,Second-hand desk finder,List desks and chairs being given away when students move.,"List desks and chairs being given away when students move.
+
+Scope
+Use approximate collection areas and remove stale listings.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Nur Izzati Abdullah: mobile developer
+Sofia Virtanen: ml contributor
+Sahana Rao: backend developer
+
+Fictional student project for the CoLearn demo.",Community,"[""Flutter"",""Dart"",""Git""]","[""ML contributor""]",,active,6,true,2026-08-13T15:30:00+00:00,2026-09-15T10:30:00+00:00
+165,group-assignment-ledger,302b84f9-9053-5cf7-bed0-305678227875,Group assignment ledger,Record which parts of a group assignment each person worked on.,"Record which parts of a group assignment each person worked on.
+
+Scope
+Track agreed contributions without turning them into a competitive score.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+We are still checking the scope before building.
+
+Team contributions
+Dechen Dema: full-stack developer
+Léa Fournier: full-stack developer
+Ethan Lim: frontend developer
+Omar Hassan: backend developer
+Tasnim Sultana: hardware builder
+Ishita Kulkarni: hardware builder
+
+Fictional student project for the CoLearn demo.",Productivity,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]","[""Hardware builder""]",,idea,8,true,2026-08-09T19:30:00+00:00,2026-09-14T10:30:00+00:00
+166,methods-flashcards,a2cc3818-be31-5aeb-828c-e23f579431aa,Methods flashcards,Practice choosing a research method for a short scenario.,"Practice choosing a research method for a short scenario.
+
+Scope
+Keep explanations with the cards so wrong answers teach something.
+
+Beginner: a small working flow before adding extra features.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Kavitha Rajan: data analyst
+Haruka Fujimoto: research partner
+Nguyễn Khánh An: backend developer
+Pedro Nascimento: data analyst
+Sumaiya Akter: frontend developer
+
+Fictional student project for the CoLearn demo.",Research,"[""Python"",""SQL"",""Data Visualization""]",[],,archived,6,true,2026-07-01T17:30:00+00:00,2026-07-21T17:30:00+00:00
+167,lab-error-notebook,20b63262-d3e6-555a-95b2-84fc87694a19,Lab error notebook,Collect mistakes from practical sessions and how the team diagnosed them.,"Collect mistakes from practical sessions and how the team diagnosed them.
+
+Scope
+Use anonymised examples and keep the original error text searchable.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Grace Nguyen: backend developer
+Maja Wiśniewska: backend developer
+Sumaiya Akter: frontend developer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,active,6,true,2026-08-18T20:30:00+00:00,2026-09-12T10:30:00+00:00
+168,flood-alert-explainer,ae96d203-7a11-52ed-9e02-cd93c3dda603,Flood alert explainer,Explain the terms used in public flood bulletins for a class project.,"Explain the terms used in public flood bulletins for a class project.
+
+Scope
+Link to official bulletins and never publish independent emergency advice.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Wei Jun Ong: content designer
+Lucía Navarro: product designer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""Figma"",""Content Strategy"",""Photography""]",[],,completed,3,true,2026-07-10T17:30:00+00:00,2026-08-04T17:30:00+00:00
+169,workshop-cost-calculator,8819cb55-67e6-5a55-98c8-d80446975a9e,Workshop cost calculator,Estimate material costs for a student-run craft workshop.,"Estimate material costs for a student-run craft workshop.
+
+Scope
+Show fixed costs separately from costs per participant.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Chloe Goh: research partner
+Lotte Visser: motion designer
+Efua Osei: research partner
+Wang Zihan: backend developer
+Ruby Fletcher: frontend developer
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]","[""Motion designer""]",,active,7,true,2026-08-24T18:30:00+00:00,2026-09-17T10:30:00+00:00
+170,recycling-label-classifier,d0c58825-6ead-50f6-9a07-f2f95dbb51ea,Recycling label classifier,Compare simple image classifiers on a small labelled packaging dataset.,"Compare simple image classifiers on a small labelled packaging dataset.
+
+Scope
+Show uncertain predictions and record class imbalance.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Mei Xuan Chew: ml contributor
+Noor de Vries: research partner
+Regina Flores: frontend developer
+Kavya Reddy: frontend developer
+Chloe Goh: research partner
+
+Fictional student project for the CoLearn demo.",Machine Learning,"[""Python"",""Machine Learning"",""Statistics""]","[""Research partner""]",,active,6,true,2026-07-25T03:30:00+00:00,2026-09-16T10:30:00+00:00
+171,public-transport-delay-charts,95927b04-f214-5c26-878d-fb55176e41bc,Public transport delay charts,Plot delays from a small public transport sample.,"Plot delays from a small public transport sample.
+
+Scope
+Distinguish cancelled trips from missing records.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+We are still checking the scope before building.
+
+Team contributions
+Intan Permata: data analyst
+Sahana Rao: backend developer
+
+Fictional student project for the CoLearn demo.",Data Science,"[""Python"",""SQL"",""Data Visualization""]","[""Research partner""]",,idea,5,true,2026-08-16T04:30:00+00:00,2026-09-15T10:30:00+00:00
+172,personal-data-export-viewer,43a3bb15-e7a6-5c42-a198-3e0d7f080ba1,Personal data export viewer,Inspect a fictional app's data export and explain each field.,"Inspect a fictional app's data export and explain each field.
+
+Scope
+Open files locally and avoid uploading real personal exports.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Sophie Chen: security reviewer
+Sander Berg: frontend developer
+Kelechi Nnamdi: product designer
+
+Fictional student project for the CoLearn demo.",Cybersecurity,"[""Linux"",""Python"",""Networking""]","[""Database developer""]",,active,6,true,2026-07-02T05:30:00+00:00,2026-09-14T10:30:00+00:00
+173,code-review-warmups,a60d0128-bffa-5d2d-9915-36693e6bc3ba,Code review warmups,Practice reviewing small intentionally flawed code examples.,"Practice reviewing small intentionally flawed code examples.
+
+Scope
+Explain trade-offs and accept more than one reasonable solution.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Niamh Byrne: full-stack developer
+Maia Wilson: hardware builder
+Kwame Boateng: hardware builder
+Ishita Kulkarni: hardware builder
+Hamad Al Qasimi: hardware builder
+Chloe Goh: research partner
+
+Fictional student project for the CoLearn demo.",EdTech,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]",[],,completed,7,true,2026-07-09T19:30:00+00:00,2026-08-04T19:30:00+00:00
+174,club-archive-timeline,7bdf8ad6-1318-5f74-9112-e2b655e215a2,Club archive timeline,Build a timeline from a club's public posters and original event notes.,"Build a timeline from a club's public posters and original event notes.
+
+Scope
+Only use images with permission and include captions.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Freya Collins: content designer
+Zeynep Şahin: product designer
+Haruka Fujimoto: research partner
+Grace Nguyen: backend developer
+
+Fictional student project for the CoLearn demo.",Community,"[""Figma"",""Content Strategy"",""Photography""]","[""Frontend developer""]",,active,6,true,2026-07-10T00:30:00+00:00,2026-09-12T10:30:00+00:00
+175,laptop-loan-desk,7624f38b-fbca-546f-af04-c9dda9318f82,Laptop loan desk,Help volunteers track donated laptops ready for loan.,"Help volunteers track donated laptops ready for loan.
+
+Scope
+Use fictional asset data and avoid storing borrower identity documents.
+
+Beginner: a small working flow before adding extra features.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Beatriz Sousa: database developer
+Inês Costa: backend developer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""SQL"",""PostgreSQL"",""Data Modeling"",""React""]",[],,archived,4,true,2026-07-31T22:30:00+00:00,2026-08-23T22:30:00+00:00
+176,pollinator-count-map,d2a70bca-a25c-522f-9b7e-c967b69503cc,Pollinator count map,Map pollinator observations from a student field exercise.,"Map pollinator observations from a student field exercise.
+
+Scope
+Location accuracy varies, and observations are not species certifications.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Sanne van Dijk: gis contributor
+Thando Nkosi: backend developer
+Inês Costa: backend developer
+Sumaiya Akter: frontend developer
+Maja Schneider: gis contributor
+
+Fictional student project for the CoLearn demo.",Climate,"[""QGIS"",""Statistics"",""Technical Writing""]","[""Content designer""]",,active,6,true,2026-08-15T18:30:00+00:00,2026-09-17T10:30:00+00:00
+177,local-language-quiz-pack,e747fee0-a84b-5f51-98a3-7481903c9023,Local language quiz pack,Create an offline quiz from volunteer-written vocabulary examples.,"Create an offline quiz from volunteer-written vocabulary examples.
+
+Scope
+Keep regional variants visible instead of marking them wrong.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Hannah Richter: mobile developer
+Thea Nilsen: research partner
+Alva Lindberg: research partner
+Isabel Santos: backend developer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""Flutter"",""Dart"",""Git""]","[""ML contributor""]",,active,6,true,2026-08-26T02:30:00+00:00,2026-09-16T10:30:00+00:00
+178,tiny-accessibility-backlog,5421f79d-ed60-5eed-852b-01b379adab9e,Tiny accessibility backlog,Turn an accessibility review into a manageable task list.,"Turn an accessibility review into a manageable task list.
+
+Scope
+Separate automated findings from checks that require a person.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Chiara Moretti: product designer
+Regina Flores: frontend developer
+
+Fictional student project for the CoLearn demo.",Developer Tools,"[""Figma"",""User Research"",""Accessibility""]","[""Data analyst""]",,active,4,true,2026-08-04T19:30:00+00:00,2026-09-15T10:30:00+00:00
+179,student-zine-shelf,610e9654-06d6-5e55-959b-377b8749b8f9,Student zine shelf,Show original digital zines with clear reading order and credits.,"Show original digital zines with clear reading order and credits.
+
+Scope
+Provide text alternatives and avoid collecting reader analytics.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+Paused while the team is on placements. The current work is saved for a later handover.
+
+Team contributions
+Kacper Zieliński: motion designer
+Niamh Byrne: full-stack developer
+Naomi Brooks: frontend developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Blender"",""Video Editing"",""Figma""]",[],,archived,5,true,2026-08-20T23:30:00+00:00,2026-09-17T23:30:00+00:00
+180,water-refill-notes,54561bf4-fe37-5b37-934d-9c7f81542f8b,Water refill notes,Track reported water refill points around public buildings.,"Track reported water refill points around public buildings.
+
+Scope
+Reports need a recent check; never infer drinking-water safety.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Róisín Doyle: hardware builder
+Tashi Wangchuk: product designer
+Su-bin Choi: research partner
+
+Fictional student project for the CoLearn demo.",Climate,"[""Python"",""Arduino"",""Git""]",[],,completed,5,true,2026-07-08T09:30:00+00:00,2026-07-28T09:30:00+00:00
+181,scholarship-document-checklist,ef763ec1-f93c-5744-9640-4ca59adf9347,Scholarship document checklist,Help applicants track which documents they have prepared.,"Help applicants track which documents they have prepared.
+
+Scope
+Store checklist state, not passports, bank records or scholarship decisions.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Mikkel Jensen: content designer
+Sagar Tamang: research partner
+
+Fictional student project for the CoLearn demo.",Productivity,"[""Figma"",""Content Strategy"",""Photography""]",[],,completed,5,true,2026-08-19T17:30:00+00:00,2026-09-06T17:30:00+00:00
+182,peer-tutoring-session-notes,3bc3e38a-5ff7-5330-ab2d-8add18e85d57,Peer tutoring session notes,Write a short recap of a tutoring session and the next exercise.,"Write a short recap of a tutoring session and the next exercise.
+
+Scope
+Use fictional learners and avoid diagnostic labels.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+We are still checking the scope before building.
+
+Team contributions
+Jakub Nowak: research partner
+Wang Zihan: backend developer
+Dewi Lestari: product designer
+
+Fictional student project for the CoLearn demo.",EdTech,"[""Excel"",""User Research"",""Data Visualization""]","[""GIS contributor""]",,idea,6,true,2026-08-18T15:30:00+00:00,2026-09-18T10:30:00+00:00
+183,markdown-lab-report-builder,da462241-608b-5422-bdbd-0d98184a433d,Markdown lab report builder,Turn structured experiment notes into a readable Markdown draft.,"Turn structured experiment notes into a readable Markdown draft.
+
+Scope
+Keep measurements unchanged and label generated section headings.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Pablo Romero: full-stack developer
+Onni Nieminen: frontend developer
+Layan Al Harbi: product designer
+Sahana Rao: backend developer
+Do-yun Lee: frontend developer
+
+Fictional student project for the CoLearn demo.",Research,"[""TypeScript"",""React"",""Node.js"",""PostgreSQL""]","[""Hardware builder""]",,active,6,true,2026-08-20T20:30:00+00:00,2026-09-17T10:30:00+00:00
+184,classroom-air-diary,2e2e8079-6c9e-51c9-bc7e-1475045fd514,Classroom air diary,Graph CO2 readings from a classroom sensor prototype.,"Graph CO2 readings from a classroom sensor prototype.
+
+Scope
+Show calibration notes and missing readings without health guarantees.
+
+Beginner: a small working flow before adding extra features.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Emil Larsen: hardware builder
+Ren Takahashi: security reviewer
+Kritika Joshi: backend developer
+Wang Zihan: backend developer
+Kofi Asante: frontend developer
+
+Fictional student project for the CoLearn demo.",Climate,"[""Python"",""Arduino"",""Git""]",[],,completed,7,true,2026-06-30T04:30:00+00:00,2026-07-19T04:30:00+00:00
+185,freelance-scope-worksheet,d5dc7189-89df-5fd7-983f-1124b6de3d68,Freelance scope worksheet,Help students write a small project scope before agreeing to work.,"Help students write a small project scope before agreeing to work.
+
+Scope
+No legal templates; focus on deliverables, revisions and assumptions.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Sara Koskinen: research partner
+Thea Nilsen: research partner
+
+Fictional student project for the CoLearn demo.",Business,"[""Excel"",""Content Strategy"",""Market Research""]","[""Motion designer""]",,active,5,true,2026-08-08T23:30:00+00:00,2026-09-15T10:30:00+00:00
+186,mutual-aid-pickup-rota,40120057-c43a-5745-9d3a-d9b0c6b1e84e,Mutual aid pickup rota,Coordinate collection shifts for a student mutual-aid group.,"Coordinate collection shifts for a student mutual-aid group.
+
+Scope
+Keep recipient details out of shared schedules.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Brian Otieno: backend developer
+Kavya Reddy: frontend developer
+Kelechi Nnamdi: product designer
+Yanis Benali: product designer
+
+Fictional student project for the CoLearn demo.",Social Impact,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,active,6,true,2026-07-19T22:30:00+00:00,2026-09-14T10:30:00+00:00
+187,book-club-question-cards,cd8c4c60-ab9b-5cf3-996e-d4fbb990f4c6,Book club question cards,Collect original questions for a small reading group.,"Collect original questions for a small reading group.
+
+Scope
+Reference chapters without copying the text of the book.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Naomi Brooks: frontend developer
+Su-bin Choi: research partner
+Sara Koskinen: research partner
+
+Fictional student project for the CoLearn demo.",Community,"[""React"",""JavaScript"",""CSS"",""PostgreSQL""]","[""Backend developer""]",,active,6,true,2026-07-13T08:30:00+00:00,2026-09-13T10:30:00+00:00
+188,photo-walk-contact-sheets,3d5b480d-3962-5c76-96ca-5459d65372aa,Photo walk contact sheets,Arrange a photographer's selected images into printable contact sheets.,"Arrange a photographer's selected images into printable contact sheets.
+
+Scope
+Use self-made sample images and retain captions.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The scoped prototype is complete; the handover notes explain its limits.
+
+Team contributions
+Naledi Molefe: motion designer
+Omar Mostafa: frontend developer
+Tiago Almeida: motion designer
+Niamh Byrne: full-stack developer
+Pablo Romero: full-stack developer
+
+Fictional student project for the CoLearn demo.",Creative Technology,"[""Blender"",""Video Editing"",""Figma""]",[],,completed,6,true,2026-08-12T02:30:00+00:00,2026-09-01T02:30:00+00:00
+189,api-permission-playground,4ec67eb8-4fda-5cbc-bbd1-a6afc7ce8130,API permission playground,Demonstrate who can read and change fictional shared records.,"Demonstrate who can read and change fictional shared records.
+
+Scope
+Use isolated sample records and show why a denied request failed.
+
+Advanced: concurrency, offline behaviour, or data quality needs careful testing.
+
+We are still checking the scope before building.
+
+Team contributions
+Malik Thompson: security reviewer
+Maja Wiśniewska: backend developer
+Sumaiya Akter: frontend developer
+Kofi Asante: frontend developer
+Sipho Dlamini: security reviewer
+Zeynep Şahin: product designer
+
+Fictional student project for the CoLearn demo.",Cybersecurity,"[""Linux"",""Python"",""Networking""]","[""Database developer""]",,idea,8,true,2026-06-30T09:30:00+00:00,2026-09-18T10:30:00+00:00
+190,field-survey-cleaning-log,facb4557-eabe-5f8b-89cc-f223b91c89b7,Field survey cleaning log,Record decisions made while cleaning a class survey dataset.,"Record decisions made while cleaning a class survey dataset.
+
+Scope
+Do not silently replace missing values or modify the raw file.
+
+Beginner: a small working flow before adding extra features.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Pedro Nascimento: data analyst
+James Rangi: research partner
+Sahana Rao: backend developer
+Do-yun Lee: frontend developer
+
+Fictional student project for the CoLearn demo.",Data Science,"[""Python"",""SQL"",""Data Visualization""]","[""Research partner""]",,active,7,true,2026-08-24T23:30:00+00:00,2026-09-17T10:30:00+00:00
+191,study-room-booking-replay,001e944b-e64e-5742-afb7-5e04327e41ee,Study room booking replay,Replay fictional booking events to understand race conditions.,"Replay fictional booking events to understand race conditions.
+
+Scope
+The exercise never connects to a real booking system.
+
+Intermediate: a tested prototype with a few cooperating parts.
+
+The first flow is being built and tested around coursework.
+
+Team contributions
+Kritika Joshi: backend developer
+Sander Berg: frontend developer
+Zoya Ansari: research partner
+Dewi Lestari: product designer
+Mariana Silva: product designer
+
+Fictional student project for the CoLearn demo.",Web Development,"[""Python"",""Django"",""PostgreSQL"",""React""]","[""Product designer""]",,active,7,true,2026-07-14T14:30:00+00:00,2026-09-16T10:30:00+00:00

@@ -1,0 +1,163 @@
+id,thread_id,author_id,parent_id,body,xp_awarded,created_at,updated_at
+209,115,341a0cef-f4a9-53ee-8980-229dc154ff4e,\N,You can usually calculate filteredItems from the list and query during render.,true,2026-09-12T11:30:00+00:00,2026-09-12T11:30:00+00:00
+210,116,bb4b0d34-59a4-5948-a9be-a1aa6caece55,\N,Start at the address bar and tab through the page. You should always see where focus is.,false,2026-09-08T02:30:00+00:00,2026-09-08T02:30:00+00:00
+211,116,84da666c-c47c-572e-b2c9-3b6f35881596,210,Check that dialogs return focus to the button that opened them.,false,2026-09-08T09:30:00+00:00,2026-09-08T09:30:00+00:00
+212,116,33ba5d16-c38c-5bcf-9896-ea8ae81d6e7b,\N,Try Shift+Tab as well. Our menu only worked in one direction.,false,2026-09-08T16:30:00+00:00,2026-09-08T16:30:00+00:00
+213,117,508d03e7-de84-523a-8242-f48abc9451d7,\N,"For a single author foreign key, yes, select_related is the first thing I'd try.",false,2026-09-01T08:30:00+00:00,2026-09-01T08:30:00+00:00
+214,117,082b47e7-5a06-5a34-bd49-595c82b2b196,213,Use prefetch_related for the team members if that's a many-to-many relationship.,false,2026-09-01T15:30:00+00:00,2026-09-01T15:30:00+00:00
+215,117,b7f1d97d-9f3c-5885-b9ef-48d67a16a686,\N,Measure it again after the change. It is easy to fix authors and still fetch each avatar separately.,false,2026-09-01T22:30:00+00:00,2026-09-01T22:30:00+00:00
+216,117,7298015b-9105-595a-b879-3013c08053f7,\N,Got it down from 42 to 4 queries. The tags were the other part.,false,2026-09-02T05:30:00+00:00,2026-09-02T05:30:00+00:00
+217,118,f0f4eb8c-a1ed-50a1-bc7d-2863700a31a5,\N,I'd expect the normal browse view when I clear the input.,false,2026-08-15T02:30:00+00:00,2026-08-15T02:30:00+00:00
+218,118,1873645b-b54c-51dc-a41a-7131e831a64f,217,Depends whether it's a dedicated search dialog or the main list page.,true,2026-08-15T09:30:00+00:00,2026-08-15T09:30:00+00:00
+219,118,88a268b0-6bca-5583-b041-ffdbc51be7e6,\N,We show all items but keep any category filters. Clearing text shouldn't reset those.,false,2026-08-15T16:30:00+00:00,2026-08-15T16:30:00+00:00
+220,118,473b12ab-4d0d-5b7f-89b2-c0a1e2405c60,\N,Good point about keeping filters. I'll test that version.,false,2026-08-15T23:30:00+00:00,2026-08-15T23:30:00+00:00
+221,119,ffe47fd1-7989-5728-addd-50b504edd889,\N,For a day-only deadline use a date column and avoid converting midnight UTC into local time.,false,2026-08-01T02:30:00+00:00,2026-08-01T02:30:00+00:00
+222,119,88a268b0-6bca-5583-b041-ffdbc51be7e6,221,We had this bug when calling new Date on a date-only string and formatting it locally.,false,2026-08-01T09:30:00+00:00,2026-08-01T09:30:00+00:00
+223,120,651ce25b-8132-52d9-8f74-889f22c3bb5c,\N,Put a short working/not-yet-working list near the top.,false,2026-09-17T11:30:00+00:00,2026-09-17T11:30:00+00:00
+224,120,cd8c4c60-ab9b-5cf3-996e-d4fbb990f4c6,223,A setup command and one screenshot help more than a huge feature wishlist.,false,2026-09-17T18:30:00+00:00,2026-09-17T18:30:00+00:00
+225,120,a6b8342c-310b-5b88-9c07-602dbd646488,\N,Include the known rough edges. It makes it easier for someone to give useful feedback.,false,2026-09-18T01:30:00+00:00,2026-09-18T01:30:00+00:00
+226,121,9d1c460b-bd0b-57ff-ac14-f2b10f73edd3,\N,"If the browser talks directly to the database, database policies need to enforce it too.",false,2026-08-08T06:30:00+00:00,2026-08-08T06:30:00+00:00
+227,123,06657aeb-b604-5b0d-9281-d2e5afb78a9d,\N,I'd pick the one you can test with a real person this week.,false,2026-07-22T11:30:00+00:00,2026-07-22T11:30:00+00:00
+228,124,6ecf180b-be59-594c-a33b-31bd0120f01f,\N,Show the sample size and how you recruited people.,false,2026-08-21T02:30:00+00:00,2026-08-21T02:30:00+00:00
+229,124,64609795-d498-5ea7-ad33-a3bcecf9d962,228,I'd show counts alongside percentages. With 23 responses the percentages look more precise than they are.,false,2026-08-21T09:30:00+00:00,2026-08-21T09:30:00+00:00
+230,124,b7180518-4b5b-54ef-9060-958212d05ab7,\N,"Mention who didn't respond too, if you know. Our survey only reached students already in the club.",false,2026-08-21T16:30:00+00:00,2026-08-21T16:30:00+00:00
+231,125,88a268b0-6bca-5583-b041-ffdbc51be7e6,\N,Try preserving the visible item's position instead of scrolling to an absolute offset.,true,2026-08-28T05:30:00+00:00,2026-08-28T05:30:00+00:00
+232,125,95927b04-f214-5c26-878d-fb55176e41bc,231,Stable keys on list items helped in our prototype.,false,2026-08-28T12:30:00+00:00,2026-08-28T12:30:00+00:00
+233,125,01c00e49-c4d6-5d4b-bbc1-8aa3fe21ba2a,\N,Are you recreating the scroll controller on every build?,false,2026-08-28T19:30:00+00:00,2026-08-28T19:30:00+00:00
+234,125,d2a70bca-a25c-522f-9b7e-c967b69503cc,\N,It was the controller. Moving it into the state object fixed most of the jump.,false,2026-08-29T02:30:00+00:00,2026-08-29T02:30:00+00:00
+235,126,19e81afb-74c1-5b4a-9af3-469f3b610235,\N,"Expected result, actual result, and the shortest steps to reproduce.",false,2026-08-14T07:30:00+00:00,2026-08-14T07:30:00+00:00
+236,126,96ccee9a-30f2-56cd-b597-a927c84e0f75,235,Add browser/device if it's a UI problem.,false,2026-08-14T14:30:00+00:00,2026-08-14T14:30:00+00:00
+237,126,4307ee18-2e16-50be-abbc-db160bb8e8fd,\N,"A short screen recording helps, but don't make a video mandatory.",true,2026-08-14T21:30:00+00:00,2026-08-14T21:30:00+00:00
+238,126,a6b8342c-310b-5b88-9c07-602dbd646488,\N,Please include the input that triggered it. 'Search is broken' took us an hour to reproduce.,false,2026-08-15T04:30:00+00:00,2026-08-15T04:30:00+00:00
+239,127,484e243b-afd7-5767-bb0f-4262c0334aea,\N,"If saving personal data isn't the point, a local prototype might be enough.",false,2026-08-28T07:30:00+00:00,2026-08-28T07:30:00+00:00
+240,127,673e8617-3280-5bfa-85a6-738a6d64aac6,239,We used example inputs and no accounts for the first user test.,false,2026-08-28T14:30:00+00:00,2026-08-28T14:30:00+00:00
+241,128,f3744506-cae3-5f81-8a4f-506a60395be8,\N,Make a branch or commit your current work before resolving it.,false,2026-09-17T11:30:00+00:00,2026-09-17T11:30:00+00:00
+242,128,ac9c9500-b7e4-5bbe-8f4e-a40a6201979a,241,Read both changes with your teammate. The correct result might include parts of both.,false,2026-09-17T18:30:00+00:00,2026-09-17T18:30:00+00:00
+243,128,f22a7317-9c2b-5d13-99b9-1a1622094bb3,\N,Don't just choose 'accept incoming' for every conflict. Run the app afterwards.,false,2026-09-18T01:30:00+00:00,2026-09-18T01:30:00+00:00
+244,129,9a026691-28ff-5880-9da3-006735af19d3,\N,That comparison is a result. Explain the dataset and where the model fails.,true,2026-09-12T08:30:00+00:00,2026-09-12T08:30:00+00:00
+245,131,06657aeb-b604-5b0d-9281-d2e5afb78a9d,\N,"The smallest snippet that still reproduces the problem, plus the exact error.",false,2026-09-14T03:30:00+00:00,2026-09-14T03:30:00+00:00
+246,132,36016ab9-3cc9-5f6a-8bc7-1d138ad9cb43,\N,Don't silently change the count to zero. That hides a reconciliation problem.,false,2026-08-10T11:30:00+00:00,2026-08-10T11:30:00+00:00
+247,132,64609795-d498-5ea7-ad33-a3bcecf9d962,246,"I'd record the correction and show a warning, but ask the shop how they handle it now.",false,2026-08-10T18:30:00+00:00,2026-08-10T18:30:00+00:00
+248,132,96ccee9a-30f2-56cd-b597-a927c84e0f75,\N,We separated the transaction ledger from the displayed stock estimate.,false,2026-08-11T01:30:00+00:00,2026-08-11T01:30:00+00:00
+249,133,d3175e63-6121-5d55-b429-df91670d9aca,\N,"Colour can help, but the labels need to remain usable where lines cross.",true,2026-08-05T10:30:00+00:00,2026-08-05T10:30:00+00:00
+250,133,82a5c89c-0b3a-58b9-9259-837a5348a5c2,249,Try printing it in grayscale and zooming to 200 percent.,true,2026-08-05T17:30:00+00:00,2026-08-05T17:30:00+00:00
+251,133,f22a7317-9c2b-5d13-99b9-1a1622094bb3,\N,A data table is useful for readers who can't use the chart at all.,false,2026-08-06T00:30:00+00:00,2026-08-06T00:30:00+00:00
+252,133,8300625d-d3f5-5264-8503-98a2bfbf60d8,\N,Dash styles helped our two similar blue lines. We kept the direct labels too.,true,2026-08-06T07:30:00+00:00,2026-08-06T07:30:00+00:00
+253,134,cac67f41-f5af-5268-9e2d-34feac0dc9fa,\N,Try drawing the two tables before writing the query.,false,2026-08-11T03:30:00+00:00,2026-08-11T03:30:00+00:00
+254,134,10feece1-a2cd-532b-8488-21659a3bee22,253,I'm working on the same thing. A small book-and-author dataset made it click for me.,false,2026-08-11T10:30:00+00:00,2026-08-11T10:30:00+00:00
+255,134,e7c63421-97d2-555e-9731-46cb0f04f637,\N,"Start with an inner join, then ask which unmatched rows a left join keeps.",false,2026-08-11T17:30:00+00:00,2026-08-11T17:30:00+00:00
+256,134,d2a70bca-a25c-522f-9b7e-c967b69503cc,\N,Don't rush into five-table examples. Two tables can teach a lot.,false,2026-08-12T00:30:00+00:00,2026-08-12T00:30:00+00:00
+257,135,1bc15434-bc22-56cc-a890-336efd2a11e5,\N,Send a private check-in first. There may be something going on.,false,2026-08-19T10:30:00+00:00,2026-08-19T10:30:00+00:00
+258,135,64b591cd-4cbe-577a-aba9-ee6912328a58,257,Make the remaining work visible so the rest of the team can plan without guessing.,false,2026-08-19T17:30:00+00:00,2026-08-19T17:30:00+00:00
+259,136,7e6a1243-34f5-52e6-862f-e5f3b2ebe640,\N,Use a clearly labelled demo dataset with relationships that actually make sense.,false,2026-09-12T02:30:00+00:00,2026-09-12T02:30:00+00:00
+260,136,f3744506-cae3-5f81-8a4f-506a60395be8,259,Show an empty state too. Handling a new account is part of the product.,false,2026-09-12T09:30:00+00:00,2026-09-12T09:30:00+00:00
+261,136,d48cab4b-e48b-59ae-88d6-41d5d463569d,\N,"A small believable example tells me more than a screenshot with 50,000 users.",false,2026-09-12T16:30:00+00:00,2026-09-12T16:30:00+00:00
+262,137,63fdd1e3-9db3-5b05-9799-510eea6abab7,\N,Rotate the key. Deleting it from the latest file doesn't remove it from history.,false,2026-09-07T08:30:00+00:00,2026-09-07T08:30:00+00:00
+263,139,484e243b-afd7-5767-bb0f-4262c0334aea,\N,Test the rounding and split calculation. Those are easy to get subtly wrong.,false,2026-08-03T04:30:00+00:00,2026-08-03T04:30:00+00:00
+264,140,84da666c-c47c-572e-b2c9-3b6f35881596,\N,Ask what they expected to happen at the point they paused.,false,2026-08-24T09:30:00+00:00,2026-08-24T09:30:00+00:00
+265,140,44a33563-638c-52da-ae01-285f43dfcb99,264,"Watch the task first, then ask about specific moments rather than a general rating.",false,2026-08-24T16:30:00+00:00,2026-08-24T16:30:00+00:00
+266,140,d3175e63-6121-5d55-b429-df91670d9aca,\N,Avoid explaining the interface while they're trying it. I kept doing that by accident.,false,2026-08-24T23:30:00+00:00,2026-08-24T23:30:00+00:00
+267,141,ac9c9500-b7e4-5bbe-8f4e-a40a6201979a,\N,Use a CSV parser that handles quoted fields. A different separator won't solve every case.,false,2026-09-12T03:30:00+00:00,2026-09-12T03:30:00+00:00
+268,141,f21481e8-5bf3-5aa6-a7e0-fe6e26920e28,267,Test quotes inside quoted text too.,false,2026-09-12T10:30:00+00:00,2026-09-12T10:30:00+00:00
+269,141,d6b81cb4-a299-5894-baa5-463cb63679a3,\N,Keep an import report with row numbers so someone can fix a bad record.,false,2026-09-12T17:30:00+00:00,2026-09-12T17:30:00+00:00
+270,141,ffe47fd1-7989-5728-addd-50b504edd889,\N,We were splitting on commas by hand. Replaced that with the standard csv module.,false,2026-09-13T00:30:00+00:00,2026-09-13T00:30:00+00:00
+271,142,0da68170-ff38-5dad-9224-770d261f1c8a,\N,Write one observable outcome and how to check it.,false,2026-09-18T04:30:00+00:00,2026-09-18T04:30:00+00:00
+272,142,33d87513-60c2-51ff-9ec5-f0f1389ed27e,271,'Save a draft and restore it after reload' is easier to finish than 'do frontend'.,false,2026-09-18T11:30:00+00:00,2026-09-18T11:30:00+00:00
+273,142,8ae0340a-8eaf-5e9d-9db0-ac449334023d,\N,Add dependencies if another task genuinely blocks it.,false,2026-09-18T18:30:00+00:00,2026-09-18T18:30:00+00:00
+274,142,8300625d-d3f5-5264-8503-98a2bfbf60d8,\N,We now include a small done checklist. Two or three items is usually enough.,false,2026-09-19T01:30:00+00:00,2026-09-19T01:30:00+00:00
+275,143,63fdd1e3-9db3-5b05-9799-510eea6abab7,\N,A generic placeholder mark avoids implying endorsement.,false,2026-08-24T07:30:00+00:00,2026-08-24T07:30:00+00:00
+276,143,3425797b-5c54-5f3a-9a34-9cedb0dc5b84,275,Check the institution's published brand rules if you want to use its actual logo.,false,2026-08-24T14:30:00+00:00,2026-08-24T14:30:00+00:00
+277,144,6e82bb3e-ede8-5803-ba1a-cc3aa8766199,\N,Use a month name where the space allows it.,false,2026-09-03T09:30:00+00:00,2026-09-03T09:30:00+00:00
+278,144,20b63262-d3e6-555a-95b2-84fc87694a19,277,"For date-only deadlines, be careful not to apply a timezone conversion.",false,2026-09-03T16:30:00+00:00,2026-09-03T16:30:00+00:00
+279,144,473b12ab-4d0d-5b7f-89b2-c0a1e2405c60,\N,A full date in the tooltip is useful but shouldn't be the only readable label.,false,2026-09-03T23:30:00+00:00,2026-09-03T23:30:00+00:00
+280,145,8ecc0792-3789-53b2-a26e-fc6daa886eb7,\N,Start by checking which columns are latitude and longitude.,true,2026-07-24T10:30:00+00:00,2026-07-24T10:30:00+00:00
+281,147,84047d01-74e6-5a08-a20e-b5c25e3eff3e,\N,"Nice catch. Put the rule in the database transaction, not just a disabled button.",false,2026-09-16T09:30:00+00:00,2026-09-16T09:30:00+00:00
+282,148,1062abbb-4fcd-51a9-95fc-5474e4af7640,\N,Read recent discussions to see whether someone is already working on it.,true,2026-07-26T11:30:00+00:00,2026-07-26T11:30:00+00:00
+283,148,58074159-53d7-5a52-8436-d84a05af35a9,282,Try running the project locally before promising a fix.,false,2026-07-26T18:30:00+00:00,2026-07-26T18:30:00+00:00
+284,148,3a376c3a-3e46-5c8c-815c-232b66ca9bc8,\N,A short question about the expected behaviour can save a lot of work.,false,2026-07-27T01:30:00+00:00,2026-07-27T01:30:00+00:00
+285,149,4ec67eb8-4fda-5cbc-bbd1-a6afc7ce8130,\N,Fix anything that prevents completing the main task with a keyboard.,false,2026-08-19T09:30:00+00:00,2026-08-19T09:30:00+00:00
+286,149,50de23a6-cd45-55ac-adb0-06d14b4ed8ce,285,Check labels and error messages on the main form.,false,2026-08-19T16:30:00+00:00,2026-08-19T16:30:00+00:00
+287,149,554a90ae-c448-548d-a552-cd8f1c340cbd,\N,Keep the remaining issues visible instead of calling the whole app accessible.,false,2026-08-19T23:30:00+00:00,2026-08-19T23:30:00+00:00
+288,149,7298015b-9105-595a-b879-3013c08053f7,\N,We split blockers from improvements and added a person responsible for each.,false,2026-08-20T06:30:00+00:00,2026-08-20T06:30:00+00:00
+289,150,33ba5d16-c38c-5bcf-9896-ea8ae81d6e7b,\N,A documented setup and pinned dependencies may solve enough for now.,true,2026-08-03T02:30:00+00:00,2026-08-03T02:30:00+00:00
+290,150,6b9b6012-cdb4-50eb-8ad0-01c36516df23,289,"Docker can help with the database, but adds another thing to learn.",false,2026-08-03T09:30:00+00:00,2026-08-03T09:30:00+00:00
+291,150,1767869f-381f-59b9-acac-01da2d539e40,\N,We containerised only PostgreSQL first and kept the app outside it.,false,2026-08-03T16:30:00+00:00,2026-08-03T16:30:00+00:00
+292,150,01c00e49-c4d6-5d4b-bbc1-8aa3fe21ba2a,\N,"Whatever you choose, try the instructions on a clean machine.",false,2026-08-03T23:30:00+00:00,2026-08-03T23:30:00+00:00
+293,151,6d9d0917-bda8-5863-abe4-92d14b0cc926,\N,Keep missing distinct from an actual zero.,false,2026-08-02T08:30:00+00:00,2026-08-02T08:30:00+00:00
+294,151,4845dc43-0c9d-5f09-aa4a-62e68abb5d12,293,Report how many responses each question has.,false,2026-08-02T15:30:00+00:00,2026-08-02T15:30:00+00:00
+295,152,0da68170-ff38-5dad-9224-770d261f1c8a,\N,Have a local screenshot or recording of the main flow as a fallback.,false,2026-08-11T04:30:00+00:00,2026-08-11T04:30:00+00:00
+296,152,d9fbcbde-376a-5f82-9fb5-268a24b02d57,295,Demo one complete task instead of every menu item.,false,2026-08-11T11:30:00+00:00,2026-08-11T11:30:00+00:00
+297,152,e3efd234-c7f9-5957-937f-661b1c3981ef,\N,Make the example data ahead of time so you aren't typing long forms on stage.,false,2026-08-11T18:30:00+00:00,2026-08-11T18:30:00+00:00
+298,153,729fe171-fa0d-547e-b374-39bd19f4c645,\N,First decide whether persistence is needed and explain it to users.,false,2026-08-06T06:30:00+00:00,2026-08-06T06:30:00+00:00
+299,155,673e8617-3280-5bfa-85a6-738a6d64aac6,\N,Testing the problem with potential users is real project work.,false,2026-08-09T08:30:00+00:00,2026-08-09T08:30:00+00:00
+300,156,e5b7ccce-2cb7-5b6e-95a5-32ffacbca87f,\N,Agree on a specific demonstration and the limitations you'll explain.,false,2026-08-05T03:30:00+00:00,2026-08-05T03:30:00+00:00
+301,156,eb3717c1-cd92-5eeb-af40-9df7f3132426,300,A reproducible experiment can be more valuable than a polished extra screen.,false,2026-08-05T10:30:00+00:00,2026-08-05T10:30:00+00:00
+302,156,d48cab4b-e48b-59ae-88d6-41d5d463569d,\N,Write a small acceptance checklist with your supervisor.,false,2026-08-05T17:30:00+00:00,2026-08-05T17:30:00+00:00
+303,157,eb397f92-99ac-5f0f-8f81-3540865f0477,\N,Look at texture sizes before chasing tiny mesh savings.,false,2026-08-28T03:30:00+00:00,2026-08-28T03:30:00+00:00
+304,157,082b47e7-5a06-5a34-bd49-595c82b2b196,303,"Measure the exported file, not just the Blender project size.",false,2026-08-28T10:30:00+00:00,2026-08-28T10:30:00+00:00
+305,157,6467241a-6abd-5888-8e87-40e0e86cbc55,\N,Could a still image explain the project just as well on mobile?,false,2026-08-28T17:30:00+00:00,2026-08-28T17:30:00+00:00
+306,157,eb3717c1-cd92-5eeb-af40-9df7f3132426,\N,We kept an optional 3D view and loaded a small poster image first.,false,2026-08-29T00:30:00+00:00,2026-08-29T00:30:00+00:00
+307,158,f2561442-8439-5138-9a3b-8bcf96f16609,\N,Pick one trade-off you're unsure about and explain your current choice.,false,2026-08-13T04:30:00+00:00,2026-08-13T04:30:00+00:00
+308,158,36016ab9-3cc9-5f6a-8bc7-1d138ad9cb43,307,Tell them what the app is meant to do and how to run it.,false,2026-08-13T11:30:00+00:00,2026-08-13T11:30:00+00:00
+309,158,82a5c89c-0b3a-58b9-9259-837a5348a5c2,\N,A small pull request is easier to review than an entire repo.,false,2026-08-13T18:30:00+00:00,2026-08-13T18:30:00+00:00
+310,158,405fd522-6b0d-52fc-b397-dc3ce2e4a2ea,\N,I asked about my permission checks and got much more useful feedback than on naming every file.,false,2026-08-14T01:30:00+00:00,2026-08-14T01:30:00+00:00
+311,159,52ab3a8f-ec5c-5e66-bcd5-efc304512118,\N,Transfer a fictional balance between two accounts and make the second update fail.,false,2026-07-31T03:30:00+00:00,2026-07-31T03:30:00+00:00
+312,159,f22a7317-9c2b-5d13-99b9-1a1622094bb3,311,Try reserving the last seat with two requests at once.,false,2026-07-31T10:30:00+00:00,2026-07-31T10:30:00+00:00
+313,160,eb397f92-99ac-5f0f-8f81-3540865f0477,\N,Label it 'tasks completed' rather than suggesting it measures all effort.,false,2026-07-26T04:30:00+00:00,2026-07-26T04:30:00+00:00
+314,160,2e2e8079-6c9e-51c9-bc7e-1475045fd514,313,We show done/total next to the bar so the meaning is clear.,false,2026-07-26T11:30:00+00:00,2026-07-26T11:30:00+00:00
+315,160,a36cd93c-2f0c-5956-9a51-8094e39a7bed,\N,Don't invent precision. A milestone summary can be more honest for some projects.,false,2026-07-26T18:30:00+00:00,2026-07-26T18:30:00+00:00
+316,161,d48cab4b-e48b-59ae-88d6-41d5d463569d,\N,Check the image orientation metadata and whether your processing library applies it.,false,2026-08-20T08:30:00+00:00,2026-08-20T08:30:00+00:00
+317,163,f6e8344b-87f4-5461-93fc-b01ff1ae4265,\N,Return a stable public message and keep detailed diagnostics server-side.,true,2026-08-24T05:30:00+00:00,2026-08-24T05:30:00+00:00
+318,164,0da68170-ff38-5dad-9224-770d261f1c8a,\N,Try the manual workflow first and see what actually repeats.,false,2026-09-03T02:30:00+00:00,2026-09-03T02:30:00+00:00
+319,164,daa36188-60fd-56a2-938b-70b1b51084b0,318,Consent and unsubscribe handling matter even for a small list.,false,2026-09-03T09:30:00+00:00,2026-09-03T09:30:00+00:00
+320,164,50d6350f-ffd4-59ad-a1ff-65a49a77a913,\N,Use an existing mailing tool before writing your own sender.,false,2026-09-03T16:30:00+00:00,2026-09-03T16:30:00+00:00
+321,165,693ebb02-ab3f-5d60-b798-d4d4df4900d2,\N,Pick a task and explain where you weren't sure what to click.,false,2026-09-13T11:30:00+00:00,2026-09-13T11:30:00+00:00
+322,165,52ab3a8f-ec5c-5e66-bcd5-efc304512118,321,Separate the issue from your preferred solution.,false,2026-09-13T18:30:00+00:00,2026-09-13T18:30:00+00:00
+323,165,5a4b137d-2ebb-5c75-8cdd-bf77406b4b9f,\N,Try 'I missed the save button after editing' instead of 'make it pop'.,false,2026-09-14T01:30:00+00:00,2026-09-14T01:30:00+00:00
+324,165,373cd20e-25d5-5a46-a0ae-18157cf68a55,\N,Asking what they want feedback on helps too. They might still be working on the layout.,false,2026-09-14T08:30:00+00:00,2026-09-14T08:30:00+00:00
+325,166,6cf4bb40-4d81-5eb3-b9d9-5841cd55724e,\N,You're counting combinations from both joins. Aggregate separately or count the distinct thing you mean.,true,2026-08-11T04:30:00+00:00,2026-08-11T04:30:00+00:00
+326,166,4845dc43-0c9d-5f09-aa4a-62e68abb5d12,325,Draw one project with two members and three tasks; the joined result has six rows.,false,2026-08-11T11:30:00+00:00,2026-08-11T11:30:00+00:00
+327,166,bc38029f-d1c5-5b8f-8055-d446a522cb91,\N,Be careful with COUNT DISTINCT as a blanket fix. Check the other aggregates too.,false,2026-08-11T18:30:00+00:00,2026-08-11T18:30:00+00:00
+328,166,ae7ac442-d880-5cd8-bc30-8d21c5f7dc54,\N,The six-row example made it click. I moved each count into its own subquery.,false,2026-08-12T01:30:00+00:00,2026-08-12T01:30:00+00:00
+329,167,5ccdaadc-80b2-50e1-a0c1-bad0246a7cf2,\N,Ask someone to follow your instructions without coaching them.,true,2026-07-26T03:30:00+00:00,2026-07-26T03:30:00+00:00
+330,167,405fd522-6b0d-52fc-b397-dc3ce2e4a2ea,329,Write down prerequisites and what successful output looks like.,false,2026-07-26T10:30:00+00:00,2026-07-26T10:30:00+00:00
+331,168,8819cb55-67e6-5a55-98c8-d80446975a9e,\N,Keep both versions when the text differs and let the user choose.,false,2026-07-30T05:30:00+00:00,2026-07-30T05:30:00+00:00
+332,168,e7c63421-97d2-555e-9731-46cb0f04f637,331,Separate fields that can merge safely from fields that need a decision.,false,2026-07-30T12:30:00+00:00,2026-07-30T12:30:00+00:00
+333,168,cd8c4c60-ab9b-5cf3-996e-d4fbb990f4c6,\N,Start by making the conflict visible. Automatic merging can come later.,false,2026-07-30T19:30:00+00:00,2026-07-30T19:30:00+00:00
+334,169,88a268b0-6bca-5583-b041-ffdbc51be7e6,\N,"Yes, if you explain what you learned and what evidence changed your mind.",false,2026-07-23T06:30:00+00:00,2026-07-23T06:30:00+00:00
+335,171,d767d4bb-a2aa-587a-90f9-23d0689ae52a,\N,Nice! Try documenting the Python version as well.,true,2026-09-02T04:30:00+00:00,2026-09-02T04:30:00+00:00
+336,172,35e87bcc-650c-5e3f-9741-3f0c54905b6f,\N,At least include the discussion title so the user knows where they landed.,false,2026-08-01T07:30:00+00:00,2026-08-01T07:30:00+00:00
+337,172,fb400c3e-ecd0-522e-8b8e-1323946be71a,336,"If you can, link to the specific reply and highlight it briefly.",false,2026-08-01T14:30:00+00:00,2026-08-01T14:30:00+00:00
+338,172,5532dec3-02ae-5ac3-8b57-2e8214a8598b,\N,Think about what the link does if the comment was removed.,false,2026-08-01T21:30:00+00:00,2026-08-01T21:30:00+00:00
+339,173,54561bf4-fe37-5b37-934d-9c7f81542f8b,\N,List what you can discuss and mark your current level honestly.,false,2026-08-11T10:30:00+00:00,2026-08-11T10:30:00+00:00
+340,173,33ba5d16-c38c-5bcf-9896-ea8ae81d6e7b,339,A project showing how you used a tool helps more than a huge skills list.,true,2026-08-11T17:30:00+00:00,2026-08-11T17:30:00+00:00
+341,173,50de23a6-cd45-55ac-adb0-06d14b4ed8ce,\N,Keep 'learning' separate from things you can help someone with.,true,2026-08-12T00:30:00+00:00,2026-08-12T00:30:00+00:00
+342,173,35e87bcc-650c-5e3f-9741-3f0c54905b6f,\N,I removed a few tools and linked the projects where I actually used the rest.,true,2026-08-12T07:30:00+00:00,2026-08-12T07:30:00+00:00
+343,174,373cd20e-25d5-5a46-a0ae-18157cf68a55,\N,No. Leave a clear status and a note about what remains.,false,2026-08-23T04:30:00+00:00,2026-08-23T04:30:00+00:00
+344,174,ffe47fd1-7989-5728-addd-50b504edd889,343,"Archive it if nobody expects to return soon, but keep the write-up.",false,2026-08-23T11:30:00+00:00,2026-08-23T11:30:00+00:00
+345,174,d767d4bb-a2aa-587a-90f9-23d0689ae52a,\N,A working small piece can still help the next team.,false,2026-08-23T18:30:00+00:00,2026-08-23T18:30:00+00:00
+346,174,63fdd1e3-9db3-5b05-9799-510eea6abab7,\N,We recorded a two-minute walkthrough before pausing. Glad we did.,false,2026-08-24T01:30:00+00:00,2026-08-24T01:30:00+00:00
+347,175,d767d4bb-a2aa-587a-90f9-23d0689ae52a,\N,A setup guide that someone outside the team has actually followed.,false,2026-07-26T03:30:00+00:00,2026-07-26T03:30:00+00:00
+348,175,3d0f3e54-413b-5a89-bc88-8cb0e7246b97,347,"Include a small sample dataset, with no real account details in it.",false,2026-07-26T10:30:00+00:00,2026-07-26T10:30:00+00:00
+349,175,302b84f9-9053-5cf7-bed0-305678227875,\N,We recorded the main flow and the known failures in a short screen recording.,false,2026-07-26T17:30:00+00:00,2026-07-26T17:30:00+00:00
+350,175,6d9d0917-bda8-5863-abe4-92d14b0cc926,\N,Who owns the deployment account? Sort that out before everyone leaves.,false,2026-07-27T00:30:00+00:00,2026-07-27T00:30:00+00:00
+351,175,37b7aed3-d207-54f7-b4ec-0e05c50eaeb2,350,"Thanks, that is the bit we had missed. It is still under my personal account.",false,2026-07-27T07:30:00+00:00,2026-07-27T07:30:00+00:00
+352,175,d6b81cb4-a299-5894-baa5-463cb63679a3,\N,Move ownership through the service settings. Do not put a shared password in the README.,false,2026-07-27T14:30:00+00:00,2026-07-27T14:30:00+00:00
+353,175,10feece1-a2cd-532b-8488-21659a3bee22,\N,"Leave a list of decisions too, especially the things you deliberately did not build.",false,2026-07-27T21:30:00+00:00,2026-07-27T21:30:00+00:00
+354,175,d9fbcbde-376a-5f82-9fb5-268a24b02d57,353,We have booked a handover session where the new team does the setup and we only take notes.,false,2026-07-28T04:30:00+00:00,2026-07-28T04:30:00+00:00
+355,176,e137404e-9196-525c-b17a-44dc96d29f29,\N,"We tried a five-line brief. Problem, who it helps, one flow, what is out of scope, and how we will test it.",false,2026-08-09T09:30:00+00:00,2026-08-09T09:30:00+00:00
+356,176,3d5b480d-3962-5c76-96ca-5459d65372aa,355,The out-of-scope line saved us. Otherwise someone adds a payment system in week two.,false,2026-08-09T16:30:00+00:00,2026-08-09T16:30:00+00:00
+357,176,f223e569-d735-5980-b77b-25d459e64a37,\N,Do you write it before talking to users or after?,false,2026-08-09T23:30:00+00:00,2026-08-09T23:30:00+00:00
+358,176,ae96d203-7a11-52ed-9e02-cd93c3dda603,\N,"A rough version before, then change it after the first conversation. It is a hypothesis at that point.",false,2026-08-10T06:30:00+00:00,2026-08-10T06:30:00+00:00
+359,176,45abfe15-6e8d-57cf-bda3-b7ae2b5c0bc7,358,I would keep the success measure separate from the feature list. Finishing the features does not prove they help.,false,2026-08-10T13:30:00+00:00,2026-08-10T13:30:00+00:00
+360,176,44a33563-638c-52da-ae01-285f43dfcb99,\N,"Ours said ""students can find an available room"". We changed it to finding one in under a minute using the list view.",false,2026-08-10T20:30:00+00:00,2026-08-10T20:30:00+00:00
+361,176,f223e569-d735-5980-b77b-25d459e64a37,\N,How many people did you test with?,true,2026-08-11T03:30:00+00:00,2026-08-11T03:30:00+00:00
+362,176,5532dec3-02ae-5ac3-8b57-2e8214a8598b,361,"Only four for the first pass, so we treated it as usability feedback, not evidence about the whole campus.",false,2026-08-11T10:30:00+00:00,2026-08-11T10:30:00+00:00
+363,176,3d016498-e16a-5ad9-95c7-b633dfc6a142,\N,We also wrote down the devices they used. Two problems only happened on phones.,false,2026-08-11T17:30:00+00:00,2026-08-11T17:30:00+00:00
+364,176,096499d2-73d6-5063-9dd4-a7c1aebac61d,\N,"Agree on testing early, but a stopwatch can make people rush. Ask them to think aloud in a separate pass.",false,2026-08-12T00:30:00+00:00,2026-08-12T00:30:00+00:00
+365,176,f223e569-d735-5980-b77b-25d459e64a37,364,Good point. We will do the first pass without timing it.,false,2026-08-12T07:30:00+00:00,2026-08-12T07:30:00+00:00
+366,176,e3efd234-c7f9-5957-937f-661b1c3981ef,\N,Our brief includes who can make a scope decision when teammates disagree. That avoided a few stalled meetings.,false,2026-08-12T14:30:00+00:00,2026-08-12T14:30:00+00:00
+367,176,729fe171-fa0d-547e-b374-39bd19f4c645,\N,"We use one person for each decision, but anyone can leave a concern in the notes.",false,2026-08-12T21:30:00+00:00,2026-08-12T21:30:00+00:00
+368,176,368442e7-2dfe-5df4-9ab7-a468b984050a,367,A sketch helped us more than another paragraph. It made the different assumptions visible.,false,2026-08-13T04:30:00+00:00,2026-08-13T04:30:00+00:00
+369,176,f223e569-d735-5980-b77b-25d459e64a37,\N,I have cut our brief from three pages to half a page and added the sketch. Much easier to discuss now.,true,2026-08-13T11:30:00+00:00,2026-08-13T11:30:00+00:00
+370,176,bf54d417-d834-5d3e-a7f9-106377fe05a5,\N,Leave a dated copy when the scope changes. It makes the final reflection easier to write.,false,2026-08-13T18:30:00+00:00,2026-08-13T18:30:00+00:00

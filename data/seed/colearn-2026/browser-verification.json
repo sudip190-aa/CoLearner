@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-09-19T11:08:47.617Z",
+  "checks": [
+    "Dashboard loads with actual membership/task data and existing recommendation queries",
+    "All 215 international profiles normalize with names and linked skills",
+    "People country and skill filters use the imported relationships",
+    "People search renders a named fictional profile",
+    "Project search, status and technology filters match the new dataset",
+    "Project detail renders coherent scope, owner and team data",
+    "Community search and unanswered filter use actual comment counts",
+    "Long thread renders nested replies and linked fictional authors",
+    "All-time, weekly and monthly leaderboards load dated imported activity",
+    "Public profile and portfolio display skills, projects, achievements and activity",
+    "Notification actor names, supported verbs and target labels render",
+    "Existing library still loads its original titles",
+    "No browser exceptions, error responses, invalid text or broken rendered images"
+  ],
+  "errors": [],
+  "badNetwork": [],
+  "status": "passed"
+}

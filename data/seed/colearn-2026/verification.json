@@ -1,0 +1,206 @@
+{
+  "verified_at": "2026-09-19T11:09:07.331Z",
+  "status": "passed",
+  "schema_unchanged": true,
+  "library_unchanged": true,
+  "original_accounts_preserved": 32,
+  "fictional_auth_accounts_banned": 215,
+  "counts": [
+    {
+      "table": "badges",
+      "before": 15,
+      "removed": 0,
+      "added": 0,
+      "after": 15
+    },
+    {
+      "table": "bookmarks",
+      "before": 0,
+      "removed": 0,
+      "added": 0,
+      "after": 0
+    },
+    {
+      "table": "books",
+      "before": 10,
+      "removed": 0,
+      "added": 0,
+      "after": 10
+    },
+    {
+      "table": "chapters",
+      "before": 50,
+      "removed": 0,
+      "added": 0,
+      "after": 50
+    },
+    {
+      "table": "comments",
+      "before": 37,
+      "removed": 27,
+      "added": 162,
+      "after": 172
+    },
+    {
+      "table": "connections",
+      "before": 1,
+      "removed": 0,
+      "added": 422,
+      "after": 423
+    },
+    {
+      "table": "contact_messages",
+      "before": 1,
+      "removed": 0,
+      "added": 0,
+      "after": 1
+    },
+    {
+      "table": "direct_messages",
+      "before": 0,
+      "removed": 0,
+      "added": 0,
+      "after": 0
+    },
+    {
+      "table": "join_requests",
+      "before": 1,
+      "removed": 0,
+      "added": 23,
+      "after": 24
+    },
+    {
+      "table": "milestones",
+      "before": 18,
+      "removed": 12,
+      "added": 160,
+      "after": 166
+    },
+    {
+      "table": "notes",
+      "before": 0,
+      "removed": 0,
+      "added": 0,
+      "after": 0
+    },
+    {
+      "table": "notifications",
+      "before": 71,
+      "removed": 0,
+      "added": 2089,
+      "after": 2160
+    },
+    {
+      "table": "profiles",
+      "before": 32,
+      "removed": 0,
+      "added": 215,
+      "after": 247
+    },
+    {
+      "table": "project_members",
+      "before": 24,
+      "removed": 15,
+      "added": 300,
+      "after": 309
+    },
+    {
+      "table": "project_updates",
+      "before": 18,
+      "removed": 12,
+      "added": 113,
+      "after": 119
+    },
+    {
+      "table": "projects",
+      "before": 9,
+      "removed": 6,
+      "added": 80,
+      "after": 83
+    },
+    {
+      "table": "reading_progress",
+      "before": 41,
+      "removed": 0,
+      "added": 247,
+      "after": 288
+    },
+    {
+      "table": "reports",
+      "before": 26,
+      "removed": 26,
+      "added": 0,
+      "after": 0
+    },
+    {
+      "table": "skills",
+      "before": 30,
+      "removed": 0,
+      "added": 16,
+      "after": 46
+    },
+    {
+      "table": "tags",
+      "before": 31,
+      "removed": 0,
+      "added": 51,
+      "after": 82
+    },
+    {
+      "table": "tasks",
+      "before": 36,
+      "removed": 24,
+      "added": 436,
+      "after": 448
+    },
+    {
+      "table": "thread_tags",
+      "before": 36,
+      "removed": 27,
+      "added": 128,
+      "after": 137
+    },
+    {
+      "table": "thread_views",
+      "before": 3,
+      "removed": 0,
+      "added": 3709,
+      "after": 3712
+    },
+    {
+      "table": "threads",
+      "before": 13,
+      "removed": 9,
+      "added": 63,
+      "after": 67
+    },
+    {
+      "table": "user_badges",
+      "before": 58,
+      "removed": 0,
+      "added": 793,
+      "after": 851
+    },
+    {
+      "table": "user_skills",
+      "before": 84,
+      "removed": 0,
+      "added": 647,
+      "after": 731
+    },
+    {
+      "table": "votes",
+      "before": 12,
+      "removed": 9,
+      "added": 686,
+      "after": 689
+    },
+    {
+      "table": "xp_events",
+      "before": 40,
+      "removed": 0,
+      "added": 10093,
+      "after": 10133
+    }
+  ]
+}

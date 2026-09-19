@@ -1,0 +1,161 @@
+id,project_id,title,description,due_date,status,created_at,updated_at
+119,112,Agree the smallest useful version,Room-level reports expire after two hours; no individual tracking.,2026-07-10,done,2026-07-06T02:30:00+00:00,2026-07-10T02:30:00+00:00
+120,112,Test and hand over the prototype,Check the main use case: Show which study rooms are quiet without asking people to share their exact location.,2026-07-17,done,2026-07-06T02:30:00+00:00,2026-07-17T02:30:00+00:00
+121,113,Agree the smallest useful version,Borrowers and lenders agree on pickup in person; the app does not handle deposits.,2026-09-29,planned,2026-07-15T22:30:00+00:00,2026-07-15T22:30:00+00:00
+122,113,Test and hand over the prototype,Check the main use case: Help students lend calculators and lab coats for a few days instead of buying another one.,2026-10-06,planned,2026-07-15T22:30:00+00:00,2026-07-15T22:30:00+00:00
+123,114,Agree the smallest useful version,"Keep personal and shared reminders separate, even when they fall on the same day.",2026-08-21,done,2026-08-17T00:30:00+00:00,2026-08-21T00:30:00+00:00
+124,114,Test and hand over the prototype,Check the main use case: Put shared flat bills and university deadlines on one small calendar.,2026-10-06,planned,2026-08-17T00:30:00+00:00,2026-08-17T00:30:00+00:00
+125,115,Agree the smallest useful version,Photograph objects only with permission and avoid storing customer details.,2026-07-29,done,2026-07-25T19:30:00+00:00,2026-07-29T19:30:00+00:00
+126,115,Test and hand over the prototype,Check the main use case: Keep a useful record of repairs at a neighbourhood repair session.,2026-10-06,in_progress,2026-07-25T19:30:00+00:00,2026-07-25T19:30:00+00:00
+127,116,Agree the smallest useful version,Use manual entry first and show rounding differences before saving.,2026-09-29,planned,2026-08-28T05:30:00+00:00,2026-08-28T05:30:00+00:00
+128,116,Test and hand over the prototype,Check the main use case: Split grocery receipts when flatmates did not buy equal amounts.,2026-10-06,planned,2026-08-28T05:30:00+00:00,2026-08-28T05:30:00+00:00
+129,117,Agree the smallest useful version,Listings need an expiry time and allergen notes; no claims about food safety.,2026-08-30,done,2026-08-26T05:30:00+00:00,2026-08-30T05:30:00+00:00
+130,117,Test and hand over the prototype,Check the main use case: Let student groups offer unopened surplus food after an event.,2026-09-07,done,2026-08-26T05:30:00+00:00,2026-09-07T05:30:00+00:00
+131,118,Agree the smallest useful version,Store measurements with units and export the original readings unchanged.,2026-08-26,done,2026-08-22T08:30:00+00:00,2026-08-26T08:30:00+00:00
+132,118,Test and hand over the prototype,Check the main use case: Record water sampling notes when field trips have no mobile signal.,2026-10-06,in_progress,2026-08-22T08:30:00+00:00,2026-08-22T08:30:00+00:00
+133,119,Agree the smallest useful version,Offer the seat to one person at a time so two confirmations cannot collide.,2026-07-03,done,2026-06-29T02:30:00+00:00,2026-07-03T02:30:00+00:00
+134,119,Test and hand over the prototype,Check the main use case: Fill empty seats when someone cancels a student workshop place.,2026-07-17,done,2026-06-29T02:30:00+00:00,2026-07-17T02:30:00+00:00
+135,120,Agree the smallest useful version,The shop owner can edit checklists without learning a content management system.,2026-08-13,done,2026-08-09T00:30:00+00:00,2026-08-13T00:30:00+00:00
+136,120,Test and hand over the prototype,Check the main use case: Make a short onboarding guide for students working their first café shift.,2026-10-06,in_progress,2026-08-09T00:30:00+00:00,2026-08-09T00:30:00+00:00
+137,121,Agree the smallest useful version,Use observation times instead of pretending shade is the same all day.,2026-09-29,planned,2026-07-04T19:30:00+00:00,2026-07-04T19:30:00+00:00
+138,121,Test and hand over the prototype,Check the main use case: Map which bus stops offer shade during a summer commute.,2026-10-06,planned,2026-07-04T19:30:00+00:00,2026-07-04T19:30:00+00:00
+139,122,Agree the smallest useful version,"Match overlapping time windows and preferred language, not a made-up score.",2026-08-03,done,2026-07-30T01:30:00+00:00,2026-08-03T01:30:00+00:00
+140,122,Test and hand over the prototype,Check the main use case: Help language learners find someone free for a short speaking session.,2026-10-06,in_progress,2026-07-30T01:30:00+00:00,2026-07-30T01:30:00+00:00
+141,123,Agree the smallest useful version,Every balance must be explainable from an expense row.,2026-09-03,done,2026-08-30T20:30:00+00:00,2026-09-03T20:30:00+00:00
+142,123,Test and hand over the prototype,Check the main use case: Track small student society grants and the receipts needed for reimbursement.,2026-10-06,in_progress,2026-08-30T20:30:00+00:00,2026-08-30T20:30:00+00:00
+143,124,Agree the smallest useful version,Editing and export are local; do not upload recorded students to an external model.,2026-08-21,done,2026-08-17T05:30:00+00:00,2026-08-21T05:30:00+00:00
+144,124,Test and hand over the prototype,Check the main use case: Turn lecture-club video transcripts into captions that volunteers can correct.,2026-09-03,done,2026-08-17T05:30:00+00:00,2026-09-03T05:30:00+00:00
+145,125,Agree the smallest useful version,Show missing sensor readings clearly instead of joining gaps with a line.,2026-08-19,done,2026-08-15T15:30:00+00:00,2026-08-19T15:30:00+00:00
+146,125,Test and hand over the prototype,Check the main use case: Compare soil readings from two planters in the student garden.,2026-10-06,in_progress,2026-08-15T15:30:00+00:00,2026-08-15T15:30:00+00:00
+147,126,Agree the smallest useful version,"Store public paper links and original notes, not copyrighted PDF copies.",2026-07-20,done,2026-07-16T23:30:00+00:00,2026-07-20T23:30:00+00:00
+148,126,Test and hand over the prototype,Check the main use case: Keep a reading list for a small research group with notes on why each paper matters.,2026-07-28,done,2026-07-16T23:30:00+00:00,2026-07-28T23:30:00+00:00
+149,127,Agree the smallest useful version,Review history is visible so assignments can be checked by the group.,2026-08-31,done,2026-08-27T02:30:00+00:00,2026-08-31T02:30:00+00:00
+150,127,Test and hand over the prototype,Check the main use case: Give each class project two reviewers without pairing the same people every week.,2026-10-06,planned,2026-08-27T02:30:00+00:00,2026-08-27T02:30:00+00:00
+151,128,Agree the smallest useful version,A kit can be incomplete; missing parts must not disappear when it is returned.,2026-07-08,done,2026-07-04T22:30:00+00:00,2026-07-08T22:30:00+00:00
+152,128,Test and hand over the prototype,Check the main use case: Check lab kits in and out before practical sessions.,2026-07-30,done,2026-07-04T22:30:00+00:00,2026-07-30T22:30:00+00:00
+153,129,Agree the smallest useful version,Keep screenshot text readable and offer an export with no decorative frame.,2026-09-03,done,2026-08-30T09:30:00+00:00,2026-09-03T09:30:00+00:00
+154,129,Test and hand over the prototype,Check the main use case: Arrange project screenshots into consistent portfolio images.,2026-09-18,done,2026-08-30T09:30:00+00:00,2026-09-18T10:30:00+00:00
+155,130,Agree the smallest useful version,There is no speed ranking; skipped days should not wipe out the journal.,2026-08-13,done,2026-08-09T02:30:00+00:00,2026-08-13T02:30:00+00:00
+156,130,Test and hand over the prototype,Check the main use case: Let students record a reading session and one thing they understood.,2026-08-31,done,2026-08-09T02:30:00+00:00,2026-08-31T02:30:00+00:00
+157,131,Agree the smallest useful version,"This is a prototype helper, not an accessibility certification tool.",2026-09-05,done,2026-09-01T21:30:00+00:00,2026-09-05T21:30:00+00:00
+158,131,Test and hand over the prototype,Check the main use case: Flag tiny text and low contrast in student event posters.,2026-10-06,in_progress,2026-09-01T21:30:00+00:00,2026-09-01T21:30:00+00:00
+159,132,Agree the smallest useful version,Separate public event guides from committee-only notes.,2026-07-22,done,2026-07-18T07:30:00+00:00,2026-07-22T07:30:00+00:00
+160,132,Test and hand over the prototype,Check the main use case: Help an outgoing club committee leave useful notes for the next team.,2026-10-06,in_progress,2026-07-18T07:30:00+00:00,2026-07-18T07:30:00+00:00
+161,133,Agree the smallest useful version,Record the date of each price rather than presenting old quotes as current.,2026-09-29,planned,2026-07-12T02:30:00+00:00,2026-07-12T02:30:00+00:00
+162,133,Test and hand over the prototype,Check the main use case: Compare parts costs for a small community bike workshop.,2026-10-06,planned,2026-07-12T02:30:00+00:00,2026-07-12T02:30:00+00:00
+163,134,Agree the smallest useful version,Moderators can hide personal information before a question is displayed.,2026-08-31,done,2026-08-27T20:30:00+00:00,2026-08-31T20:30:00+00:00
+164,134,Test and hand over the prototype,Check the main use case: Collect questions during a seminar without interrupting the speaker.,2026-09-18,done,2026-08-27T20:30:00+00:00,2026-09-18T10:30:00+00:00
+165,135,Agree the smallest useful version,"Reports are observations, not navigation guarantees.",2026-07-30,done,2026-07-26T03:30:00+00:00,2026-07-30T03:30:00+00:00
+166,135,Test and hand over the prototype,Check the main use case: Record which walking routes stayed usable after heavy rain.,2026-10-06,planned,2026-07-26T03:30:00+00:00,2026-07-26T03:30:00+00:00
+167,136,Agree the smallest useful version,Coordinators confirm sessions; users cannot approve their own hours.,2026-08-13,done,2026-08-09T07:30:00+00:00,2026-08-13T07:30:00+00:00
+168,136,Test and hand over the prototype,Check the main use case: Keep volunteer hours for a student-run tutoring group.,2026-08-28,done,2026-08-09T07:30:00+00:00,2026-08-28T07:30:00+00:00
+169,137,Agree the smallest useful version,"Preserve units, source dates and missing values in the final chart.",2026-09-29,planned,2026-07-29T20:30:00+00:00,2026-07-29T20:30:00+00:00
+170,137,Test and hand over the prototype,Check the main use case: Explain one public dataset with a chart and a note about its limitations.,2026-10-06,planned,2026-07-29T20:30:00+00:00,2026-07-29T20:30:00+00:00
+171,138,Agree the smallest useful version,Use aggregated counts and compare the model with last week's pattern.,2026-08-27,done,2026-08-23T03:30:00+00:00,2026-08-27T03:30:00+00:00
+172,138,Test and hand over the prototype,Check the main use case: Estimate quiet-room demand from anonymous hourly counts.,2026-10-06,in_progress,2026-08-23T03:30:00+00:00,2026-08-23T03:30:00+00:00
+173,139,Agree the smallest useful version,Use manual readings and keep the measurement interval visible.,2026-08-25,done,2026-08-21T14:30:00+00:00,2026-08-25T14:30:00+00:00
+174,139,Test and hand over the prototype,Check the main use case: Compare plug-meter readings for shared appliances.,2026-09-11,done,2026-08-21T14:30:00+00:00,2026-09-11T14:30:00+00:00
+175,140,Agree the smallest useful version,Recordings stay on the device unless the student exports them.,2026-08-16,done,2026-08-12T04:30:00+00:00,2026-08-16T04:30:00+00:00
+176,140,Test and hand over the prototype,Check the main use case: Let students record a practice answer and write their own feedback.,2026-10-06,in_progress,2026-08-12T04:30:00+00:00,2026-08-12T04:30:00+00:00
+177,141,Agree the smallest useful version,Changing a slot must not silently move existing bookings.,2026-08-28,done,2026-08-24T05:30:00+00:00,2026-08-28T05:30:00+00:00
+178,141,Test and hand over the prototype,Check the main use case: Make it easier to book a tutor slot without long group-chat threads.,2026-10-06,in_progress,2026-08-24T05:30:00+00:00,2026-08-24T05:30:00+00:00
+179,142,Agree the smallest useful version,Import a sample job log; do not connect to a real campus printer.,2026-09-29,planned,2026-07-27T16:30:00+00:00,2026-07-27T16:30:00+00:00
+180,142,Test and hand over the prototype,Check the main use case: Track a student's print jobs against a monthly allowance.,2026-10-06,planned,2026-07-27T16:30:00+00:00,2026-07-27T16:30:00+00:00
+181,143,Agree the smallest useful version,Comments refer to a version so old feedback is not attached to a new image.,2026-07-22,done,2026-07-18T17:30:00+00:00,2026-07-22T17:30:00+00:00
+182,143,Test and hand over the prototype,Check the main use case: Collect feedback on a design draft around specific questions.,2026-10-06,in_progress,2026-07-18T17:30:00+00:00,2026-07-18T17:30:00+00:00
+183,144,Agree the smallest useful version,"Work with item counts first, with no payment processing.",2026-08-01,done,2026-07-28T16:30:00+00:00,2026-08-01T16:30:00+00:00
+184,144,Test and hand over the prototype,Check the main use case: Make a simple stock-count tool for a shop with a small catalogue.,2026-08-24,done,2026-07-28T16:30:00+00:00,2026-08-24T16:30:00+00:00
+185,145,Agree the smallest useful version,Keep currency and package sizes explicit so comparisons are fair.,2026-09-29,planned,2026-07-07T18:30:00+00:00,2026-07-07T18:30:00+00:00
+186,145,Test and hand over the prototype,Check the main use case: Compare the cost of a week's meal plan using manually entered prices.,2026-10-06,planned,2026-07-07T18:30:00+00:00,2026-07-07T18:30:00+00:00
+187,146,Agree the smallest useful version,Use fictional forms and point out unnecessary fields.,2026-08-30,done,2026-08-26T19:30:00+00:00,2026-08-30T19:30:00+00:00
+188,146,Test and hand over the prototype,Check the main use case: Help classmates see what information a survey is asking them to share.,2026-10-06,in_progress,2026-08-26T19:30:00+00:00,2026-08-26T19:30:00+00:00
+189,147,Agree the smallest useful version,All examples are fictional and links are inert; never collect credentials.,2026-09-29,planned,2026-06-29T02:30:00+00:00,2026-06-29T02:30:00+00:00
+190,147,Test and hand over the prototype,Check the main use case: Teach students to inspect suspicious messages using safe examples.,2026-10-06,planned,2026-06-29T02:30:00+00:00,2026-06-29T02:30:00+00:00
+191,148,Agree the smallest useful version,Store release links and test results without claiming to audit packages.,2026-09-29,planned,2026-07-26T04:30:00+00:00,2026-07-26T04:30:00+00:00
+192,148,Test and hand over the prototype,Check the main use case: Document why a student project accepted or postponed a package update.,2026-10-06,planned,2026-07-26T04:30:00+00:00,2026-07-26T04:30:00+00:00
+193,149,Agree the smallest useful version,Show recent failures and stale checks; do not promise production uptime.,2026-08-11,done,2026-08-07T15:30:00+00:00,2026-08-11T15:30:00+00:00
+194,149,Test and hand over the prototype,Check the main use case: Show whether a class project's API health check is responding.,2026-10-06,in_progress,2026-08-07T15:30:00+00:00,2026-08-07T15:30:00+00:00
+195,150,Agree the smallest useful version,Prices are entered by the user and carry an effective date.,2026-08-21,done,2026-08-17T23:30:00+00:00,2026-08-21T23:30:00+00:00
+196,150,Test and hand over the prototype,Check the main use case: Compare a monthly travel pass with pay-as-you-go trips.,2026-10-06,planned,2026-08-17T23:30:00+00:00,2026-08-17T23:30:00+00:00
+197,151,Agree the smallest useful version,Accessibility details need a date and an uncertainty note.,2026-08-02,done,2026-07-29T00:30:00+00:00,2026-08-02T00:30:00+00:00
+198,151,Test and hand over the prototype,Check the main use case: Map public facility access information from community observations.,2026-10-06,in_progress,2026-07-29T00:30:00+00:00,2026-07-29T00:30:00+00:00
+199,152,Agree the smallest useful version,Contributors explain terms in their own words rather than copying chapters.,2026-08-19,done,2026-08-15T20:30:00+00:00,2026-08-19T20:30:00+00:00
+200,152,Test and hand over the prototype,Check the main use case: Keep a bilingual glossary alongside a shared reading list.,2026-10-06,in_progress,2026-08-15T20:30:00+00:00,2026-08-15T20:30:00+00:00
+201,153,Agree the smallest useful version,Allow rescheduling when someone misses a session instead of adding guilt messages.,2026-09-29,planned,2026-08-26T22:30:00+00:00,2026-08-26T22:30:00+00:00
+202,153,Test and hand over the prototype,Check the main use case: Schedule spaced revision around actual exam dates.,2026-10-06,planned,2026-08-26T22:30:00+00:00,2026-08-26T22:30:00+00:00
+203,154,Agree the smallest useful version,Use participant codes in the calendar and keep contact details outside the prototype.,2026-08-22,done,2026-08-18T01:30:00+00:00,2026-08-22T01:30:00+00:00
+204,154,Test and hand over the prototype,Check the main use case: Coordinate interviews for a student research project.,2026-10-06,in_progress,2026-08-18T01:30:00+00:00,2026-08-18T01:30:00+00:00
+205,155,Agree the smallest useful version,Use links to public issues and original notes; do not copy entire discussions.,2026-08-03,done,2026-07-30T06:30:00+00:00,2026-08-03T06:30:00+00:00
+206,155,Test and hand over the prototype,Check the main use case: Track questions and reproduction steps before opening an issue.,2026-10-06,in_progress,2026-07-30T06:30:00+00:00,2026-07-30T06:30:00+00:00
+207,156,Agree the smallest useful version,Explain units without giving personalised dietary advice.,2026-07-24,done,2026-07-20T07:30:00+00:00,2026-07-24T07:30:00+00:00
+208,156,Test and hand over the prototype,Check the main use case: Help students compare the information printed on food labels.,2026-08-07,done,2026-07-20T07:30:00+00:00,2026-08-07T07:30:00+00:00
+209,157,Agree the smallest useful version,Keep audit findings separate from verified access information.,2026-07-09,done,2026-07-05T14:30:00+00:00,2026-07-09T14:30:00+00:00
+210,157,Test and hand over the prototype,"Check the main use case: Organise a volunteer audit of ramps, entrances and lifts.",2026-07-26,done,2026-07-05T14:30:00+00:00,2026-07-26T14:30:00+00:00
+211,158,Agree the smallest useful version,Weather and tide checks remain external and need a visible source date.,2026-09-29,planned,2026-08-12T18:30:00+00:00,2026-08-12T18:30:00+00:00
+212,158,Test and hand over the prototype,Check the main use case: Help a small coastal cleanup team plan equipment and meeting points.,2026-10-06,planned,2026-08-12T18:30:00+00:00,2026-08-12T18:30:00+00:00
+213,159,Agree the smallest useful version,Keep no audio recordings or precise home locations.,2026-07-07,done,2026-07-03T19:30:00+00:00,2026-07-07T19:30:00+00:00
+214,159,Test and hand over the prototype,Check the main use case: Visualise sound-level readings collected during a class exercise.,2026-07-23,done,2026-07-03T19:30:00+00:00,2026-07-23T19:30:00+00:00
+215,160,Agree the smallest useful version,A late return should flag the next booking rather than cancel it silently.,2026-08-29,done,2026-08-25T05:30:00+00:00,2026-08-29T05:30:00+00:00
+216,160,Test and hand over the prototype,Check the main use case: Book a student club's cameras without double-booking equipment.,2026-10-06,in_progress,2026-08-25T05:30:00+00:00,2026-08-25T05:30:00+00:00
+217,161,Agree the smallest useful version,Use original scripts and transcripts; do not assume visitors can hear audio.,2026-08-26,done,2026-08-22T03:30:00+00:00,2026-08-26T03:30:00+00:00
+218,161,Test and hand over the prototype,Check the main use case: Create short original audio descriptions for a student exhibition.,2026-10-06,in_progress,2026-08-22T03:30:00+00:00,2026-08-22T03:30:00+00:00
+219,162,Agree the smallest useful version,Every chart includes a data table and a short written takeaway.,2026-07-03,done,2026-06-29T03:30:00+00:00,2026-07-03T03:30:00+00:00
+220,162,Test and hand over the prototype,Check the main use case: Compare ways to show the same dataset accessibly.,2026-07-15,done,2026-06-29T03:30:00+00:00,2026-07-15T03:30:00+00:00
+221,163,Agree the smallest useful version,No card data or payments; organisers confirm orders offline.,2026-09-29,planned,2026-07-21T20:30:00+00:00,2026-07-21T20:30:00+00:00
+222,163,Test and hand over the prototype,Check the main use case: Plan quantities for a student fundraiser using non-binding interest forms.,2026-10-06,planned,2026-07-21T20:30:00+00:00,2026-07-21T20:30:00+00:00
+223,164,Agree the smallest useful version,Use approximate collection areas and remove stale listings.,2026-08-18,done,2026-08-14T15:30:00+00:00,2026-08-18T15:30:00+00:00
+224,164,Test and hand over the prototype,Check the main use case: List desks and chairs being given away when students move.,2026-10-06,in_progress,2026-08-14T15:30:00+00:00,2026-08-14T15:30:00+00:00
+225,165,Agree the smallest useful version,Track agreed contributions without turning them into a competitive score.,2026-09-29,planned,2026-08-10T19:30:00+00:00,2026-08-10T19:30:00+00:00
+226,165,Test and hand over the prototype,Check the main use case: Record which parts of a group assignment each person worked on.,2026-10-06,planned,2026-08-10T19:30:00+00:00,2026-08-10T19:30:00+00:00
+227,166,Agree the smallest useful version,Keep explanations with the cards so wrong answers teach something.,2026-07-06,done,2026-07-02T17:30:00+00:00,2026-07-06T17:30:00+00:00
+228,166,Test and hand over the prototype,Check the main use case: Practice choosing a research method for a short scenario.,2026-10-06,planned,2026-07-02T17:30:00+00:00,2026-07-02T17:30:00+00:00
+229,167,Agree the smallest useful version,Use anonymised examples and keep the original error text searchable.,2026-08-23,done,2026-08-19T20:30:00+00:00,2026-08-23T20:30:00+00:00
+230,167,Test and hand over the prototype,Check the main use case: Collect mistakes from practical sessions and how the team diagnosed them.,2026-10-06,in_progress,2026-08-19T20:30:00+00:00,2026-08-19T20:30:00+00:00
+231,168,Agree the smallest useful version,Link to official bulletins and never publish independent emergency advice.,2026-07-15,done,2026-07-11T17:30:00+00:00,2026-07-15T17:30:00+00:00
+232,168,Test and hand over the prototype,Check the main use case: Explain the terms used in public flood bulletins for a class project.,2026-08-04,done,2026-07-11T17:30:00+00:00,2026-08-04T17:30:00+00:00
+233,169,Agree the smallest useful version,Show fixed costs separately from costs per participant.,2026-08-29,done,2026-08-25T18:30:00+00:00,2026-08-29T18:30:00+00:00
+234,169,Test and hand over the prototype,Check the main use case: Estimate material costs for a student-run craft workshop.,2026-10-06,in_progress,2026-08-25T18:30:00+00:00,2026-08-25T18:30:00+00:00
+235,170,Agree the smallest useful version,Show uncertain predictions and record class imbalance.,2026-07-30,done,2026-07-26T03:30:00+00:00,2026-07-30T03:30:00+00:00
+236,170,Test and hand over the prototype,Check the main use case: Compare simple image classifiers on a small labelled packaging dataset.,2026-10-06,in_progress,2026-07-26T03:30:00+00:00,2026-07-26T03:30:00+00:00
+237,171,Agree the smallest useful version,Distinguish cancelled trips from missing records.,2026-09-29,planned,2026-08-17T04:30:00+00:00,2026-08-17T04:30:00+00:00
+238,171,Test and hand over the prototype,Check the main use case: Plot delays from a small public transport sample.,2026-10-06,planned,2026-08-17T04:30:00+00:00,2026-08-17T04:30:00+00:00
+239,172,Agree the smallest useful version,Open files locally and avoid uploading real personal exports.,2026-07-07,done,2026-07-03T05:30:00+00:00,2026-07-07T05:30:00+00:00
+240,172,Test and hand over the prototype,Check the main use case: Inspect a fictional app's data export and explain each field.,2026-10-06,in_progress,2026-07-03T05:30:00+00:00,2026-07-03T05:30:00+00:00
+241,173,Agree the smallest useful version,Explain trade-offs and accept more than one reasonable solution.,2026-07-14,done,2026-07-10T19:30:00+00:00,2026-07-14T19:30:00+00:00
+242,173,Test and hand over the prototype,Check the main use case: Practice reviewing small intentionally flawed code examples.,2026-08-04,done,2026-07-10T19:30:00+00:00,2026-08-04T19:30:00+00:00
+243,174,Agree the smallest useful version,Only use images with permission and include captions.,2026-07-15,done,2026-07-11T00:30:00+00:00,2026-07-15T00:30:00+00:00
+244,174,Test and hand over the prototype,Check the main use case: Build a timeline from a club's public posters and original event notes.,2026-10-06,in_progress,2026-07-11T00:30:00+00:00,2026-07-11T00:30:00+00:00
+245,175,Agree the smallest useful version,Use fictional asset data and avoid storing borrower identity documents.,2026-08-05,done,2026-08-01T22:30:00+00:00,2026-08-05T22:30:00+00:00
+246,175,Test and hand over the prototype,Check the main use case: Help volunteers track donated laptops ready for loan.,2026-10-06,planned,2026-08-01T22:30:00+00:00,2026-08-01T22:30:00+00:00
+247,176,Agree the smallest useful version,"Location accuracy varies, and observations are not species certifications.",2026-08-20,done,2026-08-16T18:30:00+00:00,2026-08-20T18:30:00+00:00
+248,176,Test and hand over the prototype,Check the main use case: Map pollinator observations from a student field exercise.,2026-10-06,in_progress,2026-08-16T18:30:00+00:00,2026-08-16T18:30:00+00:00
+249,177,Agree the smallest useful version,Keep regional variants visible instead of marking them wrong.,2026-08-31,done,2026-08-27T02:30:00+00:00,2026-08-31T02:30:00+00:00
+250,177,Test and hand over the prototype,Check the main use case: Create an offline quiz from volunteer-written vocabulary examples.,2026-10-06,in_progress,2026-08-27T02:30:00+00:00,2026-08-27T02:30:00+00:00
+251,178,Agree the smallest useful version,Separate automated findings from checks that require a person.,2026-08-09,done,2026-08-05T19:30:00+00:00,2026-08-09T19:30:00+00:00
+252,178,Test and hand over the prototype,Check the main use case: Turn an accessibility review into a manageable task list.,2026-10-06,in_progress,2026-08-05T19:30:00+00:00,2026-08-05T19:30:00+00:00
+253,179,Agree the smallest useful version,Provide text alternatives and avoid collecting reader analytics.,2026-08-25,done,2026-08-21T23:30:00+00:00,2026-08-25T23:30:00+00:00
+254,179,Test and hand over the prototype,Check the main use case: Show original digital zines with clear reading order and credits.,2026-10-06,planned,2026-08-21T23:30:00+00:00,2026-08-21T23:30:00+00:00
+255,180,Agree the smallest useful version,Reports need a recent check; never infer drinking-water safety.,2026-07-13,done,2026-07-09T09:30:00+00:00,2026-07-13T09:30:00+00:00
+256,180,Test and hand over the prototype,Check the main use case: Track reported water refill points around public buildings.,2026-07-28,done,2026-07-09T09:30:00+00:00,2026-07-28T09:30:00+00:00
+257,181,Agree the smallest useful version,"Store checklist state, not passports, bank records or scholarship decisions.",2026-08-24,done,2026-08-20T17:30:00+00:00,2026-08-24T17:30:00+00:00
+258,181,Test and hand over the prototype,Check the main use case: Help applicants track which documents they have prepared.,2026-09-06,done,2026-08-20T17:30:00+00:00,2026-09-06T17:30:00+00:00
+259,182,Agree the smallest useful version,Use fictional learners and avoid diagnostic labels.,2026-09-29,planned,2026-08-19T15:30:00+00:00,2026-08-19T15:30:00+00:00
+260,182,Test and hand over the prototype,Check the main use case: Write a short recap of a tutoring session and the next exercise.,2026-10-06,planned,2026-08-19T15:30:00+00:00,2026-08-19T15:30:00+00:00
+261,183,Agree the smallest useful version,Keep measurements unchanged and label generated section headings.,2026-08-25,done,2026-08-21T20:30:00+00:00,2026-08-25T20:30:00+00:00
+262,183,Test and hand over the prototype,Check the main use case: Turn structured experiment notes into a readable Markdown draft.,2026-10-06,in_progress,2026-08-21T20:30:00+00:00,2026-08-21T20:30:00+00:00
+263,184,Agree the smallest useful version,Show calibration notes and missing readings without health guarantees.,2026-07-05,done,2026-07-01T04:30:00+00:00,2026-07-05T04:30:00+00:00
+264,184,Test and hand over the prototype,Check the main use case: Graph CO2 readings from a classroom sensor prototype.,2026-07-19,done,2026-07-01T04:30:00+00:00,2026-07-19T04:30:00+00:00
+265,185,Agree the smallest useful version,"No legal templates; focus on deliverables, revisions and assumptions.",2026-08-13,done,2026-08-09T23:30:00+00:00,2026-08-13T23:30:00+00:00
+266,185,Test and hand over the prototype,Check the main use case: Help students write a small project scope before agreeing to work.,2026-10-06,in_progress,2026-08-09T23:30:00+00:00,2026-08-09T23:30:00+00:00
+267,186,Agree the smallest useful version,Keep recipient details out of shared schedules.,2026-07-24,done,2026-07-20T22:30:00+00:00,2026-07-24T22:30:00+00:00
+268,186,Test and hand over the prototype,Check the main use case: Coordinate collection shifts for a student mutual-aid group.,2026-10-06,in_progress,2026-07-20T22:30:00+00:00,2026-07-20T22:30:00+00:00
+269,187,Agree the smallest useful version,Reference chapters without copying the text of the book.,2026-07-18,done,2026-07-14T08:30:00+00:00,2026-07-18T08:30:00+00:00
+270,187,Test and hand over the prototype,Check the main use case: Collect original questions for a small reading group.,2026-10-06,in_progress,2026-07-14T08:30:00+00:00,2026-07-14T08:30:00+00:00
+271,188,Agree the smallest useful version,Use self-made sample images and retain captions.,2026-08-17,done,2026-08-13T02:30:00+00:00,2026-08-17T02:30:00+00:00
+272,188,Test and hand over the prototype,Check the main use case: Arrange a photographer's selected images into printable contact sheets.,2026-09-01,done,2026-08-13T02:30:00+00:00,2026-09-01T02:30:00+00:00
+273,189,Agree the smallest useful version,Use isolated sample records and show why a denied request failed.,2026-09-29,planned,2026-07-01T09:30:00+00:00,2026-07-01T09:30:00+00:00
+274,189,Test and hand over the prototype,Check the main use case: Demonstrate who can read and change fictional shared records.,2026-10-06,planned,2026-07-01T09:30:00+00:00,2026-07-01T09:30:00+00:00
+275,190,Agree the smallest useful version,Do not silently replace missing values or modify the raw file.,2026-08-29,done,2026-08-25T23:30:00+00:00,2026-08-29T23:30:00+00:00
+276,190,Test and hand over the prototype,Check the main use case: Record decisions made while cleaning a class survey dataset.,2026-10-06,in_progress,2026-08-25T23:30:00+00:00,2026-08-25T23:30:00+00:00
+277,191,Agree the smallest useful version,The exercise never connects to a real booking system.,2026-07-19,done,2026-07-15T14:30:00+00:00,2026-07-19T14:30:00+00:00
+278,191,Test and hand over the prototype,Check the main use case: Replay fictional booking events to understand race conditions.,2026-10-06,in_progress,2026-07-15T14:30:00+00:00,2026-07-15T14:30:00+00:00

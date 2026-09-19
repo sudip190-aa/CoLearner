@@ -1,0 +1,17 @@
+id,slug,name,category,created_at,updated_at
+133,git,Git,Computer Science,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+134,figma,Figma,Interaction Design,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+135,data-visualization,Data Visualization,Data Science,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+136,statistics,Statistics,Data Science,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+137,excel,Excel,Business Administration,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+138,content-strategy,Content Strategy,Business Administration,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+139,market-research,Market Research,Business Administration,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+140,blender,Blender,Multimedia,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+141,video-editing,Video Editing,Multimedia,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+142,arduino,Arduino,Computer Engineering,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+143,linux,Linux,Cybersecurity,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+144,networking,Networking,Cybersecurity,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+145,flutter,Flutter,Mobile Computing,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+146,dart,Dart,Mobile Computing,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+147,qgis,QGIS,Environmental Science,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
+148,photography,Photography,Digital Media,2026-05-22T10:30:00+00:00,2026-05-22T10:30:00+00:00
