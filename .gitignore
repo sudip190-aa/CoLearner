@@ -27,3 +27,4 @@ Thumbs.db
 *.log
 .dist/
 .env.oauth
+.env.ai

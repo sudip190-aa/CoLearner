@@ -1,3 +1,4 @@
+import { BookPublishing } from '../../components/books/BookPublishing'
 import React, { useState } from 'react'
 import { Edit3, Plus, Search, Trash2 } from 'lucide-react'
 import {
@@ -25,7 +26,15 @@ import {
 import { admin } from '../../services/api.js'
 
 const DIFFICULTIES = ['beginner', 'intermediate', 'advanced']
-const EMPTY_BOOK = { title: '', author: '', category: '', difficulty: 'beginner', tags: '', description: '', isFeatured: false }
+const EMPTY_BOOK = {
+  title: '',
+  author: '',
+  category: '',
+  difficulty: 'beginner',
+  tags: '',
+  description: '',
+  isFeatured: false,
+}
 
 // Server field errors arrive keyed either way depending on the layer; read both.
 const fieldError = (errors, name) => {
@@ -39,6 +48,10 @@ function ChapterForm({ bookId, chapter, nextNumber, onSaved, onCancel }) {
     title: chapter?.title || '',
     chapterNumber: chapter?.chapterNumber ?? nextNumber,
     content: chapter?.content || '',
+    description: chapter?.description || '',
+    pageStart: chapter?.pageStart || '',
+    pageEnd: chapter?.pageEnd || '',
+    status: chapter?.status || 'PUBLISHED',
   })
   const [errors, setErrors] = useState({})
   const [busy, setBusy] = useState(false)
@@ -51,22 +64,81 @@ function ChapterForm({ bookId, chapter, nextNumber, onSaved, onCancel }) {
         title: form.title,
         chapterNumber: Number(form.chapterNumber),
         content: form.content,
+        description: form.description,
+        pageStart: form.pageStart ? Number(form.pageStart) : null,
+        pageEnd: form.pageEnd ? Number(form.pageEnd) : null,
+        status: form.status,
       })
       toast.success(chapter ? 'Chapter saved' : 'Chapter added')
       onSaved()
     } catch (error) {
-      setErrors(error?.fields || { form: [error?.message || 'Could not save the chapter'] })
+      setErrors(
+        error?.fields || {
+          form: [error?.message || 'Could not save the chapter'],
+        },
+      )
     } finally {
       setBusy(false)
     }
   }
   return (
-    <form onSubmit={submit} noValidate data-form="chapter" className="space-y-3 rounded-brand border border-c-blue/30 bg-c-blue-wash/40 p-4">
-      {fieldError(errors, 'form') && <p role="alert" className="text-sm text-c-danger">{fieldError(errors, 'form')}</p>}
+    <form
+      onSubmit={submit}
+      noValidate
+      data-form="chapter"
+      className="space-y-3 rounded-brand border border-c-blue/30 bg-c-blue-wash/40 p-4"
+    >
+      {fieldError(errors, 'form') && (
+        <p role="alert" className="text-sm text-c-danger">
+          {fieldError(errors, 'form')}
+        </p>
+      )}
       <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
-        <Input name="chapterTitle" label="Chapter title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} error={fieldError(errors, 'title')} required />
-        <Input name="chapterNumber" type="number" min={1} label="Number" value={form.chapterNumber} onChange={(e) => setForm({ ...form, chapterNumber: e.target.value })} error={fieldError(errors, 'chapterNumber')} />
+        <Input
+          name="chapterTitle"
+          label="Chapter title"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          error={fieldError(errors, 'title')}
+          required
+        />
+        <Input
+          name="chapterNumber"
+          type="number"
+          min={1}
+          label="Number"
+          value={form.chapterNumber}
+          onChange={(e) => setForm({ ...form, chapterNumber: e.target.value })}
+          error={fieldError(errors, 'chapterNumber')}
+        />
       </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Input
+          label="PDF start page"
+          type="number"
+          min={1}
+          value={form.pageStart}
+          onChange={(e) => setForm({ ...form, pageStart: e.target.value })}
+        />
+        <Input
+          label="PDF end page"
+          type="number"
+          min={1}
+          value={form.pageEnd}
+          onChange={(e) => setForm({ ...form, pageEnd: e.target.value })}
+        />
+        <Select
+          label="Chapter status"
+          options={['PUBLISHED', 'DRAFT']}
+          value={form.status}
+          onChange={(e) => setForm({ ...form, status: e.target.value })}
+        />
+      </div>
+      <Input
+        label="Short description"
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
+      />
       <Textarea
         name="chapterContent"
         label="Content"
@@ -77,8 +149,12 @@ function ChapterForm({ bookId, chapter, nextNumber, onSaved, onCancel }) {
         error={fieldError(errors, 'content')}
       />
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" size="sm" loading={busy}>{chapter ? 'Save chapter' : 'Add chapter'}</Button>
+        <Button type="button" variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" size="sm" loading={busy}>
+          {chapter ? 'Save chapter' : 'Add chapter'}
+        </Button>
       </div>
     </form>
   )
@@ -89,7 +165,15 @@ function BookEditor({ initial, onClose, onChanged }) {
   const [book, setBook] = useState(initial)
   const [form, setForm] = useState(
     initial
-      ? { title: initial.title, author: initial.author, category: initial.category, difficulty: initial.difficulty, tags: initial.tags.join(', '), description: initial.description, isFeatured: initial.isFeatured }
+      ? {
+          title: initial.title,
+          author: initial.author,
+          category: initial.category,
+          difficulty: initial.difficulty,
+          tags: initial.tags.join(', '),
+          description: initial.description,
+          isFeatured: initial.isFeatured,
+        }
       : EMPTY_BOOK,
   )
   const [cover, setCover] = useState(null)
@@ -100,7 +184,8 @@ function BookEditor({ initial, onClose, onChanged }) {
   const [chapterForm, setChapterForm] = useState(null) // null | 'new' | chapter
   const [confirm, setConfirm] = useState(null)
 
-  const set = (name) => (event) => setForm((current) => ({ ...current, [name]: event.target.value }))
+  const set = (name) => (event) =>
+    setForm((current) => ({ ...current, [name]: event.target.value }))
   const refresh = async (id = book.id) => {
     const { book: fresh } = await admin.adminGetBook(id)
     setBook(fresh)
@@ -114,7 +199,10 @@ function BookEditor({ initial, onClose, onChanged }) {
     try {
       const { book: saved } = await admin.adminSaveBook(book?.id || null, {
         ...form,
-        tags: form.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+        tags: form.tags
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean),
         cover,
         removeCover,
       })
@@ -123,33 +211,109 @@ function BookEditor({ initial, onClose, onChanged }) {
       setCoverKey((count) => count + 1)
       setRemoveCover(false)
       onChanged()
-      toast.success(book ? 'Book saved' : 'Book created', book ? undefined : 'Now add its chapters below')
+      toast.success(
+        book ? 'Book saved' : 'Book created',
+        book ? undefined : 'Now add its chapters below',
+      )
     } catch (error) {
-      setErrors(error?.fields || { form: [error?.message || 'Could not save the book'] })
+      setErrors(
+        error?.fields || {
+          form: [error?.message || 'Could not save the book'],
+        },
+      )
     } finally {
       setBusy(false)
     }
   }
 
-  const nextNumber = (book?.chapters || []).reduce((max, chapter) => Math.max(max, chapter.chapterNumber), 0) + 1
+  const nextNumber =
+    (book?.chapters || []).reduce(
+      (max, chapter) => Math.max(max, chapter.chapterNumber),
+      0,
+    ) + 1
 
   return (
-    <Modal isOpen onClose={confirm ? undefined : onClose} title={book ? `Edit “${book.title}”` : 'Add book'} size="xl">
+    <Modal
+      isOpen
+      onClose={confirm ? undefined : onClose}
+      title={book ? `Edit “${book.title}”` : 'Add book'}
+      size="xl"
+      className="max-h-[calc(100dvh-3rem)] overflow-y-auto"
+    >
       <div className="space-y-8">
         <form onSubmit={save} noValidate data-form="book" className="space-y-4">
-          {fieldError(errors, 'form') && <p role="alert" className="rounded-brand bg-red-50 p-3 text-sm text-c-danger">{fieldError(errors, 'form')}</p>}
+          {fieldError(errors, 'form') && (
+            <p
+              role="alert"
+              className="rounded-brand bg-red-50 p-3 text-sm text-c-danger"
+            >
+              {fieldError(errors, 'form')}
+            </p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
-            <Input name="title" label="Title" value={form.title} onChange={set('title')} error={fieldError(errors, 'title')} required />
-            <Input name="author" label="Author" value={form.author} onChange={set('author')} error={fieldError(errors, 'author')} required />
-            <Input name="category" label="Category" value={form.category} onChange={set('category')} error={fieldError(errors, 'category')} />
-            <Select name="difficulty" label="Difficulty" value={form.difficulty} onChange={set('difficulty')} options={DIFFICULTIES} error={fieldError(errors, 'difficulty')} />
+            <Input
+              name="title"
+              label="Title"
+              value={form.title}
+              onChange={set('title')}
+              error={fieldError(errors, 'title')}
+              required
+            />
+            <Input
+              name="author"
+              label="Author"
+              value={form.author}
+              onChange={set('author')}
+              error={fieldError(errors, 'author')}
+              required
+            />
+            <Input
+              name="category"
+              label="Category"
+              value={form.category}
+              onChange={set('category')}
+              error={fieldError(errors, 'category')}
+            />
+            <Select
+              name="difficulty"
+              label="Difficulty"
+              value={form.difficulty}
+              onChange={set('difficulty')}
+              options={DIFFICULTIES}
+              error={fieldError(errors, 'difficulty')}
+            />
           </div>
-          <Input name="tags" label="Tags" hint="Comma separated, up to 15." value={form.tags} onChange={set('tags')} error={fieldError(errors, 'tags')} />
-          <Textarea name="description" label="Description" rows={3} value={form.description} onChange={set('description')} error={fieldError(errors, 'description')} />
+          <Input
+            name="tags"
+            label="Tags"
+            hint="Comma separated, up to 15."
+            value={form.tags}
+            onChange={set('tags')}
+            error={fieldError(errors, 'tags')}
+          />
+          <Textarea
+            name="description"
+            label="Description"
+            rows={3}
+            value={form.description}
+            onChange={set('description')}
+            error={fieldError(errors, 'description')}
+          />
           <div className="flex flex-wrap items-center gap-6">
-            <Checkbox label="Featured" checked={form.isFeatured} onChange={(event) => setForm({ ...form, isFeatured: event.target.checked })} />
+            <Checkbox
+              label="Featured"
+              checked={form.isFeatured}
+              onChange={(event) =>
+                setForm({ ...form, isFeatured: event.target.checked })
+              }
+            />
             <div>
-              <label htmlFor="book-cover" className="text-sm font-medium text-c-text">Cover image</label>
+              <label
+                htmlFor="book-cover"
+                className="text-sm font-medium text-c-text"
+              >
+                Cover image
+              </label>
               <input
                 key={coverKey}
                 id="book-cover"
@@ -161,32 +325,53 @@ function BookEditor({ initial, onClose, onChanged }) {
                 }}
                 className="mt-1 block text-sm"
               />
-              {fieldError(errors, 'cover') && <p role="alert" className="mt-1 text-xs text-c-danger">{fieldError(errors, 'cover')}</p>}
+              {fieldError(errors, 'cover') && (
+                <p role="alert" className="mt-1 text-xs text-c-danger">
+                  {fieldError(errors, 'cover')}
+                </p>
+              )}
               {book?.cover && !cover && (
                 <label className="mt-2 flex items-center gap-2 text-xs text-c-text-muted">
-                  <input type="checkbox" checked={removeCover} onChange={(event) => setRemoveCover(event.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={removeCover}
+                    onChange={(event) => setRemoveCover(event.target.checked)}
+                  />
                   Remove the current cover
                 </label>
               )}
             </div>
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={onClose}>Close</Button>
-            <Button type="submit" loading={busy}>{book ? 'Save book' : 'Create book'}</Button>
+            <Button type="button" variant="ghost" onClick={onClose}>
+              Close
+            </Button>
+            <Button type="submit" loading={busy}>
+              {book ? 'Save book' : 'Create book'}
+            </Button>
           </div>
         </form>
 
+        {book && <BookPublishing book={book} onChanged={() => refresh()} />}
         {book && (
           <section data-section="chapters">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h4 className="text-base font-bold text-c-text">Chapters</h4>
                 <p className="text-xs text-c-text-muted">
-                  {book.chapters.length} {book.chapters.length === 1 ? 'chapter' : 'chapters'} · about {book.estMinutes} min to read
+                  {book.chapters.length}{' '}
+                  {book.chapters.length === 1 ? 'chapter' : 'chapters'} · about{' '}
+                  {book.estMinutes} min to read
                 </p>
               </div>
               {chapterForm !== 'new' && (
-                <Button size="sm" icon={Plus} onClick={() => setChapterForm('new')}>Add chapter</Button>
+                <Button
+                  size="sm"
+                  icon={Plus}
+                  onClick={() => setChapterForm('new')}
+                >
+                  Add chapter
+                </Button>
               )}
             </div>
             {chapterForm === 'new' && (
@@ -202,10 +387,16 @@ function BookEditor({ initial, onClose, onChanged }) {
             )}
             <ul className="mt-3 divide-y divide-c-border rounded-brand border border-c-border">
               {book.chapters.length === 0 && chapterForm !== 'new' && (
-                <li className="p-4 text-sm text-c-text-muted">No chapters yet. Readers see an empty book until you add some.</li>
+                <li className="p-4 text-sm text-c-text-muted">
+                  No chapters yet. Readers see an empty book until you add some.
+                </li>
               )}
               {book.chapters.map((chapter) => (
-                <li key={chapter.id} data-chapter={chapter.chapterNumber} className="p-3">
+                <li
+                  key={chapter.id}
+                  data-chapter={chapter.chapterNumber}
+                  className="p-3"
+                >
                   {chapterForm?.id === chapter.id ? (
                     <ChapterForm
                       bookId={book.id}
@@ -218,12 +409,25 @@ function BookEditor({ initial, onClose, onChanged }) {
                     />
                   ) : (
                     <div className="flex items-center gap-3">
-                      <span className="w-8 text-center text-sm font-bold text-c-text-muted">{chapter.chapterNumber}</span>
+                      <span className="w-8 text-center text-sm font-bold text-c-text-muted">
+                        {chapter.chapterNumber}
+                      </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-c-text">{chapter.title}</p>
-                        <p className="text-xs text-c-text-muted">{chapter.estMinutes} min</p>
+                        <p className="truncate text-sm font-semibold text-c-text">
+                          {chapter.title}
+                        </p>
+                        <p className="text-xs text-c-text-muted">
+                          {chapter.estMinutes} min
+                        </p>
                       </div>
-                      <Button size="sm" variant="ghost" icon={Edit3} onClick={() => setChapterForm(chapter)}>Edit</Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        icon={Edit3}
+                        onClick={() => setChapterForm(chapter)}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -260,11 +464,17 @@ export default function AdminBooks() {
   const toast = useToast()
   const [query, setQuery] = useState('')
   const [difficulty, setDifficulty] = useState('')
+  const [publicationStatus, setPublicationStatus] = useState('')
   const [page, setPage] = useState(1)
   const [editing, setEditing] = useState(null) // null | 'new' | book
   const [confirm, setConfirm] = useState(null)
   const q = useDebounced(query)
-  const list = useAdminList(admin.adminListBooks, { q, difficulty, page })
+  const list = useAdminList(admin.adminListBooks, {
+    q,
+    difficulty,
+    status: publicationStatus,
+    page,
+  })
   const { data } = list
 
   const openEditor = async (book) => {
@@ -281,7 +491,11 @@ export default function AdminBooks() {
       <PageHeader
         title="Books"
         subtitle="Curate the library that powers the Learn pillar."
-        actions={<Button icon={Plus} onClick={() => setEditing('new')}>Add book</Button>}
+        actions={
+          <Button icon={Plus} onClick={() => setEditing('new')}>
+            Add book
+          </Button>
+        }
       />
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
         <Input
@@ -306,30 +520,85 @@ export default function AdminBooks() {
           className="sm:w-48"
         />
       </div>
+      <Select
+        aria-label="Publication status"
+        className="mb-5 max-w-xs"
+        value={publicationStatus}
+        onChange={(e) => {
+          setPublicationStatus(e.target.value)
+          setPage(1)
+        }}
+        options={[
+          { value: '', label: 'All publication states' },
+          'DRAFT',
+          'PENDING_REVIEW',
+          'APPROVED',
+          'REJECTED',
+          'ARCHIVED',
+        ]}
+      />
       {list.status === 'error' && <ListError onRetry={list.reload} />}
       {list.status === 'loading' ? (
-        <div className="space-y-2">{[1, 2, 3, 4].map((n) => <Skeleton key={n} height="56px" />)}</div>
+        <div className="space-y-2">
+          {[1, 2, 3, 4].map((n) => (
+            <Skeleton key={n} height="56px" />
+          ))}
+        </div>
       ) : data?.items.length ? (
         <>
           <TableShell minWidth={720}>
-            <THead columns={[['Book'], ['Category'], ['Difficulty'], ['Chapters'], ['Readers'], ['Actions', 'right']]} />
+            <THead
+              columns={[
+                ['Book'],
+                ['Category'],
+                ['Difficulty'],
+                ['Chapters'],
+                ['Readers'],
+                ['Actions', 'right'],
+              ]}
+            />
             <tbody>
               {data.items.map((book) => (
-                <tr key={book.id} data-book={book.slug} className="border-t border-c-border">
+                <tr
+                  key={book.id}
+                  data-book={book.slug}
+                  className="border-t border-c-border"
+                >
                   <td className="px-4 py-4">
                     <p className="font-semibold text-c-text">
                       {book.title}
-                      {book.isFeatured && <Badge variant="warning" size="sm" className="ml-2">Featured</Badge>}
+                      {book.isFeatured && (
+                        <Badge variant="warning" size="sm" className="ml-2">
+                          Featured
+                        </Badge>
+                      )}
                     </p>
-                    <p className="mt-1 text-xs text-c-text-muted">{book.author}</p>
+                    <p className="mt-1 text-xs text-c-text-muted">
+                      {book.author} ? {book.status}
+                    </p>
                   </td>
-                  <td className="px-4 py-4 text-c-text-muted">{book.category || '—'}</td>
-                  <td className="px-4 py-4"><Badge variant="blue">{book.difficulty}</Badge></td>
-                  <td className="px-4 py-4 text-c-text-muted">{book.chapterCount}</td>
-                  <td className="px-4 py-4 text-c-text-muted">{book.readersCount}</td>
+                  <td className="px-4 py-4 text-c-text-muted">
+                    {book.category || '—'}
+                  </td>
+                  <td className="px-4 py-4">
+                    <Badge variant="blue">{book.difficulty}</Badge>
+                  </td>
+                  <td className="px-4 py-4 text-c-text-muted">
+                    {book.chapterCount}
+                  </td>
+                  <td className="px-4 py-4 text-c-text-muted">
+                    {book.readersCount}
+                  </td>
                   <td className="px-4 py-4">
                     <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="ghost" icon={Edit3} onClick={() => openEditor(book)}>Edit</Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        icon={Edit3}
+                        onClick={() => openEditor(book)}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -358,7 +627,10 @@ export default function AdminBooks() {
           <Pager data={data} onPage={setPage} />
         </>
       ) : (
-        <EmptyState title="No books found" description="Try a different search, or add the first book." />
+        <EmptyState
+          title="No books found"
+          description="Try a different search, or add the first book."
+        />
       )}
       {editing && (
         <BookEditor

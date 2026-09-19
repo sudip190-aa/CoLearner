@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "javascript-foundations",
+    "source": "https://github.com/microsoft/Web-Dev-For-Beginners/tree/78085398be0dea7abaaf5eda914817f46f6ddbbc",
+    "chapters": 4,
+    "license": "MIT"
+  },
+  {
+    "slug": "web-development-foundations",
+    "source": "https://github.com/microsoft/Web-Dev-For-Beginners/tree/78085398be0dea7abaaf5eda914817f46f6ddbbc",
+    "chapters": 5,
+    "license": "MIT"
+  },
+  {
+    "slug": "machine-learning-foundations",
+    "source": "https://github.com/microsoft/ML-For-Beginners/tree/de2d4e12236445198213a0711855e348e7253cd4",
+    "chapters": 4,
+    "license": "MIT"
+  },
+  {
+    "slug": "data-science-foundations",
+    "source": "https://github.com/microsoft/Data-Science-For-Beginners/tree/4d2ac427ad6f022e73a75c4f46a28bbb7978ec3f",
+    "chapters": 4,
+    "license": "MIT"
+  },
+  {
+    "slug": "working-with-data",
+    "source": "https://github.com/microsoft/Data-Science-For-Beginners/tree/4d2ac427ad6f022e73a75c4f46a28bbb7978ec3f",
+    "chapters": 4,
+    "license": "MIT"
+  },
+  {
+    "slug": "connected-systems",
+    "source": "https://github.com/microsoft/IoT-For-Beginners/tree/6ae558ee2b0aaade53f08b0f76505d5ea9736c43",
+    "chapters": 5,
+    "license": "MIT"
+  },
+  {
+    "slug": "generative-ai-foundations",
+    "source": "https://github.com/microsoft/generative-ai-for-beginners/tree/d8ec07e31c4b32bd283d565c1abd9b58bb5cf2e8",
+    "chapters": 4,
+    "license": "MIT"
+  }
+]

@@ -27,8 +27,9 @@ export async function data<T>(
 export async function authenticated(req: Request) {
   const token = req.headers.get("Authorization")?.replace(/^Bearer /i, "");
   if (!token) throw new Error("Authentication required");
-  const { user } = await data(admin.auth.getUser(token));
-  if (!user) throw new Error("Authentication required");
+  const { data: authData, error: authError } = await admin.auth.getUser(token);
+  if (authError || !authData.user) throw new Error("Authentication required");
+  const user = authData.user;
   const p = await data(
     admin.from("profiles").select("*").eq("id", user.id).single(),
   );

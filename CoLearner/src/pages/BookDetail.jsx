@@ -1,3 +1,6 @@
+import { useAuthStore } from '../store/authStore'
+import { BookLicense } from '../components/books/BookLicense'
+import { bookLearning } from '../services/bookLearning'
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, BookOpen, Check, Clock, Play, Tag } from 'lucide-react'
@@ -68,6 +71,7 @@ function DetailSkeleton() {
 }
 
 export default function BookDetail() {
+  const signedIn = useAuthStore((s) => s.isAuthenticated)
   const { slug } = useParams()
   const [book, setBook] = useState(null)
   const [error, setError] = useState('')
@@ -96,7 +100,7 @@ export default function BookDetail() {
         title="Book not found"
         description={error}
         actionLabel="Back to library"
-        actionTo="/library"
+        actionTo="/books"
       />
     )
   if (!book) return <DetailSkeleton />
@@ -105,11 +109,11 @@ export default function BookDetail() {
   const resumeChapter = book.chapters.find(
     (chapter) => chapter.id === book.currentChapterId,
   )
-  const readerPath = `/read/${book.slug}${resumeChapter ? `?chapter=${resumeChapter.order}` : ''}`
+  const readerPath = `/books/${book.slug}/read${resumeChapter ? `?chapter=${resumeChapter.order}` : ''}`
   return (
     <div className="space-y-10">
       <Link
-        to="/library"
+        to="/books"
         className="inline-flex items-center gap-2 text-sm font-semibold text-c-text-muted hover:text-c-blue"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -143,7 +147,11 @@ export default function BookDetail() {
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <Button
               as={Link}
-              to={book.finished ? `/read/${book.slug}?chapter=1` : readerPath}
+              to={
+                book.finished
+                  ? `/books/${book.slug}/read?chapter=1`
+                  : readerPath
+              }
               icon={book.started ? Play : BookOpen}
             >
               {book.finished
@@ -163,6 +171,28 @@ export default function BookDetail() {
           </div>
         </div>
       </section>
+      <BookLicense book={book} />
+      {book.filePath && book.redistributionConfirmed && (
+        <Button
+          variant="outline"
+          onClick={async () => {
+            if (!signedIn) {
+              window.location.assign(
+                `/login?next=${encodeURIComponent(location.pathname)}`,
+              )
+              return
+            }
+            try {
+              const r = await bookLearning.file(book.id, true)
+              window.location.assign(r.url)
+            } catch (e) {
+              setError(e.message)
+            }
+          }}
+        >
+          Download {book.fileType?.toUpperCase()}
+        </Button>
+      )}
       <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div>
           <h2 className="text-2xl font-bold text-c-text">Chapters</h2>
@@ -171,7 +201,7 @@ export default function BookDetail() {
               const complete = chapter.isCompleted
               return (
                 <Link
-                  to={`/read/${book.slug}?chapter=${chapter.order}`}
+                  to={`/books/${book.slug}/read?chapter=${chapter.order}`}
                   key={chapter.order}
                   className="flex items-center gap-4 p-4 hover:bg-c-blue-wash"
                 >
@@ -214,7 +244,7 @@ export default function BookDetail() {
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-c-text">Related books</h2>
-            <Link to="/library" className="text-sm font-semibold text-c-blue">
+            <Link to="/books" className="text-sm font-semibold text-c-blue">
               View library
             </Link>
           </div>

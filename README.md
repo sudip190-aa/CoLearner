@@ -33,6 +33,8 @@ These cloud commands do not require Docker. Edge Functions validate authenticati
 
 See [the migration runbook](supabase/MIGRATION.md) for data migration, authentication configuration, test results, and Django retirement.
 
+See [the educational library runbook](supabase/BOOK_LEARNING.md) for the public book catalog, licensed source collection, admin publishing, document uploads, saved reading positions, background indexing and book assistant setup.
+
 ## Checks
 
 ```powershell

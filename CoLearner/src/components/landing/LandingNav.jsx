@@ -2,8 +2,10 @@ import React, { useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { Logo, Button } from '../ui'
+import { useAuthStore } from '../../store/authStore'
 
 const links = [
+  ['Books', '/books'],
   ['How it works', '/how-it-works'],
   ['Features', '/features'],
   ['Community', '/our-community'],
@@ -11,6 +13,7 @@ const links = [
 ]
 
 export const LandingNav = () => {
+  const signedIn = useAuthStore((s) => s.isAuthenticated)
   const [open, setOpen] = useState(false)
   const toggleRef = useRef(null)
   const closeMenu = () => setOpen(false)
@@ -50,17 +53,23 @@ export const LandingNav = () => {
           ))}
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
+          {!signedIn && (
+            <Button
+              to="/login"
+              variant="ghost"
+              size="sm"
+              className="whitespace-nowrap"
+              onClick={closeMenu}
+            >
+              Sign in
+            </Button>
+          )}
           <Button
-            to="/login"
-            variant="ghost"
+            to={signedIn ? '/dashboard' : '/signup'}
             size="sm"
-            className="whitespace-nowrap"
             onClick={closeMenu}
           >
-            Sign in
-          </Button>
-          <Button to="/signup" size="sm" onClick={closeMenu}>
-            Get started
+            {signedIn ? 'My Dashboard' : 'Get started'}
           </Button>
           <button
             ref={toggleRef}

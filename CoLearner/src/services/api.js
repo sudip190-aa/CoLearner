@@ -123,6 +123,7 @@ const normalizeBook = (entry = {}, extras = {}) => {
 const normalizeChapter = (entry = {}) => {
   const chapter = snakeToCamel(entry)
   return {
+    ...chapter,
     id: chapter.id,
     slug: chapter.slug,
     title: chapter.title,
@@ -577,7 +578,14 @@ export const books = {
     )
     const data = snakeToCamel(payload.data)
     return {
-      progress: data.progress,
+      progress:
+        typeof data.progress === 'object'
+          ? data.progress
+          : {
+              progressPercent: Number(data.progress || 0),
+              completed: Boolean(data.bookCompleted),
+              completedChapterIds: data.completedChapterIds || [],
+            },
       chapterCompleted: data.chapterCompleted,
       bookCompleted: data.bookCompleted,
       xpAwarded: data.xpAwarded,
@@ -1012,7 +1020,10 @@ const normalizeDashboardStats = (stats = {}) => {
     levelFloorXp: floor,
     nextLevelXp: next,
     // progress inside the current level, 0-100
-    levelProgress: next > floor ? Math.round(((Number(s.xp ?? 0) - floor) / (next - floor)) * 100) : 0,
+    levelProgress:
+      next > floor
+        ? Math.round(((Number(s.xp ?? 0) - floor) / (next - floor)) * 100)
+        : 0,
     streakDays: Number(s.streakDays ?? 0),
     activeProjects: Number(s.activeProjects ?? 0),
     booksInProgress: Number(s.booksInProgress ?? 0),
@@ -1064,7 +1075,8 @@ export const dashboard = {
         xp: Number(day.xp ?? 0),
       })),
       projects: mine.status === 'fulfilled' ? mine.value.projects : [],
-      suggestions: people.status === 'fulfilled' ? people.value.items.slice(0, 3) : [],
+      suggestions:
+        people.status === 'fulfilled' ? people.value.items.slice(0, 3) : [],
       trending: hot.status === 'fulfilled' ? hot.value.threads.slice(0, 4) : [],
     }
   },
@@ -1087,8 +1099,15 @@ export const search = {
         people: Number(data.typeCounts?.people ?? 0),
         threads: Number(data.typeCounts?.threads ?? 0),
       },
-      books: (results.books || []).map((item) => ({ ...item, id: String(item.id), cover: item.cover || '' })),
-      projects: (results.projects || []).map((item) => ({ ...item, id: String(item.id) })),
+      books: (results.books || []).map((item) => ({
+        ...item,
+        id: String(item.id),
+        cover: item.cover || '',
+      })),
+      projects: (results.projects || []).map((item) => ({
+        ...item,
+        id: String(item.id),
+      })),
       people: (results.people || []).map((item) => ({
         ...normalizeAuthor(item),
         headline: item.headline || '',
@@ -1137,6 +1156,8 @@ const normalizeAdminUser = (entry = {}) => {
 const normalizeAdminBook = (entry = {}) => {
   const book = snakeToCamel(entry)
   return {
+    ...book,
+    status: book.publicationStatus || 'DRAFT',
     id: String(book.id),
     slug: book.slug || '',
     title: book.title || '',
@@ -1152,6 +1173,7 @@ const normalizeAdminBook = (entry = {}) => {
     readersCount: Number(book.readersCount ?? 0),
     createdAt: book.createdAt || '',
     chapters: (book.chapters || []).map((chapter) => ({
+      ...chapter,
       id: String(chapter.id),
       title: chapter.title || '',
       chapterNumber: Number(chapter.chapterNumber ?? 1),
@@ -1204,7 +1226,9 @@ const adminQuery = ({ q, page, pageSize, ...rest } = {}) => {
   if (q) params.q = q
   if (page) params.page = page
   if (pageSize) params.page_size = pageSize
-  Object.keys(params).forEach((key) => (params[key] === '' || params[key] == null) && delete params[key])
+  Object.keys(params).forEach(
+    (key) => (params[key] === '' || params[key] == null) && delete params[key],
+  )
   return params
 }
 
@@ -1247,14 +1271,20 @@ export const admin = {
   },
 
   adminListUsers: async (params = {}) =>
-    normalizePage((await api.get('/admin/users/', { params: adminQuery(params) })).data, normalizeAdminUser),
+    normalizePage(
+      (await api.get('/admin/users/', { params: adminQuery(params) })).data,
+      normalizeAdminUser,
+    ),
   adminCreateUser: async (data = {}) => {
     const payload = await api.post('/admin/users/', camelToSnakeKeys(data))
     return { user: normalizeAdminUser(payload.data) }
   },
   // { role?, isActive? }
   adminUpdateUser: async (id, data = {}) => {
-    const payload = await api.patch(`/admin/users/${id}/`, camelToSnakeKeys(data))
+    const payload = await api.patch(
+      `/admin/users/${id}/`,
+      camelToSnakeKeys(data),
+    )
     return { user: normalizeAdminUser(payload.data) }
   },
   adminDeleteUser: async (id) => {
@@ -1263,7 +1293,10 @@ export const admin = {
   },
 
   adminListBooks: async (params = {}) =>
-    normalizePage((await api.get('/admin/books/', { params: adminQuery(params) })).data, normalizeAdminBook),
+    normalizePage(
+      (await api.get('/admin/books/', { params: adminQuery(params) })).data,
+      normalizeAdminBook,
+    ),
   adminGetBook: async (id) => ({
     book: normalizeAdminBook((await api.get(`/admin/books/${id}/`)).data),
   }),
@@ -1286,7 +1319,9 @@ export const admin = {
     const payload = chapterId
       ? await api.patch(`/admin/chapters/${chapterId}/`, body)
       : await api.post(`/admin/books/${bookId}/chapters/`, body)
-    return { chapter: normalizeAdminBook({ chapters: [payload.data] }).chapters[0] }
+    return {
+      chapter: normalizeAdminBook({ chapters: [payload.data] }).chapters[0],
+    }
   },
   adminDeleteChapter: async (chapterId) => {
     await api.delete(`/admin/chapters/${chapterId}/`)
@@ -1294,10 +1329,16 @@ export const admin = {
   },
 
   adminListProjects: async (params = {}) =>
-    normalizePage((await api.get('/admin/projects/', { params: adminQuery(params) })).data, normalizeAdminProject),
+    normalizePage(
+      (await api.get('/admin/projects/', { params: adminQuery(params) })).data,
+      normalizeAdminProject,
+    ),
   // { status?, isPublic? }
   adminUpdateProject: async (slug, data = {}) => {
-    const payload = await api.patch(`/admin/projects/${encodeURIComponent(slug)}/`, camelToSnakeKeys(data))
+    const payload = await api.patch(
+      `/admin/projects/${encodeURIComponent(slug)}/`,
+      camelToSnakeKeys(data),
+    )
     return { project: normalizeAdminProject(payload.data) }
   },
   adminDeleteProject: async (slug) => {
@@ -1307,7 +1348,10 @@ export const admin = {
 
   // status: 'pending' (open + in review) | 'open' | 'review' | 'resolved' | 'dismissed'
   adminListReports: async (params = {}) =>
-    normalizePage((await api.get('/admin/reports/', { params: adminQuery(params) })).data, normalizeAdminReport),
+    normalizePage(
+      (await api.get('/admin/reports/', { params: adminQuery(params) })).data,
+      normalizeAdminReport,
+    ),
   // action: 'review' | 'resolve' | 'dismiss' | 'reopen' | 'remove_content' | 'deactivate_user'
   adminActOnReport: async (id, action) => {
     const payload = await api.patch(`/admin/reports/${id}/`, { action })

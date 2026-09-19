@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { parseChapterContent } from '../../lib/readerContent'
 import { parseInline } from '../../lib/inlineMarkdown'
 
-function Inline({ text }) {
+export function Inline({ text }) {
   return parseInline(text).map((token, index) => {
     switch (token.type) {
       case 'bold':

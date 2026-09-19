@@ -68,6 +68,18 @@ const bookFields = [
   'difficulty',
   'tags',
   'is_featured',
+  'language',
+  'status',
+  'source_url',
+  'license_name',
+  'license_url',
+  'attribution',
+  'changes_made',
+  'license_evidence_url',
+  'license_evidence_notes',
+  'commercial_use_allowed',
+  'redistribution_confirmed',
+  'in_app_permission_confirmed',
   'cover',
 ]
 const requireStaff = async () => {
@@ -507,10 +519,12 @@ async function dispatch(method, path, body = {}, params = {}) {
       return newest(await rows('xp_events')).slice(0, params.limit || 50)
     if (id === 'library')
       return Promise.all(
-        (await rows('reading_progress', '*,book:books(*)')).map(async (p) => ({
-          ...p,
-          book: await book(p.book),
-        })),
+        (await rows('reading_progress', '*,book:books(*)'))
+          .filter((p) => p.book)
+          .map(async (p) => ({
+            ...p,
+            book: await book(p.book),
+          })),
       )
   }
   if (resource === 'leaderboard')
@@ -646,18 +660,36 @@ async function dispatch(method, path, body = {}, params = {}) {
       return update(
         'chapters',
         sub,
-        fields(body, ['title', 'chapter_number', 'content']),
+        fields(body, [
+          'title',
+          'chapter_number',
+          'content',
+          'description',
+          'page_start',
+          'page_end',
+          'est_minutes',
+          'status',
+        ]),
       )
     }
     if (id === 'books') {
       if (subid === 'chapters')
         return insert('chapters', {
-          ...fields(body, ['title', 'chapter_number', 'content']),
+          ...fields(body, [
+            'title',
+            'chapter_number',
+            'content',
+            'description',
+            'page_start',
+            'page_end',
+            'est_minutes',
+            'status',
+          ]),
           book_id: sub,
           slug: slug(body.title),
         })
       if (method === 'delete') {
-        await remove('books', sub)
+        await edge('book-library', { action: 'delete', bookId: sub })
         return {}
       }
       if (method === 'get') {
@@ -666,6 +698,9 @@ async function dispatch(method, path, body = {}, params = {}) {
           'title',
           'author',
         ])
+        if (params.status) list = list.filter((b) => b.status === params.status)
+        if (params.difficulty)
+          list = list.filter((b) => b.difficulty === params.difficulty)
         if (params.category)
           list = list.filter((b) => b.category === params.category)
         return page(await Promise.all(list.map((b) => book(b))), params)
@@ -680,6 +715,13 @@ async function dispatch(method, path, body = {}, params = {}) {
           .filter(Boolean)
       if (typeof body.is_featured === 'string')
         body.is_featured = body.is_featured === 'true'
+      for (const key of [
+        'commercial_use_allowed',
+        'redistribution_confirmed',
+        'in_app_permission_confirmed',
+      ]) {
+        if (key in body) body[key] = body[key] === true || body[key] === 'true'
+      }
       const data = fields(body, bookFields)
       return book(
         sub

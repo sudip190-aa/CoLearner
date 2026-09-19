@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Check, Loader2 } from 'lucide-react'
 import { Logo } from '../ui'
 import { contact } from '../../services/api'
+import { useAuthStore } from '../../store/authStore'
 
 const columns = [
   [
@@ -32,6 +33,7 @@ const columns = [
 ]
 
 export const LandingFooter = () => {
+  const signedIn = useAuthStore((s) => s.isAuthenticated)
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
@@ -185,10 +187,10 @@ export const LandingFooter = () => {
                   {links.map(([label, to]) => (
                     <li key={to}>
                       <Link
-                        to={to}
+                        to={signedIn && to === '/signup' ? '/dashboard' : to}
                         className="text-xs leading-relaxed text-c-text-muted transition-colors hover:text-c-blue sm:text-sm"
                       >
-                        {label}
+                        {signedIn && to === '/signup' ? 'My Dashboard' : label}
                       </Link>
                     </li>
                   ))}

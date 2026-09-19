@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAuthStore } from '../../store/authStore'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '../ui'
@@ -38,6 +39,7 @@ export function MarketingPage({
   ctaTitle = 'Make your next step count.',
   ctaText = 'Choose a skill, find your people, and start building.',
 }) {
+  const signedIn = useAuthStore((s) => s.isAuthenticated)
   const accent = accents[eyebrow] || accents.Features
   return (
     <>
@@ -102,13 +104,13 @@ export function MarketingPage({
             <p className="mt-3 text-c-text-muted">{ctaText}</p>
           </div>
           <Button
-            to="/signup"
+            to={signedIn ? '/dashboard' : '/signup'}
             size="lg"
             icon={ArrowRight}
             iconPosition="right"
             className="shrink-0 rounded-full"
           >
-            Get started
+            {signedIn ? 'My Dashboard' : 'Get started'}
           </Button>
         </div>
       </section>

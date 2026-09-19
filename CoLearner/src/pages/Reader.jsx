@@ -1,3 +1,7 @@
+import { Inline } from '../components/ui/RichText'
+import { BookAssistant } from '../components/books/BookAssistant'
+import { BookPdf } from '../components/books/BookPdf'
+import { useReadingPosition } from '../hooks/useReadingPosition'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
@@ -152,12 +156,14 @@ function NotesPanel({ notes, noteText, setNoteText, onAdd, onDelete, saving }) {
 }
 
 function ChapterBody({ content }) {
-  const blocks = parseChapterContent(content)
+  const blocks = parseChapterContent(content, { keepLineBreaks: true })
   if (!blocks.length)
     return <p className="text-c-text-muted">This chapter has no content yet.</p>
   return blocks.map((block, index) =>
     block.type === 'quote' ? (
-      <blockquote key={index}>{block.text}</blockquote>
+      <blockquote key={index}>
+        <Inline text={block.text} />
+      </blockquote>
     ) : block.type === 'code' ? (
       <pre
         key={index}
@@ -165,8 +171,22 @@ function ChapterBody({ content }) {
       >
         <code>{block.text}</code>
       </pre>
+    ) : /^#{1,6} /.test(block.text) ? (
+      <h2 key={index} className="pt-4 text-xl font-semibold leading-7">
+        <Inline text={block.text.replace(/^#{1,6} /, '')} />
+      </h2>
+    ) : /^[-*] /.test(block.text) ? (
+      <ul key={index} className="list-disc space-y-2 pl-6">
+        {block.text.split('\n').map((line, i) => (
+          <li key={i}>
+            <Inline text={line.replace(/^[-*] /, '')} />
+          </li>
+        ))}
+      </ul>
     ) : (
-      <p key={index}>{block.text}</p>
+      <p key={index} className="whitespace-pre-line break-words">
+        <Inline text={block.text} />
+      </p>
     ),
   )
 }
@@ -179,6 +199,9 @@ export default function Reader() {
   const navigate = useNavigate()
   const toast = useToast()
   const inFlight = useInFlight()
+  const [assistantOpen, setAssistantOpen] = useState(false)
+  const [pdfPage, setPdfPage] = useState(null)
+  const [positionError, setPositionError] = useState('')
   const [book, setBook] = useState(null)
   const [error, setError] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -192,7 +215,16 @@ export default function Reader() {
   const [selection, setSelection] = useState(null)
   const [completing, setCompleting] = useState(false)
   const [finish, setFinish] = useState(null) // { xpAwarded, badgesEarned } when a book is finished
+  const citationPage = useRef(null)
   const contentRef = useRef(null)
+  const positionReady = useReadingPosition(
+    chapterData?.id,
+    contentRef,
+    pdfPage,
+    setPdfPage,
+    setPositionError,
+    citationPage,
+  )
   const chapterParam = new URLSearchParams(location.search).get('chapter')
 
   // Load the book once per slug; pick the starting chapter from ?chapter=N, else where the reader left off.
@@ -242,6 +274,11 @@ export default function Reader() {
       .then(({ chapter: result }) => {
         if (!active) return
         setChapterData(result)
+        setPdfPage(
+          result.book?.fileType === 'pdf' || result.book?.file_type === 'pdf'
+            ? result.pageStart || 1
+            : null,
+        )
         setChapterError('')
       })
       .catch((requestError) => {
@@ -251,7 +288,9 @@ export default function Reader() {
           )
       })
     books.saveProgress(bookSlug, chapterId, { completed: false }).catch(() => {
-      // Resume position is a convenience; failing to record it must not interrupt reading.
+      setPositionError(
+        'Your reading session could not be saved. Check your connection.',
+      )
     })
     return () => {
       active = false
@@ -285,18 +324,37 @@ export default function Reader() {
       if (!book) return
       const nextIndex = Math.max(0, Math.min(index, book.chapters.length - 1))
       if (nextIndex === currentIndex) return
+      setPdfPage(
+        book.fileType === 'pdf'
+          ? book.chapters[nextIndex].pageStart || 1
+          : null,
+      )
       setCurrentIndex(nextIndex)
       setChapterData(null)
       setScrollPosition(0)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      navigate(`/read/${book.slug}?chapter=${book.chapters[nextIndex].order}`, {
-        replace: true,
-      })
+      navigate(
+        `/books/${book.slug}/read?chapter=${book.chapters[nextIndex].order}`,
+        {
+          replace: true,
+        },
+      )
     },
     [book, currentIndex, navigate],
   )
 
   // A toggle sent twice cancels itself out, so a second press while one is pending is dropped.
+  const openCitation = (citation) => {
+    const next = book.chapters.findIndex(
+      (c) => String(c.id) === String(citation.chapterId),
+    )
+    if (citation.pageStart && next !== currentIndex)
+      citationPage.current = citation.pageStart
+    if (next >= 0) goToChapter(next)
+    if (citation.pageStart) setPdfPage(citation.pageStart)
+    setAssistantOpen(false)
+  }
+
   const toggleBookmark = useCallback(
     () =>
       chapterData &&
@@ -306,7 +364,9 @@ export default function Reader() {
           setChapterData((current) => ({ ...current, bookmarked }))
           toast.success(bookmarked ? 'Chapter bookmarked' : 'Bookmark removed')
         } catch (requestError) {
-          toast.error(errorMessage(requestError, 'Could not update the bookmark'))
+          toast.error(
+            errorMessage(requestError, 'Could not update the bookmark'),
+          )
         }
       }),
     [chapterData, toast, inFlight],
@@ -316,9 +376,19 @@ export default function Reader() {
     const handleKey = (event) => {
       // Shortcuts are for reading, not for typing, picking from a menu, or browser combos
       // (Alt+Left = back, Ctrl+B = bold...), and Escape must not leave the page under an open dialog.
-      if (event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return
+      if (
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.defaultPrevented
+      )
+        return
       const target = event.target
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable) return
+      if (
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+        target.isContentEditable
+      )
+        return
       if (event.repeat) return
       if (document.querySelector('[role="dialog"]')) return
       if (event.key === 'ArrowLeft') goToChapter(currentIndex - 1)
@@ -531,7 +601,8 @@ export default function Reader() {
         <main className="min-w-0 flex-1 px-5 pb-28 pt-12 sm:px-8">
           <article
             ref={contentRef}
-            className="mx-auto max-w-[68ch]"
+            aria-busy={!chapterData || !positionReady}
+            className="mx-auto max-w-[68ch] break-words"
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.8 }}
           >
             <div className="mb-8">
@@ -568,6 +639,13 @@ export default function Reader() {
               </div>
             ) : (
               <div className="space-y-6 text-c-text [&_blockquote]:border-l-4 [&_blockquote]:border-c-blue [&_blockquote]:bg-c-blue-wash [&_blockquote]:px-5 [&_blockquote]:py-3 [&_blockquote]:italic [&_code]:font-mono">
+                {book.fileType === 'pdf' && (
+                  <BookPdf
+                    book={book}
+                    page={pdfPage || chapter.pageStart || 1}
+                    onPage={setPdfPage}
+                  />
+                )}
                 <ChapterBody content={chapterData.content} />
               </div>
             )}
@@ -628,6 +706,32 @@ export default function Reader() {
           Save as note
         </button>
       )}
+      <div className="fixed bottom-24 right-4 z-30 sm:right-6">
+        <Button size="sm" onClick={() => setAssistantOpen(true)}>
+          Ask this book
+        </Button>
+      </div>
+      {positionError && (
+        <p
+          role="status"
+          className="fixed bottom-40 right-4 z-30 max-w-xs rounded-xl bg-white p-3 text-xs shadow"
+        >
+          {positionError}
+        </p>
+      )}
+      <Modal
+        isOpen={assistantOpen}
+        onClose={() => setAssistantOpen(false)}
+        title="Ask this book"
+        size="lg"
+        className="max-h-[calc(100dvh-2rem)] overflow-y-auto"
+      >
+        <BookAssistant
+          book={book}
+          chapter={chapter}
+          onCitation={openCitation}
+        />
+      </Modal>
       <Modal
         isOpen={Boolean(finish)}
         onClose={() => setFinish(null)}

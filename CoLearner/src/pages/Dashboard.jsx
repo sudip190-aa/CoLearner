@@ -1,3 +1,4 @@
+import { MyLearning } from '../components/books/MyLearning'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -397,6 +398,7 @@ export default function Dashboard() {
                   )}
                 </div>
               </section>
+              <MyLearning />
               <section className={panel}>
                 <Heading
                   title="On your radar"

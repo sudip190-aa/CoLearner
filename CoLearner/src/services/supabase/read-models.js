@@ -75,6 +75,7 @@ export const book = async (b, context) => {
   chapters.sort((a, b) => a.chapter_number - b.chapter_number)
   return {
     ...b,
+    publication_status: b.status,
     cover: await mediaUrl('book-covers', b.cover),
     chapters: chapters.map((c) => ({
       ...c,
@@ -241,7 +242,7 @@ export const dashboardData = async () => {
     ),
   ])
   const resume = progress
-    .filter((p) => !p.completed)
+    .filter((p) => p.book && !p.completed)
     .sort((a, b) =>
       String(b.last_read_at).localeCompare(String(a.last_read_at)),
     )[0]
@@ -254,7 +255,7 @@ export const dashboardData = async () => {
       active_projects: members.filter((m) =>
         ['idea', 'active'].includes(m.project?.status),
       ).length,
-      books_in_progress: progress.filter((p) => !p.completed).length,
+      books_in_progress: progress.filter((p) => p.book && !p.completed).length,
       badges_earned: badges.length,
     },
     reading: resume

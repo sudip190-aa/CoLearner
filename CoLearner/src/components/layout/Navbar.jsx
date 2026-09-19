@@ -5,9 +5,10 @@ import clsx from 'clsx'
 import { Logo } from '../ui/Logo'
 import { Button } from '../ui/Button'
 import Container from './Container'
+import { useAuthStore } from '../../store/authStore'
 
 const links = [
-  { label: 'Learn', to: '/library' },
+  { label: 'Learn', to: '/books' },
   { label: 'Build', to: '/projects' },
   { label: 'Community', to: '/community' },
   { label: 'Pricing', to: '/pricing' },
@@ -15,6 +16,7 @@ const links = [
 ]
 
 export function Navbar() {
+  const signedIn = useAuthStore((s) => s.isAuthenticated)
   const [isOpen, setIsOpen] = useState(false)
   const [hasScrolled, setHasScrolled] = useState(false)
 
@@ -62,13 +64,13 @@ export function Navbar() {
         </nav>
         <div className="hidden items-center gap-5 md:flex">
           <Link
-            to="/login"
+            to={signedIn ? '/library' : '/login'}
             className="text-sm font-semibold text-c-text-muted hover:text-c-blue"
           >
-            Log in
+            {signedIn ? 'My books' : 'Log in'}
           </Link>
-          <Button as={Link} to="/signup" size="sm">
-            Get started
+          <Button as={Link} to={signedIn ? '/dashboard' : '/signup'} size="sm">
+            {signedIn ? 'My Dashboard' : 'Get started'}
           </Button>
         </div>
         <button
@@ -113,18 +115,18 @@ export function Navbar() {
           <div className="space-y-3 px-6 pb-8">
             <Button
               as={Link}
-              to="/signup"
+              to={signedIn ? '/dashboard' : '/signup'}
               fullWidth
               onClick={() => setIsOpen(false)}
             >
-              Get started
+              {signedIn ? 'My Dashboard' : 'Get started'}
             </Button>
             <Link
-              to="/login"
+              to={signedIn ? '/library' : '/login'}
               onClick={() => setIsOpen(false)}
               className="block py-2 text-center text-sm font-semibold text-c-text-muted"
             >
-              Log in
+              {signedIn ? 'My books' : 'Log in'}
             </Link>
           </div>
         </div>

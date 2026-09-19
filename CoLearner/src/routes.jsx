@@ -41,6 +41,12 @@ const AuthCallback = lazy(() => import('./pages/auth/AuthCallback.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Messages = lazy(() => import('./pages/Messages.jsx'))
+const BookCatalog = lazy(() => import('./pages/BookCatalog.jsx'))
+const PublicBook = () => (
+  <div className="container py-10">
+    <LazyView Component={Book} />
+  </div>
+)
 const Library = lazy(() => import('./pages/Library.jsx'))
 const Book = lazy(() => import('./pages/BookDetail.jsx'))
 const Reader = lazy(() => import('./pages/Reader.jsx'))
@@ -120,6 +126,8 @@ export const router = createBrowserRouter([
       { path: '/features', element: view(FeaturesPage) },
       { path: '/our-community', element: view(CommunityOverview) },
       { path: '/about', element: view(About) },
+      { path: '/books', element: view(BookCatalog) },
+      { path: '/books/:slug', element: <PublicBook /> },
       { path: '/pricing', element: view(Pricing) },
       { path: '/contact', element: view(Contact) },
       { path: '/terms', element: view(Terms) },
@@ -177,6 +185,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: '/read/:slug', element: view(Reader) },
+      { path: '/books/:slug/read', element: view(Reader) },
     ],
   },
   {
