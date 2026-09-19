@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { ChevronDown, SlidersHorizontal } from 'lucide-react'
+import { SlidersHorizontal, Users, X } from 'lucide-react'
 import {
   EmptyState,
   Pagination,
@@ -20,9 +20,9 @@ const roles = [
   { value: 'mentor', label: 'Mentor' },
 ]
 const availability = [
-  { value: '', label: 'Any availability' },
-  { value: 'open_to_collaboration', label: 'Open to collaboration' },
-  { value: 'mentoring', label: 'Available for mentoring' },
+  { value: '', label: 'Everyone' },
+  { value: 'open_to_collaboration', label: 'Open to team up' },
+  { value: 'mentoring', label: 'Mentoring' },
   { value: 'focused_learning', label: 'Focused learning' },
 ]
 const sortOrdering = { match: 'best_match', xp: 'xp', newest: 'newest' }
@@ -35,17 +35,20 @@ function PeopleSkeleton() {
           key={item}
           className="rounded-brand-lg border border-c-border bg-white p-5"
         >
-          <div className="flex justify-between">
-            <Skeleton width="56px" height="56px" />
-            <Skeleton width="68px" height="24px" />
+          <div className="flex items-center gap-3">
+            <Skeleton width="44px" height="44px" className="!rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton width="70%" height="20px" />
+              <Skeleton width="40%" height="12px" />
+            </div>
           </div>
-          <Skeleton width="60%" height="20px" className="mt-5" />
-          <Skeleton width="40%" height="14px" className="mt-2" />
-          <Skeleton width="100%" height="40px" className="mt-4" />
+          <Skeleton width="70%" height="24px" className="mt-4" />
+          <Skeleton width="100%" height="40px" className="mt-3" />
           <div className="mt-4 flex gap-2">
             <Skeleton width="64px" height="24px" />
             <Skeleton width="76px" height="24px" />
           </div>
+          <Skeleton width="100%" height="40px" className="mt-5" />
         </div>
       ))}
     </div>
@@ -180,138 +183,207 @@ export default function People() {
     resetPage()
     setter(event.target.value)
   }
+  const filterFields = [
+    {
+      id: 'people-role',
+      label: 'Role',
+      value: role,
+      setter: setRole,
+      options: roles,
+    },
+    {
+      id: 'people-location',
+      label: 'Location',
+      value: location,
+      setter: setLocation,
+      options: [
+        { value: '', label: 'Anywhere' },
+        ...locations.map((value) => ({ value, label: value })),
+      ],
+    },
+    {
+      id: 'people-availability',
+      label: 'Availability',
+      value: availabilityValue,
+      setter: setAvailabilityValue,
+      options: availability,
+    },
+  ]
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="flex flex-wrap items-center gap-4 lg:flex-nowrap lg:gap-6">
-        <h1 className="flex w-full shrink-0 items-center gap-2.5 !text-3xl !font-bold !tracking-tight lg:w-auto">
-          Discover people{' '}
-          <span
-            aria-hidden="true"
-            className="mt-1.5 h-2 w-2 rounded-full bg-c-yellow"
-          />
+      <header className="mb-6 sm:mb-8">
+        <h1 className="!text-3xl !font-bold !tracking-tight sm:!text-4xl">
+          Discover people
         </h1>
-        <SearchBar
-          value={query}
-          onChange={handleSearch}
-          placeholder="Search by name, skill, or role..."
-          aria-label="Search people"
-          containerClassName="min-w-0 flex-1"
-          className="!h-12 !rounded-xl"
-        />
-        <button
-          type="button"
-          aria-expanded={filtersOpen}
-          aria-controls="people-filters"
-          onClick={() => setFiltersOpen((open) => !open)}
-          className={`inline-flex h-12 shrink-0 items-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text hover:border-c-blue/40'}`}
-        >
-          <SlidersHorizontal size={18} aria-hidden="true" />
-          <span className="hidden sm:inline">Filters</span>
-          <span className="sr-only sm:hidden">Filters</span>
-          {filterCount > 0 && (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-c-blue px-1 text-[10px] font-semibold text-white">
-              {filterCount}
-            </span>
-          )}
-        </button>
       </header>
 
-      <div className="mb-6 mt-6 flex flex-wrap items-center gap-2.5">
-        <button
-          type="button"
-          aria-expanded={filtersOpen}
-          aria-controls="people-filters"
-          onClick={() => setFiltersOpen((open) => !open)}
-          className={`inline-flex h-10 items-center gap-3 rounded-full border bg-white px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${selectedSkills.length ? 'border-c-blue text-c-blue' : 'border-c-border text-c-text'}`}
-        >
-          Skills{selectedSkills.length > 0 && ` (${selectedSkills.length})`}
-          <ChevronDown size={15} aria-hidden="true" />
-        </button>
-        <div className="w-32">
-          <Select
-            aria-label="Filter by role"
-            value={role}
-            onChange={change(setRole)}
-            options={roles.map((option) =>
-              option.value ? option : { value: '', label: 'Role' },
-            )}
-            className={`!rounded-full ${role ? '!border-c-blue !text-c-blue' : ''}`}
-          />
-        </div>
-        <div className="w-44">
-          <Select
-            aria-label="Filter by availability"
-            value={availabilityValue}
-            onChange={change(setAvailabilityValue)}
-            options={availability.map((option) =>
-              option.value ? option : { value: '', label: 'Availability' },
-            )}
-            className={`!rounded-full ${availabilityValue ? '!border-c-blue !text-c-blue' : ''}`}
-          />
-        </div>
-        {hasFilters && (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="rounded-lg px-2 py-2 text-xs font-medium text-c-blue hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+      <section aria-label="Find people" className="mb-8">
+        <div className="flex items-center gap-3 rounded-2xl bg-c-blue-soft/80 px-5 pb-12 pt-5 sm:px-6 sm:pt-6">
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-c-blue"
+            aria-hidden="true"
           >
-            Clear
-          </button>
-        )}
-        <div className="ml-auto w-36">
-          <Select
-            aria-label="Sort people"
-            value={sort}
-            onChange={change(setSort)}
-            options={[
-              { value: 'match', label: 'Best match' },
-              { value: 'xp', label: 'Most XP' },
-              { value: 'newest', label: 'Recently joined' },
-            ]}
-            className="!rounded-full !border-transparent !bg-transparent !text-xs !text-c-text-muted"
-          />
+            <Users size={20} />
+          </span>
+          <p className="text-sm font-medium leading-6 text-c-text">
+            Find a study partner, teammate, or mentor.
+          </p>
         </div>
-      </div>
-
-      {filtersOpen && (
-        <section
-          id="people-filters"
-          aria-label="People filters"
-          className="mb-6 rounded-2xl border border-c-border bg-white p-5"
-        >
-          <fieldset>
-            <legend className="mb-3 text-xs font-semibold text-c-text-muted">
-              Skills
-            </legend>
-            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto p-1">
-              {skills.map((skill) => (
-                <button
-                  key={skill}
-                  type="button"
-                  aria-pressed={selectedSkills.includes(skill)}
-                  onClick={() => toggleSkill(skill)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${selectedSkills.includes(skill) ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border text-c-text-muted hover:border-c-blue/40'}`}
-                >
-                  {skill}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <div className="mt-4 max-w-xs">
-            <Select
-              aria-label="Filter by location"
-              value={location}
-              onChange={change(setLocation)}
-              options={[
-                { value: '', label: 'All locations' },
-                ...locations.map((value) => ({ value, label: value })),
-              ]}
-              className="!rounded-xl"
+        <div className="relative mx-3 -mt-7 grid grid-cols-2 items-center gap-4 rounded-2xl border border-c-border/70 bg-white p-4 shadow-sm sm:mx-5 sm:p-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.1fr)_auto] xl:gap-2">
+          <div className="col-span-2 min-w-0 sm:col-span-1">
+            <label
+              htmlFor="people-search"
+              className="mb-1 block px-3.5 text-[11px] text-c-text-muted"
+            >
+              Name or skill
+            </label>
+            <SearchBar
+              id="people-search"
+              value={query}
+              onChange={handleSearch}
+              placeholder="Search people..."
+              aria-label="Search people"
+              containerClassName="[&_kbd]:hidden"
+              className="!h-9 !rounded-lg !border-transparent !text-[13px] focus:!ring-1 focus:!ring-offset-0"
             />
           </div>
-        </section>
-      )}
+          {filterFields.map((field) => (
+            <div
+              key={field.id}
+              className="min-w-0 xl:border-l xl:border-c-border xl:pl-2"
+            >
+              <label
+                htmlFor={field.id}
+                className="mb-1 block px-2 text-[11px] text-c-text-muted sm:px-3.5"
+              >
+                {field.label}
+              </label>
+              <Select
+                id={field.id}
+                value={field.value}
+                onChange={change(field.setter)}
+                options={field.options}
+                aria-label={`Filter by ${field.label.toLowerCase()}`}
+                title={
+                  field.options.find((option) => option.value === field.value)
+                    ?.label
+                }
+                className={`!h-9 !rounded-lg !border-transparent !pl-2 !pr-8 !text-[13px] focus:!ring-1 focus:!ring-offset-0 sm:!pl-3.5 sm:!pr-10 ${field.value ? '!font-medium !text-c-blue' : ''}`}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="people-filters"
+            aria-label={`Filter by skills${selectedSkills.length ? `, ${selectedSkills.length} selected` : ''}`}
+            title="Filter by skills"
+            onClick={() => setFiltersOpen((open) => !open)}
+            className={`relative flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue sm:col-span-2 xl:col-span-1 xl:h-14 xl:w-14 ${filtersOpen || selectedSkills.length ? 'bg-c-blue text-white' : 'bg-c-blue-soft text-c-blue hover:bg-c-blue-soft/70'}`}
+          >
+            <SlidersHorizontal size={19} aria-hidden="true" />
+            <span className="xl:sr-only">Skills</span>
+            {selectedSkills.length > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-c-yellow px-1 text-[10px] font-bold text-c-text">
+                {selectedSkills.length}
+              </span>
+            )}
+          </button>
+        </div>
+        {filtersOpen && (
+          <div
+            id="people-filters"
+            className="mx-3 mt-3 rounded-2xl border border-c-border bg-white p-5 sm:mx-5"
+          >
+            <fieldset>
+              <legend className="mb-3 text-xs font-semibold text-c-text-muted">
+                Skills
+              </legend>
+              <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto p-1">
+                {skills.map((skill) => (
+                  <button
+                    key={skill}
+                    type="button"
+                    aria-pressed={selectedSkills.includes(skill)}
+                    onClick={() => toggleSkill(skill)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${selectedSkills.includes(skill) ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border text-c-text-muted hover:border-c-blue/40'}`}
+                  >
+                    {skill}
+                  </button>
+                ))}
+                {!skills.length && (
+                  <p className="text-xs text-c-text-muted">
+                    No skills available yet.
+                  </p>
+                )}
+              </div>
+            </fieldset>
+          </div>
+        )}
+        {!filtersOpen && selectedSkills.length > 0 && (
+          <div
+            className="mx-3 mt-3 flex flex-wrap gap-2 sm:mx-5"
+            aria-label="Selected skills"
+          >
+            {selectedSkills.map((skill) => (
+              <button
+                key={skill}
+                type="button"
+                onClick={() => toggleSkill(skill)}
+                aria-label={`Remove ${skill} filter`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-c-blue/15 bg-white px-3 py-1.5 text-xs text-c-blue"
+              >
+                {skill}
+                <X size={12} aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
 
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2.5 !text-xl !font-semibold !tracking-tight">
+          {hasFilters
+            ? 'Your matches'
+            : sort === 'match'
+              ? 'Best for you'
+              : sort === 'xp'
+                ? 'Community leaders'
+                : 'Recently joined'}
+          {people && (
+            <span
+              aria-label={`${people.length} people`}
+              className="rounded-full bg-c-blue-soft px-2 py-0.5 text-[11px] font-medium tabular-nums text-c-blue"
+            >
+              {people.length}
+            </span>
+          )}
+        </h2>
+        <div className="flex items-center gap-2">
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="rounded-lg px-2 py-2 text-xs font-medium text-c-blue hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
+          <div className="w-40">
+            <Select
+              aria-label="Sort people"
+              value={sort}
+              onChange={change(setSort)}
+              options={[
+                { value: 'match', label: 'Best match' },
+                { value: 'xp', label: 'Most XP' },
+                { value: 'newest', label: 'Recently joined' },
+              ]}
+              className="!h-9 !rounded-full !border-transparent !bg-white/70 !text-xs !text-c-text-muted"
+            />
+          </div>
+        </div>
+      </div>
       {error && (
         <p
           className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
@@ -347,6 +419,7 @@ export default function People() {
       ) : (
         !error && (
           <EmptyState
+            icon={Users}
             title="No people found"
             description="Try a different search or clear your filters."
             actionLabel="Clear filters"

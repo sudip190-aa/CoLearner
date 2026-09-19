@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Clock3, UserPlus, MessageCircle } from 'lucide-react'
+import { Check, Clock3, MapPin, UserPlus, MessageCircle } from 'lucide-react'
 import { Avatar, Button } from '../ui'
 
 // What the button shows, its look, and the API action a click performs, per connection state
@@ -9,7 +9,7 @@ const connectionStates = {
   none: {
     label: 'Connect',
     icon: UserPlus,
-    variant: 'outline',
+    variant: 'primary',
     action: 'connect',
   },
   pending_sent: {
@@ -34,58 +34,67 @@ const connectionStates = {
   },
 }
 
+const availabilityLabels = {
+  open_to_collaboration: 'Open to team up',
+  mentoring: 'Available to mentor',
+  focused_learning: 'Focused on learning',
+}
+
 export function PersonCard({ person, onConnect, busy = false }) {
   const state =
     connectionStates[person.connectionStatus] || connectionStates.none
   const commonCount = person.mutualSkillsCount || 0
-  const mentor = person.role === 'mentor'
+  const available = availabilityLabels[person.availability]
   return (
-    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white p-5 text-left shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-c-blue/25 hover:shadow-[0_12px_32px_-16px_rgba(46,120,229,0.3)] focus-within:border-c-blue/40 motion-safe:hover:-translate-y-1 sm:p-6">
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full border-[14px] ${mentor ? 'border-c-yellow/10' : 'border-c-blue/5'}`}
-      />
+    <article className="flex min-w-0 flex-col rounded-2xl border border-c-border/80 bg-white p-5 text-left shadow-sm transition-[box-shadow,border-color] hover:border-c-blue/25 hover:shadow-md focus-within:border-c-blue/40">
       <Link
         to={`/u/${person.username}`}
-        className="relative rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+        className="group flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
       >
-        <div className="flex items-start justify-between gap-3">
-          <Avatar
-            src={person.avatar}
-            name={person.fullName}
-            size="lg"
-            className={`!h-14 !w-14 ring-4 ${mentor ? 'ring-c-yellow-soft' : 'ring-c-blue-wash'}`}
-          />
-          <p className="pt-1 text-[11px] tabular-nums text-c-text-muted">
-            Level {person.level}
-            <span className="mx-1.5 text-c-border" aria-hidden="true">
-              ·
-            </span>
-            {person.xp.toLocaleString()} XP
+        <Avatar
+          src={person.avatar}
+          name={person.fullName}
+          size="lg"
+          className="!h-11 !w-11 ring-4 ring-c-blue-wash"
+        />
+        <div className="min-w-0">
+          <h2
+            title={person.fullName}
+            className="truncate !text-base !font-semibold !leading-6 !tracking-tight text-c-text transition-colors group-hover:text-c-blue"
+          >
+            {person.fullName}
+          </h2>
+          <p className="mt-0.5 text-xs capitalize text-c-text-muted">
+            {person.role}
           </p>
         </div>
-        <h2
-          title={person.fullName}
-          className="mt-4 h-6 truncate text-lg font-semibold leading-6 tracking-tight text-c-text transition-colors group-hover:text-c-blue"
-        >
-          {person.fullName}
-        </h2>
-        <p
-          title={`@${person.username}`}
-          className="mt-0.5 h-5 truncate text-xs leading-5 text-c-text-muted"
-        >
-          @{person.username}
-        </p>
-        <p className="mt-3 h-10 line-clamp-2 break-words text-sm leading-5 text-c-text-muted">
-          {person.headline}
-        </p>
       </Link>
-      <div className="mb-5 mt-4 flex h-7 min-w-0 items-center gap-1.5">
+      <div className="mt-4 flex min-w-0 items-center gap-3">
+        <span
+          title={`${person.xp.toLocaleString()} XP`}
+          className="shrink-0 rounded-full bg-c-blue-soft px-2.5 py-1 text-[10px] font-semibold text-c-blue"
+        >
+          Level {person.level}
+        </span>
+        {person.location && (
+          <span
+            title={person.location}
+            className="inline-flex min-w-0 items-center gap-1 text-[11px] text-c-text-muted"
+          >
+            <MapPin size={13} className="shrink-0" aria-hidden="true" />
+            <span className="truncate">{person.location}</span>
+          </span>
+        )}
+      </div>
+      <p className="mt-3 h-10 line-clamp-2 break-words text-[13px] leading-5 text-c-text-muted">
+        {person.headline || person.bio}
+      </p>
+      <div className="mb-5 mt-4 flex h-6 min-w-0 items-center gap-1.5">
         {person.skills.slice(0, 3).map((skill) => (
           <span
             key={skill.id}
             title={skill.name}
-            className="min-w-0 truncate rounded-full border border-c-border px-2.5 py-1 text-[11px] text-c-text-muted"
+            className="min-w-0 truncate rounded-full bg-c-blue-wash px-2.5 py-1 text-[10px] text-c-text-muted"
           >
             {skill.name}
           </span>
@@ -96,31 +105,38 @@ export function PersonCard({ person, onConnect, busy = false }) {
               .slice(3)
               .map((skill) => skill.name)
               .join(', ')}
-            className="shrink-0 text-[11px] text-c-text-muted"
+            className="shrink-0 rounded-full border border-c-border px-2 py-1 text-[10px] text-c-text-muted"
           >
             +{person.skills.length - 3}
           </span>
         )}
       </div>
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-c-border/70 pt-4">
-        {commonCount > 0 ? (
-          <span className="text-xs font-medium text-c-blue">
-            {commonCount} shared {commonCount === 1 ? 'skill' : 'skills'}
-          </span>
-        ) : (
+      <div className="mt-auto flex min-w-0 items-center justify-between gap-3">
+        <Link
+          to={`/u/${person.username}`}
+          className="min-w-0 rounded hover:text-c-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+        >
           <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${mentor ? 'bg-c-yellow-soft text-c-text' : 'bg-c-blue-wash text-c-text-muted'}`}
+            className={`block truncate text-xs font-semibold ${commonCount ? 'text-c-blue' : 'text-c-text'}`}
           >
-            {person.role}
+            {commonCount
+              ? `${commonCount} shared ${commonCount === 1 ? 'skill' : 'skills'}`
+              : `${person.xp.toLocaleString()} XP`}
           </span>
-        )}
+          <span
+            title={available || 'View profile'}
+            className="mt-1 block truncate text-[10px] text-c-text-muted"
+          >
+            {available || 'View profile'}
+          </span>
+        </Link>
         {person.connectionStatus === 'accepted' ? (
           <Button
             to={`/messages?to=${person.id}`}
             size="sm"
-            variant="secondary"
+            variant="primary"
             icon={MessageCircle}
-            className="!rounded-xl"
+            className="!h-10 shrink-0 !rounded-full !px-4 !shadow-none"
             aria-label={`Message ${person.fullName}`}
           >
             Message
@@ -132,7 +148,7 @@ export function PersonCard({ person, onConnect, busy = false }) {
             variant={state.variant}
             icon={state.icon}
             title={state.title}
-            className="!rounded-xl"
+            className="!h-10 shrink-0 !rounded-full !px-4 !shadow-none"
             aria-label={`${state.title || state.label} ${person.fullName}`}
             loading={busy}
             disabled={!state.action}
