@@ -1,0 +1,26 @@
+# Python
+backend/.venv/
+backend/.venv-local/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.env
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Node
+CoLearner/node_modules/
+CoLearner/.env
+CoLearner/.env.*
+!CoLearner/.env.example
+CoLearner/dist/
+
+# Tooling and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
