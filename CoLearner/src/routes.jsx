@@ -40,6 +40,7 @@ const ResetPassword = lazy(() => import('./pages/auth/ResetPassword.jsx'))
 const AuthCallback = lazy(() => import('./pages/auth/AuthCallback.jsx'))
 const Onboarding = lazy(() => import('./pages/Onboarding.jsx'))
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
+const Messages = lazy(() => import('./pages/Messages.jsx'))
 const Library = lazy(() => import('./pages/Library.jsx'))
 const Book = lazy(() => import('./pages/BookDetail.jsx'))
 const Reader = lazy(() => import('./pages/Reader.jsx'))
@@ -156,6 +157,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/onboarding', element: view(Onboarding) },
           { path: '/dashboard', element: view(Dashboard) },
+          { path: '/messages', element: view(Messages) },
           { path: '/library', element: view(Library) },
           { path: '/library/:slug', element: view(Book) },
           { path: '/projects', element: view(Projects) },

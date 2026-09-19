@@ -11,6 +11,7 @@ import {
   Users,
   UserRound,
   FolderKanban,
+  MessageCircle,
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -20,6 +21,7 @@ const items = [
   { label: 'Projects', to: '/projects', icon: FolderKanban },
   { label: 'Community', to: '/community', icon: Users },
   { label: 'People', to: '/people', icon: UserRound },
+  { label: 'Messages', to: '/messages', icon: MessageCircle },
   { label: 'Leaderboard', to: '/leaderboard', icon: BarChart3 },
   { label: 'Notifications', to: '/notifications', icon: Bell },
   { label: 'Settings', to: '/settings', icon: Settings },
@@ -32,7 +34,7 @@ export function Sidebar() {
       <aside
         className={clsx(
           'hidden shrink-0 border-r border-c-border bg-white py-5 transition-[width] duration-200 lg:block',
-          isCollapsed ? 'w-20' : 'w-60',
+          isCollapsed ? 'w-20' : 'w-52',
         )}
       >
         <nav className="space-y-1 px-3" aria-label="App navigation">

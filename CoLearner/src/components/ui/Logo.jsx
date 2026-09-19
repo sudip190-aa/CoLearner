@@ -27,6 +27,7 @@ const SIZE_MAP = {
   xs: { height: 20, textClass: 'text-sm' },
   sm: { height: 24, textClass: 'text-base' },
   md: { height: 32, textClass: 'text-xl' },
+  nav: { height: 40, textClass: 'text-2xl' },
   lg: { height: 48, textClass: 'text-2xl' },
   xl: { height: 64, textClass: 'text-3xl' },
 }

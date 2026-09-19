@@ -1,19 +1,42 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Clock3, UserPlus } from 'lucide-react'
+import { Check, Clock3, UserPlus, MessageCircle } from 'lucide-react'
 import { Avatar, Badge, Button, Chip } from '../ui'
 
 // What the button shows, its look, and the API action a click performs, per connection state
 // (states come from the backend: none | pending_sent | pending_received | accepted).
 const connectionStates = {
-  none: { label: 'Connect', icon: UserPlus, variant: 'outline', action: 'connect' },
-  pending_sent: { label: 'Pending', icon: Clock3, variant: 'outline', action: 'cancel', title: 'Cancel request' },
-  pending_received: { label: 'Accept', icon: Check, variant: 'primary', action: 'accept', title: 'Accept request' },
-  accepted: { label: 'Connected', icon: Check, variant: 'secondary', action: null },
+  none: {
+    label: 'Connect',
+    icon: UserPlus,
+    variant: 'outline',
+    action: 'connect',
+  },
+  pending_sent: {
+    label: 'Pending',
+    icon: Clock3,
+    variant: 'outline',
+    action: 'cancel',
+    title: 'Cancel request',
+  },
+  pending_received: {
+    label: 'Accept',
+    icon: Check,
+    variant: 'primary',
+    action: 'accept',
+    title: 'Accept request',
+  },
+  accepted: {
+    label: 'Connected',
+    icon: Check,
+    variant: 'secondary',
+    action: null,
+  },
 }
 
 export function PersonCard({ person, onConnect, busy = false }) {
-  const state = connectionStates[person.connectionStatus] || connectionStates.none
+  const state =
+    connectionStates[person.connectionStatus] || connectionStates.none
   const commonSkills = person.sharedSkills || []
   return (
     <article className="flex min-h-[286px] flex-col rounded-brand-lg border border-c-border bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -47,18 +70,29 @@ export function PersonCard({ person, onConnect, busy = false }) {
             </p>
           )}
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant={state.variant}
-          icon={state.icon}
-          title={state.title}
-          loading={busy}
-          disabled={!state.action}
-          onClick={() => onConnect?.(person, state.action)}
-        >
-          {state.label}
-        </Button>
+        {person.connectionStatus === 'accepted' ? (
+          <Button
+            to={`/messages?to=${person.id}`}
+            size="sm"
+            variant="secondary"
+            icon={MessageCircle}
+          >
+            Message
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            variant={state.variant}
+            icon={state.icon}
+            title={state.title}
+            loading={busy}
+            disabled={!state.action}
+            onClick={() => onConnect?.(person, state.action)}
+          >
+            {state.label}
+          </Button>
+        )}
       </div>
     </article>
   )

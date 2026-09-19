@@ -8,6 +8,8 @@ import {
   ShieldCheck,
   User,
   Briefcase,
+  MessageCircle,
+  Search,
 } from 'lucide-react'
 import { Logo } from '../ui/Logo'
 import { SearchBar } from '../ui/SearchBar'
@@ -19,6 +21,7 @@ import { useNotificationSync } from '../../hooks/useNotificationSync.js'
 import { describeNotification } from '../../lib/notifications.js'
 import { useAuthStore } from '../../store/authStore.js'
 import { formatRelative } from '../../lib/formatters.js'
+import { useMessageInbox, useMessageSync } from '../../hooks/useMessages'
 
 const roleLabels = {
   learner: 'Learner',
@@ -37,6 +40,12 @@ export function AppNavbar() {
   const markRead = useNotificationStore((state) => state.markRead)
   const unreadCount = useNotificationStore((state) => state.unreadCount)
   useNotificationSync()
+  useMessageSync()
+  const inbox = useMessageInbox()
+  const unreadMessages = (inbox.data || []).reduce(
+    (count, person) => count + person.unread_count,
+    0,
+  )
 
   const handleLogout = async () => {
     await logout()
@@ -47,23 +56,42 @@ export function AppNavbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-c-border bg-white">
-      <Container className="flex h-16 items-center gap-4">
+      <Container className="flex h-[76px] items-center gap-3 sm:gap-5">
         <Link to="/dashboard" className="shrink-0" aria-label="Go to dashboard">
           <span className="hidden min-[768px]:inline-flex">
-            <Logo variant="full" size="sm" />
+            <Logo variant="full" size="lg" />
           </span>
           <span className="inline-flex min-[768px]:hidden">
-            <Logo variant="mark" size="sm" />
+            <Logo variant="mark" size="md" />
           </span>
         </Link>
         <SearchBar
-          containerClassName="mx-auto max-w-md flex-1"
+          containerClassName="mx-auto hidden max-w-md flex-1 sm:flex"
           onSearch={(query) => {
             const text = query.trim()
             if (text) navigate(`/search?q=${encodeURIComponent(text)}`)
           }}
         />
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
+          <Link
+            to="/search"
+            aria-label="Search CoLearn"
+            className="rounded-brand p-2 text-c-text-muted hover:bg-c-blue-soft sm:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </Link>
+          <Link
+            to="/messages"
+            className="relative rounded-brand p-2 text-c-text-muted hover:bg-c-blue-soft hover:text-c-blue"
+            aria-label={`Messages${unreadMessages ? `, ${unreadMessages} unread` : ''}`}
+          >
+            <MessageCircle className="h-5 w-5" />
+            {unreadMessages > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 rounded-full bg-c-blue px-1.5 py-0.5 text-[9px] font-bold text-white">
+                {unreadMessages > 9 ? '9+' : unreadMessages}
+              </span>
+            )}
+          </Link>
           <Dropdown
             align="right"
             className="w-80"
@@ -157,7 +185,10 @@ export function AppNavbar() {
               Settings
             </DropdownItem>
             {isAdmin && (
-              <DropdownItem icon={ShieldCheck} onClick={() => navigate('/admin')}>
+              <DropdownItem
+                icon={ShieldCheck}
+                onClick={() => navigate('/admin')}
+              >
                 Admin
               </DropdownItem>
             )}

@@ -1037,6 +1037,7 @@ export const dashboard = {
     const reading = data.reading
     return {
       stats: normalizeDashboardStats(data.stats),
+      tasks: data.tasks || [],
       reading: reading
         ? {
             book: {
@@ -1062,7 +1063,7 @@ export const dashboard = {
         day: WEEKDAYS[new Date(`${day.date}T12:00:00`).getDay()],
         xp: Number(day.xp ?? 0),
       })),
-      projects: mine.status === 'fulfilled' ? mine.value.projects.slice(0, 3) : [],
+      projects: mine.status === 'fulfilled' ? mine.value.projects : [],
       suggestions: people.status === 'fulfilled' ? people.value.items.slice(0, 3) : [],
       trending: hot.status === 'fulfilled' ? hot.value.threads.slice(0, 4) : [],
     }

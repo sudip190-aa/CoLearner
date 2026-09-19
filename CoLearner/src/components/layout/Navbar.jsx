@@ -40,7 +40,7 @@ export function Navbar() {
       )}
     >
       <Container className="flex h-16 items-center justify-between gap-6">
-        <Logo variant="full" size="md" to="/" />
+        <Logo variant="full" size="lg" to="/" />
         <nav
           className="hidden items-center gap-7 md:flex"
           aria-label="Primary navigation"

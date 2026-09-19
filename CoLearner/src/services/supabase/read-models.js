@@ -220,7 +220,7 @@ export const filterText = (items, q, keys) =>
 export const newest = (items) =>
   items.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
 export const dashboardData = async () => {
-  const [p, progress, events, badges, members] = await Promise.all([
+  const [p, progress, events, badges, members, tasks] = await Promise.all([
     me(),
     rows('reading_progress', '*,book:books(*),chapter:chapters(*)'),
     rows('xp_events'),
@@ -228,6 +228,17 @@ export const dashboardData = async () => {
     rows('project_members', '*,project:projects(*)', {
       user_id: await viewerId(),
     }),
+    result(
+      supabase
+        .from('tasks')
+        .select(
+          'id,title,status,priority,due_date,project:projects(title,slug)',
+        )
+        .eq('assignee_id', await viewerId())
+        .neq('status', 'done')
+        .order('due_date', { ascending: true, nullsFirst: false })
+        .limit(100),
+    ),
   ])
   const resume = progress
     .filter((p) => !p.completed)
@@ -235,6 +246,7 @@ export const dashboardData = async () => {
       String(b.last_read_at).localeCompare(String(a.last_read_at)),
     )[0]
   return {
+    tasks,
     stats: {
       ...p,
       level_floor_xp: 50 * (p.level - 1) ** 2,
@@ -258,7 +270,7 @@ export const dashboardData = async () => {
         }
       : null,
     activity: newest(events)
-      .slice(0, 6)
+      .slice(0, 50)
       .map((e) => ({ ...e, text: e.reason.replaceAll('_', ' ') })),
     badges: badges.map((b) => ({ ...b.badge, earned_at: b.earned_at })),
     weekly_xp: Array.from({ length: 7 }, (_, i) => {

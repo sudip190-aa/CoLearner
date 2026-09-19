@@ -34,7 +34,7 @@ export const LandingNav = () => {
         aria-label="Main navigation"
         className="container flex h-[72px] items-center justify-between gap-3"
       >
-        <Logo size="md" to="/" aria-label="CoLearn home" onClick={closeMenu} />
+        <Logo size="nav" to="/" aria-label="CoLearn home" onClick={closeMenu} />
         <div className="hidden items-center gap-7 text-sm font-medium text-c-text-muted lg:flex">
           {links.map(([label, href]) => (
             <NavLink
@@ -50,7 +50,13 @@ export const LandingNav = () => {
           ))}
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          <Button to="/login" variant="ghost" size="sm" onClick={closeMenu}>
+          <Button
+            to="/login"
+            variant="ghost"
+            size="sm"
+            className="whitespace-nowrap"
+            onClick={closeMenu}
+          >
             Sign in
           </Button>
           <Button to="/signup" size="sm" onClick={closeMenu}>
