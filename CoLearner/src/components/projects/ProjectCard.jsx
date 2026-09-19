@@ -1,81 +1,125 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays, Users } from 'lucide-react'
-import { Avatar, AvatarGroup, Badge, Chip, ProgressBar } from '../ui'
-import { BookCover } from '../books/BookCover'
-import { formatDate } from '../../lib/formatters.js'
 import {
-  projectStatusLabel,
-  projectStatusVariant,
-} from '../../lib/projectStatus.js'
+  ArrowUpRight,
+  BookOpen,
+  Cpu,
+  FlaskConical,
+  FolderCode,
+  Layers,
+  Users,
+} from 'lucide-react'
+import { Avatar, AvatarGroup } from '../ui'
+import { isClosedProject, projectStatusLabel } from '../../lib/projectStatus'
+
+const categoryIcons = {
+  education: BookOpen,
+  ai: Cpu,
+  research: FlaskConical,
+  community: Users,
+  collaboration: Layers,
+}
 
 export default function ProjectCard({ project }) {
-  const { done, total } = project.taskProgress
+  const open = !isClosedProject(project) && project.spotsLeft > 0
+  const category = project.category || 'Project'
+  const yellow = project.status === 'idea'
+  const CategoryIcon = categoryIcons[category.toLowerCase()] || FolderCode
+  const people = project.members.length
+    ? project.members.slice(0, 2)
+    : [project.owner]
+
   return (
-    <article className="overflow-hidden rounded-brand-lg border border-c-border bg-white shadow-sm transition-shadow hover:shadow-md">
-      <Link to={`/projects/${project.slug}`}>
-        <div className="h-28 bg-c-blue-wash">
-          <BookCover book={project} className="h-full w-full" />
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-c-border bg-white text-left shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:border-c-blue/25 hover:shadow-[0_12px_32px_-16px_rgba(46,120,229,0.3)] focus-within:border-c-blue/40 motion-safe:hover:-translate-y-1">
+      <div
+        className={`relative flex h-20 items-center justify-between gap-3 overflow-hidden px-5 ${yellow ? 'bg-c-yellow-soft/70' : 'bg-c-blue-wash'}`}
+      >
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute -right-3 -top-10 h-32 w-32 rounded-full border-[18px] ${yellow ? 'border-c-yellow/15' : 'border-c-blue/5'}`}
+        />
+        <div className="relative flex min-w-0 items-center gap-2.5">
+          <span
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white bg-white/90 shadow-sm ${yellow ? 'text-c-text' : 'text-c-blue'}`}
+          >
+            <CategoryIcon size={20} strokeWidth={1.6} aria-hidden="true" />
+          </span>
+          <span
+            title={category}
+            className="min-w-0 line-clamp-2 text-[10px] font-semibold uppercase leading-4 tracking-[0.08em] text-c-text-muted"
+          >
+            {category}
+          </span>
         </div>
-        <div className="p-5">
-          <div className="flex items-start justify-between gap-3">
-            <h2 className="line-clamp-2 text-lg font-bold leading-6 text-c-text">
-              {project.title}
-            </h2>
-            <Badge variant={projectStatusVariant(project.status)} size="sm">
-              {projectStatusLabel(project.status)}
-            </Badge>
-          </div>
-          <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-c-text-muted">
-            {project.summary}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {project.techStack.slice(0, 3).map((tech) => (
-              <Chip key={tech}>{tech}</Chip>
-            ))}
-          </div>
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Avatar
-                src={project.owner.avatar}
-                name={project.owner.fullName}
-                size="sm"
-              />
-              <span className="max-w-24 truncate text-xs font-medium text-c-text-muted">
-                {project.owner.fullName}
-              </span>
-            </div>
-            <AvatarGroup size="sm" max={3}>
-              {project.members.map((member) => (
+        <span className="relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white bg-white/85 px-2.5 py-1 text-[10px] font-medium text-c-text">
+          <span
+            aria-hidden="true"
+            className={`h-1.5 w-1.5 rounded-full ${yellow ? 'bg-c-yellow' : project.status === 'active' ? 'bg-c-blue' : 'bg-c-text-muted'}`}
+          />
+          {projectStatusLabel(project.status)}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <Link
+          to={`/projects/${project.slug}`}
+          title={project.title}
+          className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+        >
+          <h2 className="h-12 line-clamp-2 break-words text-xl font-semibold leading-6 tracking-tight text-c-text transition-colors group-hover:text-c-blue">
+            {project.title}
+          </h2>
+        </Link>
+        <p className="mt-2 h-10 line-clamp-2 break-words text-sm leading-5 text-c-text-muted">
+          {project.summary}
+        </p>
+        <div className="mb-5 mt-4 flex h-6 min-w-0 items-center gap-1.5">
+          {project.techStack.slice(0, 2).map((tech) => (
+            <span
+              key={tech}
+              title={tech}
+              className="min-w-0 truncate rounded-md border border-c-border/80 px-2 py-0.5 text-[11px] font-medium text-c-text-muted"
+            >
+              {tech}
+            </span>
+          ))}
+          {project.techStack.length > 2 && (
+            <span
+              title={project.techStack.slice(2).join(', ')}
+              className="shrink-0 text-[11px] text-c-text-muted"
+            >
+              +{project.techStack.length - 2}
+            </span>
+          )}
+        </div>
+        <div className="mt-auto flex items-center justify-between gap-2 border-t border-c-border pt-4 text-xs">
+          <span className="inline-flex min-w-0 items-center gap-1.5 text-c-text-muted">
+            <AvatarGroup size="sm" max={2}>
+              {people.map((person) => (
                 <Avatar
-                  key={member.id}
-                  src={member.avatar}
-                  name={member.fullName}
+                  key={person.id || person.fullName}
+                  src={person.avatar}
+                  name={person.fullName}
+                  size="sm"
                 />
               ))}
             </AvatarGroup>
-          </div>
-          <div className="mt-4 flex items-center justify-between text-xs text-c-text-muted">
-            <span className="flex items-center gap-1">
-              <Users className="h-3.5 w-3.5" />
-              {project.memberCount} of {project.maxMembers} spots
+            <span>
+              {open
+                ? `${project.spotsLeft} ${project.spotsLeft === 1 ? 'spot' : 'spots'} open`
+                : `${project.memberCount} ${project.memberCount === 1 ? 'member' : 'members'}`}
             </span>
-            <span>{project.spotsLeft} open</span>
-          </div>
-          <ProgressBar
-            value={done}
-            max={Math.max(1, total)}
-            size="sm"
-            className="mt-3"
-            label={`${done}/${total} tasks`}
-            showValue
-          />
-          <p className="mt-4 flex items-center gap-1.5 text-xs text-c-text-muted">
-            <CalendarDays className="h-3.5 w-3.5" />
-            Created {formatDate(project.createdAt, 'MMM d, yyyy')}
-          </p>
+          </span>
+          <Link
+            to={`/projects/${project.slug}`}
+            aria-label={`View ${project.title}`}
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg py-1 font-semibold text-c-blue hover:text-c-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          >
+            View project{' '}
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-c-blue-soft transition-colors group-hover:bg-c-blue group-hover:text-white">
+              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </span>
+          </Link>
         </div>
-      </Link>
+      </div>
     </article>
   )
 }

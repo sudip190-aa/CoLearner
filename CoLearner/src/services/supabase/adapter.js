@@ -221,12 +221,23 @@ async function dispatch(method, path, body = {}, params = {}) {
     let all = await profileList(
       (await rows('profiles')).filter((p) => p.is_active),
     )
-    all = filterText(all, params.search, [
-      'username',
-      'full_name',
-      'headline',
-      'bio',
-    ])
+    if (params.search?.trim()) {
+      const search = params.search.trim().toLowerCase()
+      all = all.filter((p) =>
+        [
+          p.username,
+          p.full_name,
+          p.headline,
+          p.bio,
+          p.role,
+          ...p.skills.map((skill) => skill.name),
+        ].some((value) =>
+          String(value || '')
+            .toLowerCase()
+            .includes(search),
+        ),
+      )
+    }
     for (const k of ['role', 'availability'])
       if (params[k]) all = all.filter((p) => p[k] === params[k])
     if (params.location) all = filterText(all, params.location, ['location'])
@@ -324,7 +335,9 @@ async function dispatch(method, path, body = {}, params = {}) {
           params.tech.every((t) => p.tech_stack.includes(t)),
         )
       if (params.ordering === 'fewest')
-        all.sort((a, b) => a.member_count - b.member_count)
+        all.sort((a, b) => a.spots_left - b.spots_left)
+      if (params.ordering === 'updated')
+        all.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
       return admin ? page(all, params) : all
     }
     const p = await one('projects', 'slug', key)

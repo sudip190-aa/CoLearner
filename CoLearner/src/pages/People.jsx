@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight, SlidersHorizontal } from 'lucide-react'
+import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 import {
-  Avatar,
-  Button,
   EmptyState,
   Pagination,
   SearchBar,
@@ -11,7 +8,7 @@ import {
   Skeleton,
   useToast,
 } from '../components/ui'
-import { PageHeader } from '../components/layout/PageHeader'
+import { useAuthStore } from '../store/authStore'
 import { users } from '../services/api'
 import PersonCard from '../components/people/PersonCard.jsx'
 
@@ -32,7 +29,7 @@ const sortOrdering = { match: 'best_match', xp: 'xp', newest: 'newest' }
 
 function PeopleSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
       {[1, 2, 3, 4, 5, 6].map((item) => (
         <div
           key={item}
@@ -55,93 +52,10 @@ function PeopleSkeleton() {
   )
 }
 
-function SuggestedPerson({ person }) {
-  const reason = person.sharedSkills[0] || person.skills[0]?.name
-  return (
-    <Link
-      to={`/u/${person.username}`}
-      className="group flex min-w-[220px] flex-1 items-center gap-3 rounded-brand-lg border border-c-border bg-white p-4 shadow-sm hover:border-c-blue"
-    >
-      <Avatar src={person.avatar} name={person.fullName} size="md" />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-bold text-c-text group-hover:text-c-blue">
-          {person.fullName}
-        </p>
-        <p className="mt-1 truncate text-xs text-c-text-muted">
-          {reason ? `Also learning ${reason}` : person.headline}
-        </p>
-      </div>
-      <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-c-text-muted group-hover:text-c-blue" />
-    </Link>
-  )
-}
-
-function Filters({
-  selectedSkills,
-  onSkillToggle,
-  role,
-  setRole,
-  availabilityValue,
-  setAvailabilityValue,
-  location,
-  setLocation,
-  skills,
-  locations,
-}) {
-  return (
-    <aside className="space-y-5 rounded-brand-lg border border-c-border bg-white p-5">
-      <div>
-        <h2 className="text-sm font-bold text-c-text">Filter people</h2>
-        <p className="mt-1 text-xs text-c-text-muted">
-          Find peers who are learning alongside you.
-        </p>
-      </div>
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-wide text-c-text-muted">
-          Skills
-        </h3>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {skills.map((skill) => (
-            <button
-              type="button"
-              key={skill}
-              onClick={() => onSkillToggle(skill)}
-              className={`rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors ${selectedSkills.includes(skill) ? 'border-c-blue bg-c-blue text-white' : 'border-c-border bg-white text-c-text-muted hover:border-c-blue hover:text-c-blue'}`}
-            >
-              {skill}
-            </button>
-          ))}
-        </div>
-      </div>
-      <Select
-        label="Role"
-        value={role}
-        onChange={(event) => setRole(event.target.value)}
-        options={roles}
-      />
-      <Select
-        label="Availability"
-        value={availabilityValue}
-        onChange={(event) => setAvailabilityValue(event.target.value)}
-        options={availability}
-      />
-      <Select
-        label="Location"
-        value={location}
-        onChange={(event) => setLocation(event.target.value)}
-        options={[
-          { value: '', label: 'Everywhere' },
-          ...locations.map((item) => ({ value: item, label: item })),
-        ]}
-      />
-    </aside>
-  )
-}
-
 export default function People() {
   const toast = useToast()
+  const me = useAuthStore((state) => state.user?.id)
   const [people, setPeople] = useState(null)
-  const [suggested, setSuggested] = useState([])
   const [skills, setSkills] = useState([])
   const [locations, setLocations] = useState([])
   const [error, setError] = useState('')
@@ -155,20 +69,23 @@ export default function People() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [busyId, setBusyId] = useState(null)
 
-  // Facets and suggestions: loaded once.
+  // Load the available filter values once.
   useEffect(() => {
     let active = true
-    Promise.all([users.getSkills(), users.getUsers(), users.getSuggested()])
-      .then(([skillResult, everyone, suggestions]) => {
+    Promise.all([users.getSkills(), users.getUsers()])
+      .then(([skillResult, everyone]) => {
         if (!active) return
-        setSkills(skillResult.skills.slice(0, 16).map((skill) => skill.name))
+        setSkills(skillResult.skills.map((skill) => skill.name))
         setLocations(
-          [...new Set(everyone.items.map((person) => person.location).filter(Boolean))].sort(),
+          [
+            ...new Set(
+              everyone.items.map((person) => person.location).filter(Boolean),
+            ),
+          ].sort(),
         )
-        setSuggested(suggestions.items)
       })
       .catch(() => {
-        // Facets and suggestions are optional; the list below reports its own errors.
+        // The main list reports loading errors; filters remain optional.
       })
     return () => {
       active = false
@@ -189,7 +106,7 @@ export default function People() {
       })
       .then(({ items }) => {
         if (!active) return
-        setPeople(items)
+        setPeople(items.filter((person) => person.id !== me))
         setError('')
       })
       .catch((requestError) => {
@@ -200,7 +117,7 @@ export default function People() {
     return () => {
       active = false
     }
-  }, [query, selectedSkills, role, availabilityValue, location, sort])
+  }, [query, selectedSkills, role, availabilityValue, location, sort, me])
 
   const resetPage = useCallback(() => setPage(1), [])
   const handleSearch = useCallback(
@@ -224,7 +141,6 @@ export default function People() {
         person.username === username ? { ...person, connectionStatus } : person,
       )
     setPeople((list) => patch(list || []))
-    setSuggested((list) => patch(list))
   }
   const connect = async (person, action) => {
     if (!action) return
@@ -232,7 +148,8 @@ export default function People() {
     try {
       const result = await users.connect(person.username, action)
       applyConnection(person.username, result.connectionStatus)
-      if (action === 'connect') toast.success('Request sent', `We let ${person.fullName} know`)
+      if (action === 'connect')
+        toast.success('Request sent', `We let ${person.fullName} know`)
     } catch (requestError) {
       toast.error(requestError?.message || 'Could not update the connection')
     } finally {
@@ -253,130 +170,190 @@ export default function People() {
     setLocation('')
     resetPage()
   }
-  const filterProps = {
-    selectedSkills,
-    onSkillToggle: toggleSkill,
-    role,
-    setRole: (value) => {
-      resetPage()
-      setRole(value)
-    },
-    availabilityValue,
-    setAvailabilityValue: (value) => {
-      resetPage()
-      setAvailabilityValue(value)
-    },
-    location,
-    setLocation: (value) => {
-      resetPage()
-      setLocation(value)
-    },
-    skills,
-    locations,
+  const filterCount =
+    selectedSkills.length +
+    Number(Boolean(role)) +
+    Number(Boolean(availabilityValue)) +
+    Number(Boolean(location))
+  const hasFilters = filterCount > 0 || Boolean(query)
+  const change = (setter) => (event) => {
+    resetPage()
+    setter(event.target.value)
   }
   return (
-    <div>
-      <PageHeader
-        title="People"
-        subtitle="Meet learners, builders, and mentors who can help you move from learning to doing."
-      />
-      {suggested.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-c-text">
-                Suggested for you
-              </h2>
-              <p className="mt-1 text-sm text-c-text-muted">
-                People with skills that overlap your learning path.
-              </p>
+    <div className="mx-auto max-w-6xl">
+      <header className="flex flex-wrap items-center gap-4 lg:flex-nowrap lg:gap-6">
+        <h1 className="flex w-full shrink-0 items-center gap-2.5 !text-3xl !font-bold !tracking-tight lg:w-auto">
+          Discover people{' '}
+          <span
+            aria-hidden="true"
+            className="mt-1.5 h-2 w-2 rounded-full bg-c-yellow"
+          />
+        </h1>
+        <SearchBar
+          value={query}
+          onChange={handleSearch}
+          placeholder="Search by name, skill, or role..."
+          aria-label="Search people"
+          containerClassName="min-w-0 flex-1"
+          className="!h-12 !rounded-xl"
+        />
+        <button
+          type="button"
+          aria-expanded={filtersOpen}
+          aria-controls="people-filters"
+          onClick={() => setFiltersOpen((open) => !open)}
+          className={`inline-flex h-12 shrink-0 items-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${filtersOpen ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border bg-white text-c-text hover:border-c-blue/40'}`}
+        >
+          <SlidersHorizontal size={18} aria-hidden="true" />
+          <span className="hidden sm:inline">Filters</span>
+          <span className="sr-only sm:hidden">Filters</span>
+          {filterCount > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-c-blue px-1 text-[10px] font-semibold text-white">
+              {filterCount}
+            </span>
+          )}
+        </button>
+      </header>
+
+      <div className="mb-6 mt-6 flex flex-wrap items-center gap-2.5">
+        <button
+          type="button"
+          aria-expanded={filtersOpen}
+          aria-controls="people-filters"
+          onClick={() => setFiltersOpen((open) => !open)}
+          className={`inline-flex h-10 items-center gap-3 rounded-full border bg-white px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${selectedSkills.length ? 'border-c-blue text-c-blue' : 'border-c-border text-c-text'}`}
+        >
+          Skills{selectedSkills.length > 0 && ` (${selectedSkills.length})`}
+          <ChevronDown size={15} aria-hidden="true" />
+        </button>
+        <div className="w-32">
+          <Select
+            aria-label="Filter by role"
+            value={role}
+            onChange={change(setRole)}
+            options={roles.map((option) =>
+              option.value ? option : { value: '', label: 'Role' },
+            )}
+            className={`!rounded-full ${role ? '!border-c-blue !text-c-blue' : ''}`}
+          />
+        </div>
+        <div className="w-44">
+          <Select
+            aria-label="Filter by availability"
+            value={availabilityValue}
+            onChange={change(setAvailabilityValue)}
+            options={availability.map((option) =>
+              option.value ? option : { value: '', label: 'Availability' },
+            )}
+            className={`!rounded-full ${availabilityValue ? '!border-c-blue !text-c-blue' : ''}`}
+          />
+        </div>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="rounded-lg px-2 py-2 text-xs font-medium text-c-blue hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue"
+          >
+            Clear
+          </button>
+        )}
+        <div className="ml-auto w-36">
+          <Select
+            aria-label="Sort people"
+            value={sort}
+            onChange={change(setSort)}
+            options={[
+              { value: 'match', label: 'Best match' },
+              { value: 'xp', label: 'Most XP' },
+              { value: 'newest', label: 'Recently joined' },
+            ]}
+            className="!rounded-full !border-transparent !bg-transparent !text-xs !text-c-text-muted"
+          />
+        </div>
+      </div>
+
+      {filtersOpen && (
+        <section
+          id="people-filters"
+          aria-label="People filters"
+          className="mb-6 rounded-2xl border border-c-border bg-white p-5"
+        >
+          <fieldset>
+            <legend className="mb-3 text-xs font-semibold text-c-text-muted">
+              Skills
+            </legend>
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto p-1">
+              {skills.map((skill) => (
+                <button
+                  key={skill}
+                  type="button"
+                  aria-pressed={selectedSkills.includes(skill)}
+                  onClick={() => toggleSkill(skill)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue ${selectedSkills.includes(skill) ? 'border-c-blue bg-c-blue-soft text-c-blue' : 'border-c-border text-c-text-muted hover:border-c-blue/40'}`}
+                >
+                  {skill}
+                </button>
+              ))}
             </div>
-          </div>
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2 xl:grid xl:grid-cols-4">
-            {suggested.map((person) => (
-              <SuggestedPerson key={person.id} person={person} />
-            ))}
+          </fieldset>
+          <div className="mt-4 max-w-xs">
+            <Select
+              aria-label="Filter by location"
+              value={location}
+              onChange={change(setLocation)}
+              options={[
+                { value: '', label: 'All locations' },
+                ...locations.map((value) => ({ value, label: value })),
+              ]}
+              className="!rounded-xl"
+            />
           </div>
         </section>
       )}
-      <div className="mt-10 grid items-start gap-8 xl:grid-cols-[230px_minmax(0,1fr)]">
-        <div className="xl:hidden">
-          <Button
-            variant="outline"
-            icon={SlidersHorizontal}
-            onClick={() => setFiltersOpen((open) => !open)}
+
+      {error && (
+        <p
+          className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-c-danger"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+      {!people ? (
+        <PeopleSkeleton />
+      ) : visible.length ? (
+        <>
+          <div
+            className="grid gap-5 md:grid-cols-2 xl:grid-cols-3"
+            aria-label="People"
           >
-            Filters
-          </Button>
-          {filtersOpen && (
-            <div className="mt-4">
-              <Filters {...filterProps} />
-            </div>
-          )}
-        </div>
-        <div className="hidden xl:block">
-          <Filters {...filterProps} />
-        </div>
-        <main className="min-w-0">
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row">
-            <SearchBar
-              value={query}
-              onChange={handleSearch}
-              placeholder="Search by name or headline..."
-              containerClassName="flex-1"
-            />
-            <Select
-              value={sort}
-              onChange={(event) => {
-                resetPage()
-                setSort(event.target.value)
-              }}
-              options={[
-                { value: 'match', label: 'Best match' },
-                { value: 'xp', label: 'Most XP' },
-                { value: 'newest', label: 'Newest' },
-              ]}
-              className="sm:w-40"
-            />
+            {visible.map((person) => (
+              <PersonCard
+                key={person.id}
+                person={person}
+                busy={busyId === person.id}
+                onConnect={connect}
+              />
+            ))}
           </div>
-          {error && (
-            <p className="mb-4 rounded-brand bg-red-50 px-3 py-2 text-sm text-c-danger" role="alert">
-              {error}
-            </p>
-          )}
-          {!people ? (
-            <PeopleSkeleton />
-          ) : visible.length ? (
-            <>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {visible.map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    busy={busyId === person.id}
-                    onConnect={connect}
-                  />
-                ))}
-              </div>
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-                className="mt-8"
-              />
-            </>
-          ) : (
-            !error && (
-              <EmptyState
-                title="No people found"
-                description="Try widening your search or removing a filter."
-                actionLabel="Clear filters"
-                onAction={clearFilters}
-              />
-            )
-          )}
-        </main>
-      </div>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            className="mt-8"
+          />
+        </>
+      ) : (
+        !error && (
+          <EmptyState
+            title="No people found"
+            description="Try a different search or clear your filters."
+            actionLabel="Clear filters"
+            onAction={clearFilters}
+          />
+        )
+      )}
     </div>
   )
 }
