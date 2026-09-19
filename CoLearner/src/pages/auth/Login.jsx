@@ -37,12 +37,14 @@ export default function Login() {
     try {
       const user = await login(email, password)
       const nextPath =
-        user?.onboardingCompleted === false || user?.onboardingComplete === false
+        user?.onboardingCompleted === false ||
+        user?.onboardingComplete === false
           ? '/onboarding'
           : safeNextPath(params.get('next')) || '/dashboard'
       navigate(nextPath, { replace: true })
     } catch (submitError) {
-      const fieldErrors = submitError?.fields || submitError?.error?.fields || {}
+      const fieldErrors =
+        submitError?.fields || submitError?.error?.fields || {}
       Object.entries(fieldErrors).forEach(([key, value]) => {
         const fieldName = key === 'full_name' ? 'fullName' : key
         const message = Array.isArray(value) ? value[0] : value
@@ -97,6 +99,27 @@ export default function Login() {
         <Button type="submit" fullWidth loading={isSubmitting}>
           Log in
         </Button>
+        <p className="text-center text-xs leading-relaxed text-c-text-muted">
+          By continuing, you agree to CoLearn's{' '}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-c-blue underline underline-offset-2"
+          >
+            Terms and Conditions
+          </Link>{' '}
+          and acknowledge its{' '}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-c-blue underline underline-offset-2"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </form>
       <div className="my-5 flex items-center gap-3 text-xs text-c-text-muted">
         <span className="h-px flex-1 bg-c-border" />

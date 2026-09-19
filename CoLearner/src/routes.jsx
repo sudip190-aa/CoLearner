@@ -27,6 +27,8 @@ const FeaturesPage = lazy(() => import('./pages/FeaturesPage.jsx'))
 const CommunityOverview = lazy(() => import('./pages/CommunityOverview.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
 const Pricing = lazy(() => import('./pages/Pricing.jsx'))
+const Terms = lazy(() => import('./pages/Terms.jsx'))
+const Privacy = lazy(() => import('./pages/Privacy.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
 const Placeholder = (title) => page(title)
 const PublicProfile = lazy(() => import('./pages/PublicProfile.jsx'))
@@ -118,14 +120,14 @@ export const router = createBrowserRouter([
       { path: '/about', element: view(About) },
       { path: '/pricing', element: view(Pricing) },
       { path: '/contact', element: view(Contact) },
+      { path: '/terms', element: view(Terms) },
+      { path: '/privacy', element: view(Privacy) },
     ],
   },
   { path: '/u/:username', element: view(PublicProfile) },
   {
     element: <PublicLayout />,
     children: [
-      { path: '/privacy', element: view(Placeholder('Privacy Policy')) },
-      { path: '/terms', element: view(Placeholder('Terms of Service')) },
       { path: '/cookies', element: view(Placeholder('Cookie Policy')) },
       { path: '/accessibility', element: view(Placeholder('Accessibility')) },
       { path: '/blog', element: view(Placeholder('Blog')) },

@@ -26,7 +26,7 @@ const columns = [
     'Legal',
     [
       ['Privacy policy', '/privacy'],
-      ['Terms of service', '/terms'],
+      ['Terms and Conditions', '/terms'],
     ],
   ],
 ]

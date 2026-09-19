@@ -10,6 +10,8 @@ const titles = {
   '/our-community': 'Community — CoLearn',
   '/contact': 'Contact us | CoLearn',
   '/pricing': 'Pricing | CoLearn',
+  '/terms': 'Terms and Conditions | CoLearn',
+  '/privacy': 'Privacy Policy | CoLearn',
   '/about': 'About — CoLearn',
 }
 

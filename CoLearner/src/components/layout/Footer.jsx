@@ -11,7 +11,7 @@ const columns = {
   Company: FOOTER_LINKS.company || [],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Terms and Conditions', href: '/terms' },
   ],
 }
 

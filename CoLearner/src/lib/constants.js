@@ -38,7 +38,7 @@ export const FOOTER_LINKS = {
     { label: 'About Us', href: '/about' },
     { label: 'Careers', href: '/careers' },
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Terms and Conditions', href: '/terms' },
   ],
 }
 

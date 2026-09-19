@@ -17,7 +17,8 @@ const schema = z.object({
     .regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers, and hyphens.'),
   password: z.string().min(8, 'Use at least 8 characters.'),
   terms: z.literal(true, {
-    errorMap: () => ({ message: 'Accept the terms to continue.' }),
+    error:
+      'You must accept the Terms and Conditions and Privacy Policy to create an account.',
   }),
 })
 
@@ -33,7 +34,10 @@ const strength = (value = '') =>
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
-  const [usernameCheck, setUsernameCheck] = useState({ name: '', available: null })
+  const [usernameCheck, setUsernameCheck] = useState({
+    name: '',
+    available: null,
+  })
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const signup = useAuthStore((state) => state.signup)
@@ -48,6 +52,11 @@ export default function Signup() {
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: { terms: false },
+  })
+  const acceptedPolicies = useWatch({
+    control,
+    name: 'terms',
+    defaultValue: false,
   })
   const password = useWatch({ control, name: 'password', defaultValue: '' })
   const username = useWatch({ control, name: 'username', defaultValue: '' })
@@ -86,12 +95,14 @@ export default function Signup() {
     try {
       const user = await signup({ ...data, name: data.fullName })
       const nextPath =
-        user?.onboardingCompleted === false || user?.onboardingComplete === false
+        user?.onboardingCompleted === false ||
+        user?.onboardingComplete === false
           ? '/onboarding'
           : '/dashboard'
       navigate(nextPath, { replace: true })
     } catch (submitError) {
-      const fieldErrors = submitError?.fields || submitError?.error?.fields || {}
+      const fieldErrors =
+        submitError?.fields || submitError?.error?.fields || {}
       Object.entries(fieldErrors).forEach(([key, value]) => {
         const fieldName = key === 'full_name' ? 'fullName' : key
         const message = Array.isArray(value) ? value[0] : value
@@ -171,27 +182,44 @@ export default function Signup() {
           </p>
         </div>
         <Checkbox
-          label="I agree to Colearn's terms and privacy policy."
+          label={
+            <span>
+              I have read and agree to the{' '}
+              <Link
+                to="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-c-blue underline underline-offset-2"
+              >
+                Terms and Conditions
+              </Link>{' '}
+              and{' '}
+              <Link
+                to="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-c-blue underline underline-offset-2"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          }
           error={errors.terms?.message}
+          aria-required="true"
           {...register('terms')}
         />
-        <p className="-mt-2 text-xs text-c-text-muted">
-          Read our{' '}
-          <Link to="/terms" className="font-medium text-c-blue hover:underline">
-            terms
-          </Link>{' '}
-          and{' '}
-          <Link to="/privacy" className="font-medium text-c-blue hover:underline">
-            privacy policy
-          </Link>
-          .
-        </p>
         {error && (
           <p className="text-sm font-medium text-c-danger" role="alert">
             {error}
           </p>
         )}
-        <Button type="submit" fullWidth loading={isSubmitting}>
+        <Button
+          type="submit"
+          fullWidth
+          loading={isSubmitting}
+          disabled={!acceptedPolicies}
+        >
           Create account
         </Button>
       </form>

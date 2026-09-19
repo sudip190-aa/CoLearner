@@ -1,0 +1,303 @@
+{
+  "terms": {
+    "title": "Terms and Conditions",
+    "effectiveDate": "19 September 2026",
+    "intro": "Welcome to CoLearn. By creating an account or using the platform, you agree to these Terms and Conditions.",
+    "sections": [
+      {
+        "id": "section-1",
+        "title": "Account responsibilities",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "You must provide accurate information, protect your login credentials, and take responsibility for activity performed through your account. Notify CoLearn if you believe your account has been accessed without permission."
+          }
+        ]
+      },
+      {
+        "id": "section-2",
+        "title": "Acceptable use",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may be used for lawful learning, collaboration, mentoring, project development, and portfolio building."
+          },
+          {
+            "type": "paragraph",
+            "text": "You must not:"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Harass, threaten, deceive, or impersonate others.",
+              "Upload illegal, harmful, abusive, or misleading content.",
+              "Spam users or promote scams.",
+              "Plagiarize work or falsely claim skills and achievements.",
+              "Introduce malware or interfere with platform security.",
+              "Collect another user’s personal information without permission."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "section-3",
+        "title": "Learning and achievements",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Courses, resources, mentor feedback, XP, badges, endorsements, and skill-verification features support learning and progress. They are not formal academic qualifications, professional licences, or employment guarantees unless explicitly stated."
+          }
+        ]
+      },
+      {
+        "id": "section-4",
+        "title": "Projects and collaboration",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Users are responsible for communicating respectfully, completing agreed responsibilities, and crediting contributors properly."
+          },
+          {
+            "type": "paragraph",
+            "text": "Project teams should agree on ownership, payment, responsibilities, and commercial use before beginning commercial work. CoLearn is not responsible for private agreements or disputes between users."
+          }
+        ]
+      },
+      {
+        "id": "section-5",
+        "title": "User content",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "You retain ownership of original content you create. By uploading content, you allow CoLearn to store and display it as necessary to operate the platform."
+          },
+          {
+            "type": "paragraph",
+            "text": "You must have the right to upload your content and must not violate another person’s intellectual-property or privacy rights."
+          }
+        ]
+      },
+      {
+        "id": "section-6",
+        "title": "Account suspension",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may remove content or restrict, suspend, or terminate accounts that violate these Terms, harm other users, create security risks, or misuse the platform."
+          }
+        ]
+      },
+      {
+        "id": "section-7",
+        "title": "Service availability",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may update, change, suspend, or discontinue features. Continuous or error-free access is not guaranteed."
+          }
+        ]
+      },
+      {
+        "id": "section-8",
+        "title": "Disclaimer",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn does not guarantee employment, income, certification, project success, or specific learning outcomes. Users are responsible for their decisions, collaborations, and use of information obtained through the platform."
+          }
+        ]
+      },
+      {
+        "id": "section-9",
+        "title": "Changes to these Terms",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may update these Terms when its services or legal obligations change. Significant updates will be communicated through the platform or another reasonable method."
+          }
+        ]
+      },
+      {
+        "id": "section-10",
+        "title": "Contact",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "For questions about these Terms, contact:"
+          },
+          {
+            "type": "email",
+            "text": "hello@colearn.dev"
+          }
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "effectiveDate": "19 September 2026",
+    "intro": "CoLearn respects your privacy. This Privacy Policy explains what information is collected, why it is used, and the choices available to users.",
+    "sections": [
+      {
+        "id": "section-1",
+        "title": "Information we collect",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may collect:"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Your name, email address, profile image, and login information.",
+              "Skills, interests, biography, education, and portfolio details.",
+              "Course progress, projects, tasks, XP, badges, and achievements.",
+              "Posts, comments, messages, reviews, and uploaded files.",
+              "Device, browser, IP address, and platform-usage information.",
+              "Information provided when contacting support."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "section-2",
+        "title": "How information is used",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Information may be used to:"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Create and secure accounts.",
+              "Provide learning and project features.",
+              "Suggest other members to connect and collaborate with.",
+              "Track progress and display achievements.",
+              "Support communication and collaboration.",
+              "Prevent fraud, abuse, and security threats.",
+              "Improve platform performance and user experience.",
+              "Send essential account and service notifications."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "section-3",
+        "title": "Public information",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Information users choose to publish—such as their name, profile, skills, projects, portfolio, and community posts—may be visible to other users or the public."
+          },
+          {
+            "type": "paragraph",
+            "text": "Private account information must not be displayed publicly without permission."
+          }
+        ]
+      },
+      {
+        "id": "section-4",
+        "title": "Information sharing",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn does not sell personal information."
+          },
+          {
+            "type": "paragraph",
+            "text": "Information may be shared with service providers required to operate the platform, when legally required, to protect users and platform security, or when a user gives permission."
+          }
+        ]
+      },
+      {
+        "id": "section-5",
+        "title": "Cookies and local storage",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may use cookies or browser storage for authentication, preferences, security, and essential platform functions."
+          }
+        ]
+      },
+      {
+        "id": "section-6",
+        "title": "Data security",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn uses reasonable technical and organizational safeguards to protect information. However, no online system can guarantee complete security."
+          }
+        ]
+      },
+      {
+        "id": "section-7",
+        "title": "Data retention",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Information is retained only for as long as necessary to provide the service, meet legal requirements, resolve disputes, and protect the platform."
+          }
+        ]
+      },
+      {
+        "id": "section-8",
+        "title": "User choices and rights",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Users may request to:"
+          },
+          {
+            "type": "list",
+            "items": [
+              "Access or correct their information.",
+              "Update profile visibility.",
+              "Delete content where applicable.",
+              "Request account deletion.",
+              "Withdraw optional consent."
+            ]
+          },
+          {
+            "type": "paragraph",
+            "text": "Requests may be submitted to the contact email below."
+          }
+        ]
+      },
+      {
+        "id": "section-9",
+        "title": "Children’s privacy",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Users must meet the minimum digital-consent age applicable in their location. Users below the legal age of majority should use CoLearn with permission from a parent or legal guardian."
+          }
+        ]
+      },
+      {
+        "id": "section-10",
+        "title": "Policy updates",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "CoLearn may update this Privacy Policy when its services or data practices change. Significant changes will be communicated through the platform or another reasonable method."
+          }
+        ]
+      },
+      {
+        "id": "section-11",
+        "title": "Contact",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "For privacy questions or data requests, contact:"
+          },
+          {
+            "type": "email",
+            "text": "hello@colearn.dev"
+          }
+        ]
+      }
+    ]
+  }
+}
