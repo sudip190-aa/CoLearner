@@ -7,6 +7,7 @@ import {
   Check,
   CheckCheck,
   MessageCircle,
+  Phone,
   Search,
   Send,
   ShieldCheck,
@@ -15,8 +16,10 @@ import { Avatar, Button } from '../components/ui'
 import { useAuthStore } from '../store/authStore'
 import { useMessageInbox } from '../hooks/useMessages'
 import { messages } from '../services/messages'
+import { useVoiceCall } from '../components/calls/VoiceCallProvider'
 
 function Conversation({ person, me, onBack, draft, onDraftChange }) {
+  const voice = useVoiceCall()
   const cache = useQueryClient()
   const setDraft = onDraftChange
   const [sending, setSending] = useState(false)
@@ -110,6 +113,20 @@ function Conversation({ person, me, onBack, draft, onDraftChange }) {
           </h2>
           <p className="mt-1 text-xs text-c-text-muted">Connected on CoLearn</p>
         </div>
+        <button
+          type="button"
+          aria-label={`Voice call ${person.full_name || person.username}`}
+          title={
+            voice?.busy
+              ? 'Finish your current call first'
+              : 'Start a voice call'
+          }
+          disabled={!voice?.available || voice.busy}
+          onClick={() => void voice.call(person)}
+          className="rounded-xl p-2 text-c-blue transition hover:bg-c-blue-wash focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-c-blue disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Phone size={20} />
+        </button>
         <Link
           aria-label={`View ${person.full_name}'s profile`}
           to={`/u/${person.username}`}

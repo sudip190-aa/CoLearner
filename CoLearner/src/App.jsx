@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router-dom'
 import router from './routes'
 import { ErrorBoundary, PageLoader, useToast } from './components/ui'
 import { useAuthStore } from './store/authStore'
+import { VoiceCallProvider } from './components/calls/VoiceCallProvider'
 
 function OfflineBanner() {
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
@@ -24,7 +25,8 @@ function OfflineBanner() {
 
   return (
     <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800">
-      You are offline. Colearn will reconnect automatically when the network is back.
+      You are offline. Colearn will reconnect automatically when the network is
+      back.
     </div>
   )
 }
@@ -42,7 +44,10 @@ function SessionExpiredListener() {
 
     window.addEventListener('colearn:session-expired', handleSessionExpired)
     return () => {
-      window.removeEventListener('colearn:session-expired', handleSessionExpired)
+      window.removeEventListener(
+        'colearn:session-expired',
+        handleSessionExpired,
+      )
     }
   }, [toast])
 
@@ -65,7 +70,9 @@ function App() {
     <ErrorBoundary>
       <OfflineBanner />
       <SessionExpiredListener />
-      <RouterProvider router={router} />
+      <VoiceCallProvider>
+        <RouterProvider router={router} />
+      </VoiceCallProvider>
     </ErrorBoundary>
   )
 }
