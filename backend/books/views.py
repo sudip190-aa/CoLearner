@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from django.db import transaction
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
@@ -23,6 +26,7 @@ from .serializers import (
 class BookListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='books_book_list_get', responses={200: BookMiniSerializer(many=True)})
     def get(self, request, *args, **kwargs):
         queryset = Book.objects.annotate(
             chapter_count=Count("chapters", distinct=True),
@@ -75,6 +79,7 @@ class BookListAPIView(APIView):
 class BookDetailAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='books_book_detail_get', responses={200: BookDetailSerializer})
     def get(self, request, slug, *args, **kwargs):
         book = get_object_or_404(Book, slug=slug)
         serializer = BookDetailSerializer(book, context={"request": request})
@@ -84,6 +89,7 @@ class BookDetailAPIView(APIView):
 class BookChapterListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='books_book_chapter_list_get', responses={200: BookChapterSerializer(many=True)})
     def get(self, request, slug, *args, **kwargs):
         book = get_object_or_404(Book, slug=slug)
         serializer = BookChapterSerializer(book.chapters.all(), many=True, context={"request": request})
@@ -93,6 +99,7 @@ class BookChapterListAPIView(APIView):
 class ChapterDetailAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='books_chapter_detail_get', responses={200: ChapterDetailSerializer})
     def get(self, request, pk, *args, **kwargs):
         chapter = get_object_or_404(Chapter, id=pk)
         serializer = ChapterDetailSerializer(chapter, context={"request": request})
@@ -117,6 +124,7 @@ class BookProgressAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='books_book_progress_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     @transaction.atomic
     def post(self, request, slug, *args, **kwargs):
         book = get_object_or_404(Book, slug=slug)
@@ -180,6 +188,7 @@ class BookProgressAPIView(APIView):
 class UserLibraryAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='books_user_library_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         progresses = ReadingProgress.objects.filter(user=request.user).select_related("book").order_by("-last_read_at", "-updated_at")
         context = {"request": request}
@@ -199,6 +208,7 @@ class ChapterBookmarkAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='books_chapter_bookmark_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT, 201: OpenApiTypes.OBJECT})
     def post(self, request, pk, *args, **kwargs):
         chapter = get_object_or_404(Chapter, id=pk)
         existing = Bookmark.objects.filter(user=request.user, chapter=chapter).first()
@@ -220,11 +230,13 @@ class ChapterNoteAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     MAX_NOTE_LENGTH = 5000
 
+    @extend_schema(operation_id='books_chapter_note_get', responses={200: NoteSerializer(many=True)})
     def get(self, request, pk, *args, **kwargs):
         chapter = get_object_or_404(Chapter, id=pk)
         notes = Note.objects.filter(user=request.user, chapter=chapter).order_by("-created_at")
         return Response(NoteSerializer(notes, many=True).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='books_chapter_note_post', request=OpenApiTypes.OBJECT, responses={201: NoteSerializer})
     def post(self, request, pk, *args, **kwargs):
         chapter = get_object_or_404(Chapter, id=pk)
         content = str(request.data.get("content") or "").strip()
@@ -235,6 +247,7 @@ class ChapterNoteAPIView(APIView):
         note = Note.objects.create(user=request.user, chapter=chapter, content=content)
         return Response(NoteSerializer(note).data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(operation_id='books_chapter_note_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, pk, *args, **kwargs):
         chapter = get_object_or_404(Chapter, id=pk)
         note_id = request.query_params.get("note_id") or request.data.get("id") or request.data.get("note_id")

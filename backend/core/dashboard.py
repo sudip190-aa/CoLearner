@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from datetime import timedelta
 
 from django.db.models import Q
@@ -41,6 +44,7 @@ class DashboardAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='core_dashboard_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         user = request.user
         now = timezone.now()

@@ -4,6 +4,10 @@ Every endpoint requires `is_staff` (IsAdminUser). Lists are paginated ({count, p
 inputs are validated (field errors come back in the standard error envelope), and destructive actions are guarded so an
 admin cannot lock themselves out.
 """
+
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 import re
 from datetime import timedelta
 from math import ceil
@@ -131,6 +135,7 @@ def _tags(data, current=None):
 class AdminStatsAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_stats_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         now = timezone.now()
         today = timezone.localdate(now)
@@ -210,6 +215,7 @@ def _user_row(user, request):
 class AdminUserListAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_user_list_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         params = request.query_params
         users = User.objects.all()
@@ -226,6 +232,7 @@ class AdminUserListAPIView(APIView):
             users = users.filter(is_active=(state == "active"))
         return Response(_paginate(request, users.order_by("-created_at", "-id"), lambda user: _user_row(user, request)))
 
+    @extend_schema(operation_id='users_admin_user_list_post', request=OpenApiTypes.OBJECT, responses={201: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         data = request.data
         errors = {}
@@ -275,6 +282,7 @@ class AdminUserListAPIView(APIView):
 class AdminUserDetailAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_user_detail_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
         user = get_object_or_404(User, pk=id)
         data = request.data
@@ -293,6 +301,7 @@ class AdminUserDetailAPIView(APIView):
         user.save(update_fields=["role", "is_active", "updated_at"])
         return Response(_user_row(user, request), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='users_admin_user_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         user = get_object_or_404(User, pk=id)
         if user == request.user:
@@ -376,6 +385,7 @@ class AdminBookListCreateAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
+    @extend_schema(operation_id='users_admin_book_list_create_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         params = request.query_params
         books = _annotated_books()
@@ -386,6 +396,7 @@ class AdminBookListCreateAPIView(APIView):
             books = books.filter(difficulty=params["difficulty"])
         return Response(_paginate(request, books.order_by("-created_at", "-id"), lambda book: _book_row(book, request)))
 
+    @extend_schema(operation_id='users_admin_book_list_create_post', request=OpenApiTypes.OBJECT, responses={201: OpenApiTypes.OBJECT})
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -417,16 +428,19 @@ class AdminBookDetailAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
+    @extend_schema(operation_id='users_admin_book_detail_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, id, *args, **kwargs):
         book = get_object_or_404(_annotated_books(), pk=id)
         return Response(_book_row(book, request, chapters=True))
 
+    @extend_schema(operation_id='users_admin_book_detail_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
         book = get_object_or_404(Book, pk=id)
         _apply_book_fields(book, request.data, request.FILES, creating=False)
         book.save()
         return Response(_book_row(_annotated_books().get(pk=book.pk), request, chapters=True), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='users_admin_book_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         get_object_or_404(Book, pk=id).delete()
         return Response({"detail": "Book deleted."}, status=status.HTTP_200_OK)
@@ -454,6 +468,7 @@ def _save_chapter(chapter, data):
 class AdminBookChaptersAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_book_chapters_post', request=OpenApiTypes.OBJECT, responses={201: OpenApiTypes.OBJECT})
     def post(self, request, id, *args, **kwargs):
         book = get_object_or_404(Book, pk=id)
         chapter = Chapter(book=book)
@@ -469,11 +484,13 @@ class AdminBookChaptersAPIView(APIView):
 class AdminChapterDetailAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_chapter_detail_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
         chapter = get_object_or_404(Chapter.objects.select_related("book"), pk=id)
         _save_chapter(chapter, request.data)
         return Response(_chapter_row(chapter), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='users_admin_chapter_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         chapter = get_object_or_404(Chapter.objects.select_related("book"), pk=id)
         book = chapter.book
@@ -509,6 +526,7 @@ def _apply_project_moderation(project, data):
 class AdminProjectListAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_project_list_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         params = request.query_params
         projects = Project.objects.select_related("owner").annotate(member_total=Count("members", distinct=True))
@@ -523,6 +541,7 @@ class AdminProjectListAPIView(APIView):
             projects = projects.filter(is_public=params["visibility"] == "public")
         return Response(_paginate(request, projects.order_by("-created_at", "-id"), _project_row))
 
+    @extend_schema(operation_id='users_admin_project_list_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, *args, **kwargs):
         slug = request.data.get("slug") or request.data.get("project_slug")
         project = get_object_or_404(Project, slug=slug)
@@ -533,11 +552,13 @@ class AdminProjectListAPIView(APIView):
 class AdminProjectDetailAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_project_detail_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, slug, *args, **kwargs):
         project = get_object_or_404(Project.objects.select_related("owner").annotate(member_total=Count("members", distinct=True)), slug=slug)
         _apply_project_moderation(project, request.data)
         return Response(_project_row(project), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='users_admin_project_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, slug, *args, **kwargs):
         get_object_or_404(Project, slug=slug).delete()
         return Response({"detail": "Project deleted."}, status=status.HTTP_200_OK)
@@ -574,6 +595,7 @@ def _report_row(report, request):
 class AdminReportsAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_reports_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         reports = Report.objects.select_related("reporter", "content_type")
         state = request.query_params.get("status")
@@ -585,7 +607,7 @@ class AdminReportsAPIView(APIView):
             reports = reports.filter(status=state)
         return Response(_paginate(request, reports.order_by("-created_at", "-id"), lambda report: _report_row(report, request)))
 
-    def patch(self, request, id, *args, **kwargs):
+    def update_report(self, request, id, *args, **kwargs):
         report = get_object_or_404(Report.objects.select_related("reporter", "content_type"), pk=id)
         action = request.data.get("action")
         legacy_status = request.data.get("status")
@@ -630,5 +652,6 @@ class AdminReportsAPIView(APIView):
 class AdminReportDetailAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
+    @extend_schema(operation_id='users_admin_report_detail_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
-        return AdminReportsAPIView().patch(request, id, *args, **kwargs)
+        return AdminReportsAPIView().update_report(request, id, *args, **kwargs)

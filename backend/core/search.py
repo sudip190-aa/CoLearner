@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from django.contrib.auth import get_user_model
 from django.db.models import Case, Count, IntegerField, Q, Value, When
 from rest_framework import permissions, status
@@ -46,6 +49,7 @@ class SearchAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='core_search_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         query = " ".join((request.query_params.get("q") or "").split())
         requested = (request.query_params.get("type") or "all").lower()

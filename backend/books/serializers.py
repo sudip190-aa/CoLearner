@@ -31,11 +31,11 @@ class ChapterSummarySerializer(serializers.ModelSerializer):
         model = Chapter
         fields = ("id", "slug", "title", "chapter_number", "est_minutes", "is_completed")
 
-    def get_is_completed(self, obj):
+    def get_is_completed(self, obj) -> bool:
         progress = _user_progress(self.context, obj.book_id)
         return bool(progress and obj.id in (progress.completed_chapters or []))
 
-    def get_est_minutes(self, obj):
+    def get_est_minutes(self, obj) -> int:
         return reading_minutes(obj.content)
 
 
@@ -73,33 +73,33 @@ class BookMiniSerializer(serializers.ModelSerializer):
             "completed_chapter_ids",
         )
 
-    def get_progress_percent(self, obj):
+    def get_progress_percent(self, obj) -> float | None:
         request = self.context.get("request")
         if not request or not getattr(request.user, "is_authenticated", False):
             return None
         progress = _user_progress(self.context, obj.id)
         return progress.progress_percent if progress else 0
 
-    def get_status(self, obj):
+    def get_status(self, obj) -> str:
         progress = _user_progress(self.context, obj.id)
         if not progress:
             return "not_started"
         return "finished" if progress.completed else "started"
 
-    def get_current_chapter_id(self, obj):
+    def get_current_chapter_id(self, obj) -> int | None:
         progress = _user_progress(self.context, obj.id)
         return progress.chapter_id if progress else None
 
-    def get_completed_chapter_ids(self, obj):
+    def get_completed_chapter_ids(self, obj) -> list[int]:
         progress = _user_progress(self.context, obj.id)
         return sorted(progress.completed_chapters or []) if progress else []
 
-    def get_chapter_count(self, obj):
+    def get_chapter_count(self, obj) -> int:
         # The list view annotates this; fall back to a query for single objects.
         value = getattr(obj, "chapter_count", None)
         return value if value is not None else obj.chapters.count()
 
-    def get_readers_count(self, obj):
+    def get_readers_count(self, obj) -> int:
         value = getattr(obj, "readers_count", None)
         return value if value is not None else obj.reading_progress.count()
 
@@ -111,10 +111,10 @@ class BookDetailSerializer(BookMiniSerializer):
     class Meta(BookMiniSerializer.Meta):
         fields = BookMiniSerializer.Meta.fields + ("chapters", "related")
 
-    def get_chapters(self, obj):
+    def get_chapters(self, obj) -> list[dict]:
         return ChapterSummarySerializer(obj.chapters.all(), many=True, context=self.context).data
 
-    def get_related(self, obj):
+    def get_related(self, obj) -> list[dict]:
         # Same category first, then anything else, never the book itself.
         siblings = list(Book.objects.filter(category=obj.category).exclude(pk=obj.pk)[:3])
         if len(siblings) < 3:
@@ -147,23 +147,23 @@ class ChapterDetailSerializer(serializers.ModelSerializer):
         model = Chapter
         fields = ("id", "book", "slug", "title", "chapter_number", "content", "est_minutes", "is_completed", "bookmarks", "notes")
 
-    def get_book(self, obj):
+    def get_book(self, obj) -> dict:
         return {"id": obj.book.id, "slug": obj.book.slug, "title": obj.book.title}
 
-    def get_est_minutes(self, obj):
+    def get_est_minutes(self, obj) -> int:
         return reading_minutes(obj.content)
 
-    def get_is_completed(self, obj):
+    def get_is_completed(self, obj) -> bool:
         progress = _user_progress(self.context, obj.book_id)
         return bool(progress and obj.id in (progress.completed_chapters or []))
 
-    def get_bookmarks(self, obj):
+    def get_bookmarks(self, obj) -> list[dict]:
         request = self.context.get("request")
         if not request or not getattr(request.user, "is_authenticated", False):
             return []
         return BookmarkSerializer(Bookmark.objects.filter(user=request.user, chapter=obj), many=True).data
 
-    def get_notes(self, obj):
+    def get_notes(self, obj) -> list[dict]:
         request = self.context.get("request")
         if not request or not getattr(request.user, "is_authenticated", False):
             return []

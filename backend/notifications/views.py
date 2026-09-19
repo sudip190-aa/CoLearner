@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
@@ -58,6 +61,7 @@ class NotificationListAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='notifications_notification_list_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         try:
             limit = max(1, min(int(request.query_params.get("limit", DEFAULT_LIMIT)), MAX_LIMIT))
@@ -74,6 +78,7 @@ class NotificationListAPIView(APIView):
 class NotificationMarkReadAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='notifications_notification_mark_read_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, id, *args, **kwargs):
         notification = get_object_or_404(Notification, id=id, user=request.user)
         if not notification.is_read:
@@ -85,6 +90,7 @@ class NotificationMarkReadAPIView(APIView):
 class NotificationReadAllAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='notifications_notification_read_all_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         updated = Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return Response({"status": "ok", "updated": updated}, status=status.HTTP_200_OK)
@@ -93,6 +99,7 @@ class NotificationReadAllAPIView(APIView):
 class UnreadNotificationCountAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='notifications_unread_notification_count_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         count = Notification.objects.filter(user=request.user, is_read=False).count()
         return Response({"unread_count": count}, status=status.HTTP_200_OK)

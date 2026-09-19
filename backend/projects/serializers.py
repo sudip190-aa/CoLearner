@@ -22,7 +22,7 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
         model = ProjectMember
         fields = ("id", "user", "role", "joined_at")
 
-    def get_user(self, obj):
+    def get_user(self, obj) -> dict:
         person = _person(obj.user, self.context.get("request"))
         person["headline"] = obj.user.headline
         person["skills"] = [item.skill.name for item in obj.user.skills.all()[:4]]
@@ -96,20 +96,20 @@ class ProjectSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"The team already has {current} members.")
         return value
 
-    def get_owner(self, obj):
+    def get_owner(self, obj) -> dict:
         return _person(obj.owner, self.context.get("request"))
 
-    def get_member_count(self, obj):
+    def get_member_count(self, obj) -> int:
         return obj.member_count if hasattr(obj, "member_count") else obj.members.count()
 
-    def get_spots_left(self, obj):
+    def get_spots_left(self, obj) -> int:
         return max(0, obj.max_members - self.get_member_count(obj))
 
-    def get_member_preview(self, obj):
+    def get_member_preview(self, obj) -> list[dict]:
         request = self.context.get("request")
         return [_person(member.user, request) for member in list(obj.members.all())[:5]]
 
-    def get_task_progress(self, obj):
+    def get_task_progress(self, obj) -> dict:
         total = obj.task_total if hasattr(obj, "task_total") else obj.tasks.count()
         done = obj.task_done if hasattr(obj, "task_done") else obj.tasks.filter(status=Task.STATUS_DONE).count()
         return {"total": total, "done": done, "percent": round(100 * done / total) if total else 0}
@@ -132,7 +132,7 @@ class JoinRequestSerializer(serializers.ModelSerializer):
         model = JoinRequest
         fields = ("id", "project", "project_slug", "project_title", "user", "message", "status", "created_at")
 
-    def get_user(self, obj):
+    def get_user(self, obj) -> dict:
         return _person(obj.user, self.context.get("request"))
 
 
@@ -161,7 +161,7 @@ class TaskSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("project",)
 
-    def get_assignee(self, obj):
+    def get_assignee(self, obj) -> dict | None:
         return _person(obj.assignee, self.context.get("request")) if obj.assignee else None
 
     def validate_assignee_id(self, user):
@@ -190,7 +190,7 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
         fields = ("id", "project", "author", "body", "created_at")
         read_only_fields = ("project",)
 
-    def get_author(self, obj):
+    def get_author(self, obj) -> dict:
         return _person(obj.author, self.context.get("request"))
 
 
@@ -218,22 +218,22 @@ class ProjectDetailSerializer(ProjectSerializer):
             )
         return cache[obj.pk]
 
-    def get_members(self, obj):
+    def get_members(self, obj) -> list[dict]:
         members = obj.members.select_related("user").prefetch_related("user__skills__skill")
         return ProjectMemberSerializer(members, many=True, context=self.context).data
 
-    def get_milestones(self, obj):
+    def get_milestones(self, obj) -> list[dict]:
         return MilestoneSerializer(obj.milestones.all(), many=True, context=self.context).data
 
-    def get_updates(self, obj):
+    def get_updates(self, obj) -> list[dict]:
         return ProjectUpdateSerializer(obj.updates.select_related("author")[:50], many=True, context=self.context).data
 
-    def get_tasks(self, obj):
+    def get_tasks(self, obj) -> list[dict]:
         if not self._member_of(obj):
             return []
         return TaskSerializer(obj.tasks.select_related("assignee"), many=True, context=self.context).data
 
-    def get_viewer(self, obj):
+    def get_viewer(self, obj) -> dict:
         request = self.context.get("request")
         user = getattr(request, "user", None)
         membership = self._member_of(obj)

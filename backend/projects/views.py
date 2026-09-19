@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from django.contrib.auth import get_user_model
 from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery
 from django.db.models.functions import Coalesce
@@ -115,6 +118,7 @@ def _int(value, field):
 class ProjectListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='projects_project_list_get', responses={200: ProjectSerializer(many=True)})
     def get(self, request, *args, **kwargs):
         user = request.user
         queryset = _annotated(_visible(Project.objects.select_related("owner").prefetch_related("members__user"), user))
@@ -149,6 +153,7 @@ class ProjectCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
+    @extend_schema(operation_id='projects_project_create_post', request=ProjectSerializer, responses={201: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = ProjectSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
@@ -164,10 +169,12 @@ class ProjectDetailAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
+    @extend_schema(operation_id='projects_project_detail_get', responses={200: ProjectDetailSerializer})
     def get(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         return Response(_detail(project, request), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_project_detail_patch', request=ProjectSerializer, responses={200: ProjectDetailSerializer})
     def patch(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         if not (is_project_owner(project, request.user) or request.user.is_staff):
@@ -177,6 +184,7 @@ class ProjectDetailAPIView(APIView):
         serializer.save()
         return Response(_detail(project, request), status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_project_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         if not (is_project_owner(project, request.user) or request.user.is_staff):
@@ -201,6 +209,7 @@ def _add_member(join_request, actor):
 class JoinProjectAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_join_project_post', request=OpenApiTypes.OBJECT, responses={200: JoinRequestSerializer, 201: JoinRequestSerializer})
     def post(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         if is_project_member(project, request.user):
@@ -236,6 +245,7 @@ class JoinRequestsAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_join_requests_get', responses={200: JoinRequestSerializer(many=True)})
     def get(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         if not is_project_owner(project, request.user):
@@ -251,6 +261,7 @@ class JoinRequestRespondAPIView(APIView):
     ACCEPT = {"approved", "accept", "accepted", "approve"}
     DECLINE = {"rejected", "decline", "declined", "reject"}
 
+    @extend_schema(operation_id='projects_join_request_respond_post', request=OpenApiTypes.OBJECT, responses={200: JoinRequestSerializer})
     def post(self, request, id, *args, **kwargs):
         join_request = get_object_or_404(JoinRequest.objects.select_related("project", "user"), id=id)
         project = join_request.project
@@ -288,6 +299,7 @@ class JoinRequestRespondAPIView(APIView):
 class InviteAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_invite_post', request=OpenApiTypes.OBJECT, responses={201: JoinRequestSerializer})
     def post(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user)
         if not is_project_owner(project, request.user):
@@ -326,6 +338,7 @@ class MemberAPIView(APIView):
     def _target(self, project, user_id):
         return get_object_or_404(ProjectMember.objects.select_related("user"), project=project, user_id=user_id)
 
+    @extend_schema(operation_id='projects_member_patch', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, slug, user_id, *args, **kwargs):
         project = _get_project(slug, request.user)
         if not is_project_owner(project, request.user):
@@ -340,6 +353,7 @@ class MemberAPIView(APIView):
         member.save(update_fields=["role"])
         return Response({"id": member.id, "user_id": member.user_id, "role": member.role}, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_member_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, slug, user_id, *args, **kwargs):
         project = _get_project(slug, request.user)
         member = self._target(project, user_id)
@@ -370,10 +384,12 @@ def _apply_legacy_assignee(data):
 class TaskListAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_task_list_get', responses={200: TaskSerializer(many=True)})
     def get(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         return Response(TaskSerializer(project.tasks.select_related("assignee"), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_task_list_post', request=TaskSerializer, responses={201: TaskSerializer})
     def post(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         serializer = TaskSerializer(data=_apply_legacy_assignee(request.data), context={"request": request, "project": project})
@@ -393,10 +409,12 @@ class TaskDetailAPIView(APIView):
             raise PermissionDenied("You must be a project member to do that.")
         return task
 
+    @extend_schema(operation_id='projects_task_detail_get', responses={200: TaskSerializer})
     def get(self, request, id, *args, **kwargs):
         task = self._task(request, id)
         return Response(TaskSerializer(task, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_task_detail_patch', request=TaskSerializer, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
         task = self._task(request, id)
         previous_assignee = task.assignee_id
@@ -423,6 +441,7 @@ class TaskDetailAPIView(APIView):
         payload["xp_recipient"] = recipient.username if recipient else None
         return Response(payload, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_task_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         task = self._task(request, id)
         if not is_project_owner(task.project, request.user):
@@ -435,10 +454,12 @@ class TaskDetailAPIView(APIView):
 class MilestoneAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_milestone_get', responses={200: MilestoneSerializer(many=True)})
     def get(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         return Response(MilestoneSerializer(project.milestones.all(), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_milestone_post', request=MilestoneSerializer, responses={201: MilestoneSerializer})
     def post(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         serializer = MilestoneSerializer(data=request.data, context={"request": request})
@@ -456,6 +477,7 @@ class MilestoneDetailAPIView(APIView):
             raise PermissionDenied("You must be a project member to do that.")
         return milestone
 
+    @extend_schema(operation_id='projects_milestone_detail_patch', request=MilestoneSerializer, responses={200: OpenApiTypes.OBJECT})
     def patch(self, request, id, *args, **kwargs):
         milestone = self._milestone(request, id)
         was_done = milestone.status == "done"
@@ -469,6 +491,7 @@ class MilestoneDetailAPIView(APIView):
         payload["xp_awarded"] = xp
         return Response(payload, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_milestone_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         milestone = self._milestone(request, id)
         if not is_project_owner(milestone.project, request.user):
@@ -480,10 +503,12 @@ class MilestoneDetailAPIView(APIView):
 class ProjectUpdateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='projects_project_update_get', responses={200: ProjectUpdateSerializer(many=True)})
     def get(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         return Response(ProjectUpdateSerializer(project.updates.select_related("author"), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='projects_project_update_post', request=ProjectUpdateSerializer, responses={201: ProjectUpdateSerializer})
     def post(self, request, slug, *args, **kwargs):
         project = _get_project(slug, request.user, members_only=True)
         serializer = ProjectUpdateSerializer(data=request.data, context={"request": request})

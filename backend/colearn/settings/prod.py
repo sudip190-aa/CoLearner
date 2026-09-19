@@ -1,12 +1,13 @@
-from datetime import timedelta
-
 from decouple import Csv, config
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import *
 
 # No fallback: base.py's insecure default must never reach production.
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", default=False, cast=bool)
+if len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5 or SECRET_KEY.startswith("django-insecure-"):
+    raise ImproperlyConfigured("Production SECRET_KEY must be a unique random secret of at least 50 characters.")
+DEBUG = False
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="colearn.app", cast=Csv())
 
 DATABASES = {

@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 import re
 
 from django.contrib.auth import get_user_model
@@ -82,6 +85,7 @@ def _get_target(name, object_id):
 class ThreadListAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    @extend_schema(operation_id='community_thread_list_get', responses={200: ThreadSerializer(many=True)})
     def get(self, request, *args, **kwargs):
         queryset = Thread.objects.select_related("author").prefetch_related("tags")
         queryset = _with_comment_count(_with_vote_annotations(queryset, Thread, request.user))
@@ -108,6 +112,7 @@ class ThreadListAPIView(APIView):
 
         return Response(ThreadSerializer(queryset.distinct(), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='community_thread_list_post', request=ThreadWriteSerializer, responses={201: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = ThreadWriteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -128,6 +133,7 @@ class ThreadListAPIView(APIView):
 class ThreadDetailAPIView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    @extend_schema(operation_id='community_thread_detail_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, slug, *args, **kwargs):
         thread = get_object_or_404(Thread.objects.select_related("author").prefetch_related("tags"), slug=slug)
 
@@ -152,6 +158,7 @@ class ThreadDetailAPIView(APIView):
         payload["comments"] = CommentSerializer(roots, many=True, context={"request": request}).data
         return Response(payload, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='community_thread_detail_patch', request=ThreadWriteSerializer, responses={200: ThreadSerializer})
     def patch(self, request, slug, *args, **kwargs):
         thread = get_object_or_404(Thread, slug=slug)
         if request.user != thread.author and not request.user.is_staff:
@@ -161,6 +168,7 @@ class ThreadDetailAPIView(APIView):
         updated = serializer.save()
         return Response(ThreadSerializer(updated, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='community_thread_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, slug, *args, **kwargs):
         thread = get_object_or_404(Thread, slug=slug)
         if request.user != thread.author and not request.user.is_staff:
@@ -172,6 +180,7 @@ class ThreadDetailAPIView(APIView):
 class ThreadCommentCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='community_thread_comment_create_post', request=OpenApiTypes.OBJECT, responses={201: CommentSerializer})
     def post(self, request, slug, *args, **kwargs):
         thread = get_object_or_404(Thread, slug=slug)
         body = _require_text(request.data.get("body"), "body", MAX_COMMENT_LENGTH)
@@ -210,6 +219,7 @@ class ThreadCommentCreateAPIView(APIView):
 class CommentDetailAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='community_comment_detail_patch', request=OpenApiTypes.OBJECT, responses={200: CommentSerializer})
     def patch(self, request, id, *args, **kwargs):
         comment = get_object_or_404(Comment, id=id)
         if request.user != comment.author and not request.user.is_staff:
@@ -218,6 +228,7 @@ class CommentDetailAPIView(APIView):
         comment.save(update_fields=["body", "updated_at"])
         return Response(CommentSerializer(comment, context={"request": request}).data, status=status.HTTP_200_OK)
 
+    @extend_schema(operation_id='community_comment_detail_delete', responses={200: OpenApiTypes.OBJECT})
     def delete(self, request, id, *args, **kwargs):
         comment = get_object_or_404(Comment, id=id)
         if request.user != comment.author and not request.user.is_staff:
@@ -234,6 +245,7 @@ class VoteAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='community_vote_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         content_type = str(request.data.get("content_type") or "").lower()
         try:
@@ -268,6 +280,7 @@ class VoteAPIView(APIView):
 class TagListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='community_tag_list_get', responses={200: TagSerializer(many=True)})
     def get(self, request, *args, **kwargs):
         tags = Tag.objects.annotate(thread_count=Count("threads", distinct=True)).filter(thread_count__gt=0).order_by("-thread_count", "name")
         return Response(TagSerializer(tags, many=True, context={"request": request}).data, status=status.HTTP_200_OK)
@@ -276,6 +289,7 @@ class TagListAPIView(APIView):
 class ReportAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='community_report_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT, 201: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         content_type_name = str(request.data.get("content_type") or "").lower()
         target = _get_target(content_type_name, request.data.get("object_id"))

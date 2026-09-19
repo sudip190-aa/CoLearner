@@ -51,14 +51,14 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This role cannot be self-assigned.")
         return value
 
-    def get_skills(self, obj):
+    def get_skills(self, obj) -> list[dict]:
         user_skills = obj.skills.select_related("skill").all()
         return [
             {"id": item.skill.id, "name": item.skill.name, "level": item.level}
             for item in user_skills
         ]
 
-    def get_badges(self, obj):
+    def get_badges(self, obj) -> list[dict]:
         return [
             {"id": item.badge.id, "name": item.badge.name, "slug": item.badge.slug}
             for item in obj.badges.select_related("badge").all()
@@ -116,7 +116,7 @@ class UserDetailSerializer(UserSerializer):
                 data.pop(field, None)
         return data
 
-    def get_stats(self, obj):
+    def get_stats(self, obj) -> dict:
         return {
             "xp": obj.xp,
             "level": obj.level,

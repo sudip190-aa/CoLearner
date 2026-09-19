@@ -45,24 +45,24 @@ class ThreadSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
-    def get_author(self, obj):
+    def get_author(self, obj) -> dict:
         return author_payload(obj.author, self.context.get("request"))
 
     # The list view annotates these in one query; single objects fall back to a query each.
-    def get_vote_score(self, obj):
+    def get_vote_score(self, obj) -> int:
         if hasattr(obj, "vote_score"):
             return int(obj.vote_score or 0)
         from .views import vote_total
 
         return vote_total(obj)
 
-    def get_comment_count(self, obj):
+    def get_comment_count(self, obj) -> int:
         return obj.comment_count if hasattr(obj, "comment_count") else obj.comments.count()
 
-    def get_tags(self, obj):
+    def get_tags(self, obj) -> list[str]:
         return [tag.name for tag in obj.tags.all()]
 
-    def get_user_vote(self, obj):
+    def get_user_vote(self, obj) -> int:
         if hasattr(obj, "user_vote"):
             return int(obj.user_vote or 0)
         from .views import user_vote_for
@@ -81,17 +81,17 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ("id", "thread", "parent", "author", "body", "vote_score", "user_vote", "replies", "created_at", "updated_at")
 
-    def get_author(self, obj):
+    def get_author(self, obj) -> dict:
         return author_payload(obj.author, self.context.get("request"))
 
-    def get_vote_score(self, obj):
+    def get_vote_score(self, obj) -> int:
         if hasattr(obj, "vote_score"):
             return int(obj.vote_score or 0)
         from .views import vote_total
 
         return vote_total(obj)
 
-    def get_user_vote(self, obj):
+    def get_user_vote(self, obj) -> int:
         if hasattr(obj, "user_vote"):
             return int(obj.user_vote or 0)
         from .views import user_vote_for
@@ -99,7 +99,7 @@ class CommentSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         return user_vote_for(request.user if request else None, obj)
 
-    def get_replies(self, obj):
+    def get_replies(self, obj) -> list[dict]:
         # Replies are attached by the detail view (one level deep); a bare comment has none.
         return getattr(obj, "reply_list", [])
 
@@ -111,7 +111,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ("id", "slug", "name", "color", "count")
 
-    def get_count(self, obj):
+    def get_count(self, obj) -> int:
         return obj.thread_count if hasattr(obj, "thread_count") else obj.threads.count()
 
 

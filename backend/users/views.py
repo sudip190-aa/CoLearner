@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 import logging
 from datetime import timedelta
 from urllib.parse import quote
@@ -101,6 +104,7 @@ class RegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AuthIPThrottle]
 
+    @extend_schema(operation_id='users_register_post', request=UserRegisterSerializer, responses={201: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = UserRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -122,6 +126,7 @@ class LoginAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AuthIPThrottle]
 
+    @extend_schema(operation_id='users_login_post', request=LoginSerializer, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -141,6 +146,7 @@ class LoginAPIView(APIView):
 class LogoutAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_logout_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         refresh_token = request.data.get("refresh")
         if not refresh_token:
@@ -170,6 +176,7 @@ class UsernameAvailabilityAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_username_availability_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         username = (request.query_params.get("username") or "").strip()
         if not username:
@@ -197,6 +204,7 @@ class MeAPIView(generics.RetrieveUpdateAPIView):
 class MeSkillsAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='users_me_skills_put', request=SkillsSyncSerializer, responses={200: UserDetailSerializer})
     def put(self, request, *args, **kwargs):
         serializer = SkillsSyncSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -208,6 +216,7 @@ class PasswordChangeAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [AuthIPThrottle]
 
+    @extend_schema(operation_id='users_password_change_post', request=PasswordChangeSerializer, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = PasswordChangeSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
@@ -240,6 +249,7 @@ class PasswordForgotAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AuthIPThrottle]
 
+    @extend_schema(operation_id='users_password_forgot_post', request=PasswordForgotSerializer, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = PasswordForgotSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -259,6 +269,7 @@ class PasswordResetAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AuthIPThrottle]
 
+    @extend_schema(operation_id='users_password_reset_post', request=PasswordResetSerializer, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = PasswordResetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -269,6 +280,7 @@ class PasswordResetAPIView(APIView):
 class OnboardingAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='users_onboarding_post', request=OnboardingSerializer, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, *args, **kwargs):
         serializer = OnboardingSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -288,6 +300,7 @@ class OnboardingAPIView(APIView):
 class UserListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_user_list_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         # Deactivated/banned accounts never appear in public listings.
         queryset = User.objects.filter(is_active=True).prefetch_related("skills__skill", "badges__badge")
@@ -333,6 +346,7 @@ class UserListAPIView(APIView):
 class UserDetailAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_user_detail_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, username, *args, **kwargs):
         user = get_object_or_404(User, username__iexact=username, is_active=True)
         return Response(_user_summary(user, request), status=status.HTTP_200_OK)
@@ -341,6 +355,7 @@ class UserDetailAPIView(APIView):
 class UserPortfolioAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_user_portfolio_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, username, *args, **kwargs):
         user = get_object_or_404(User, username__iexact=username, is_active=True)
         profile = _user_summary(user, request)
@@ -422,6 +437,7 @@ class UserPortfolioAPIView(APIView):
 class ConnectionAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='users_connection_post', request=OpenApiTypes.OBJECT, responses={200: OpenApiTypes.OBJECT})
     def post(self, request, username, *args, **kwargs):
         target = get_object_or_404(User, username__iexact=username)
         if target.pk == request.user.pk:
@@ -467,6 +483,7 @@ class ConnectionAPIView(APIView):
 class SuggestedUsersAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='users_suggested_users_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         existing = Connection.objects.filter(Q(from_user=request.user) | Q(to_user=request.user)).values_list("from_user_id", "to_user_id")
         excluded_ids = {user_id for pair in existing for user_id in pair}
@@ -498,6 +515,7 @@ class SuggestedUsersAPIView(APIView):
 class SkillListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='users_skill_list_get', responses={200: SkillSerializer(many=True)})
     def get(self, request, *args, **kwargs):
         skills = Skill.objects.annotate(usage_count=Count("user_skills__user")).order_by("-usage_count", "name")
         serializer = SkillSerializer(skills, many=True, context={"request": request})

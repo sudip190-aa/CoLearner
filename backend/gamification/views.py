@@ -1,3 +1,6 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
+
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -72,6 +75,7 @@ class LeaderboardAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='gamification_leaderboard_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         period = (request.query_params.get("period") or "all").lower()
         if period not in {"week", "month", "all"}:
@@ -118,6 +122,7 @@ class LeaderboardAPIView(APIView):
 class BadgeListAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(operation_id='gamification_badge_list_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         return Response(
             [_badge_payload(badge, required=BADGE_THRESHOLDS.get(badge.criteria_key, 1)) for badge in Badge.objects.all()],
@@ -128,6 +133,7 @@ class BadgeListAPIView(APIView):
 class MeBadgesAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='gamification_me_badges_get', responses={200: OpenApiTypes.OBJECT})
     def get(self, request, *args, **kwargs):
         earned_at = dict(UserBadge.objects.filter(user=request.user).values_list("badge_id", "earned_at"))
         earned, locked = [], []
@@ -145,6 +151,7 @@ class MeBadgesAPIView(APIView):
 class MeXPHistoryAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(operation_id='gamification_me_x_p_history_get', responses={200: {'type': 'array', 'items': {'type': 'object'}}})
     def get(self, request, *args, **kwargs):
         limit = _limit(request, 50, 200)
         events = XPEvent.objects.filter(user=request.user).order_by("-created_at", "-id")[:limit]

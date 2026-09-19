@@ -4,6 +4,7 @@ backend/.venv-local/
 backend/__pycache__/
 backend/**/__pycache__/
 backend/.pytest_cache/
+backend/.pytest-audit-*/
 backend/.coverage
 backend/htmlcov/
 backend/.env

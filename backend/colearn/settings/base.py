@@ -6,7 +6,7 @@ from decouple import Csv, config
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = False  # Environment-specific settings decide whether debugging is allowed.
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="localhost,127.0.0.1,0.0.0.0",
@@ -138,10 +138,16 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
+    "ENUM_NAME_OVERRIDES": {
+        "ProjectStatusEnum": "projects.models.Project.STATUS_CHOICES",
+        "JoinRequestStatusEnum": "projects.models.JoinRequest.STATUS_CHOICES",
+        "TaskStatusEnum": "projects.models.Task.STATUS_CHOICES",
+        "MilestoneStatusEnum": "projects.models.Milestone.STATUS_CHOICES",
+    },
 }
 
 # Where the React app lives; password-reset emails link here.
-FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5176")
 
 # Dev default prints emails to the runserver console. Set EMAIL_BACKEND (and the SMTP vars) for real delivery.
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
