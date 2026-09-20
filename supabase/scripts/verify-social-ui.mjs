@@ -635,9 +635,7 @@ try {
       ),
       "https://example.com/demo",
     );
-    await G.wait(
-      "!!document.querySelector('section[aria-label=\"Project gallery\"] img')",
-    );
+    await G.wait("!!document.querySelector('.project-banner img')");
     pass(
       "Owner gallery upload and anonymous project detail with live demo/repository links",
     );

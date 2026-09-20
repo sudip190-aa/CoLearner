@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import clsx from 'clsx'
 import logoSrc from '../../assets/logo.png'
+import darkLogoSrc from '../../assets/logo2.svg'
 
 export const LOGO_SRC = logoSrc
 
@@ -27,16 +28,22 @@ const SIZE_MAP = {
   xs: { height: 18, textClass: 'text-sm' },
   sm: { height: 22, textClass: 'text-base' },
   md: { height: 28, textClass: 'text-xl' },
-  nav: { height: 36, textClass: 'text-2xl' },
+  nav: { height: 32, textClass: 'text-2xl' },
   lg: { height: 42, textClass: 'text-2xl' },
   xl: { height: 56, textClass: 'text-3xl' },
 }
 
-/** Renders the pristine logo.png with its transparent margin cropped away. */
+/** Both supplied assets share the same square canvas and lockup bounds. */
 function LockupImage({ height, priority }) {
   // Scale the square source so the drawn lockup ends up exactly `height` tall.
   const imgSize = (height * SRC_SIZE) / INK_BOX.h
   const boxWidth = (height * INK_BOX.w) / INK_BOX.h
+  const imageStyle = {
+    width: imgSize,
+    height: imgSize,
+    left: -(INK_BOX.x / SRC_SIZE) * imgSize,
+    top: -(INK_BOX.y / SRC_SIZE) * imgSize,
+  }
 
   return (
     <span
@@ -49,13 +56,17 @@ function LockupImage({ height, priority }) {
         draggable="false"
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
-        className="absolute max-w-none select-none dark:brightness-0 dark:invert"
-        style={{
-          width: imgSize,
-          height: imgSize,
-          left: -(INK_BOX.x / SRC_SIZE) * imgSize,
-          top: -(INK_BOX.y / SRC_SIZE) * imgSize,
-        }}
+        className="absolute max-w-none select-none dark:hidden"
+        style={imageStyle}
+      />
+      <img
+        src={darkLogoSrc}
+        alt="Colearn"
+        draggable="false"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        className="absolute hidden max-w-none select-none dark:block"
+        style={imageStyle}
       />
     </span>
   )

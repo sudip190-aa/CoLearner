@@ -58,7 +58,7 @@ export function AppNavbar() {
       <Container className="flex h-[76px] items-center gap-3 sm:gap-5">
         <Link to="/dashboard" className="shrink-0" aria-label="Go to dashboard">
           <span className="hidden min-[768px]:inline-flex">
-            <Logo variant="full" size="lg" />
+            <Logo variant="full" size="nav" />
           </span>
           <span className="inline-flex min-[768px]:hidden">
             <Logo variant="mark" size="md" />

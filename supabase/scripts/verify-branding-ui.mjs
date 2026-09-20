@@ -1,7 +1,7 @@
 import { createClient } from "../../CoLearner/node_modules/@supabase/supabase-js/dist/index.mjs";
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 const ref = "ghjdpcvnzclfvyosfhoz",
   origin = "http://127.0.0.1:5176",
@@ -243,16 +243,17 @@ try {
         "!![...document.querySelectorAll('img[alt=Colearn]')].find(i=>i.complete&&i.naturalWidth>0)",
       );
       const logo = await A.evaluate(
-        "(()=>{const img=[...document.querySelectorAll('img[alt=Colearn]')].find(i=>i.getBoundingClientRect().width>0),r=img.parentElement.getBoundingClientRect();return {filter:getComputedStyle(img).filter,ratio:r.width/r.height,height:r.height}})()",
+        "(()=>{const img=[...document.querySelectorAll('img[alt=Colearn]')].find(i=>i.getBoundingClientRect().width>0),r=img.parentElement.getBoundingClientRect();return {src:img.currentSrc,filter:getComputedStyle(img).filter,ratio:r.width/r.height,height:r.height}})()",
       );
       assert(Math.abs(logo.ratio - 1716 / 773) < 0.01);
       assert(logo.height <= 42);
-      if (theme === "dark")
-        assert(
-          logo.filter.includes("brightness(0)") &&
-            logo.filter.includes("invert(1)"),
-        );
-      else assert.equal(logo.filter, "none");
+      assert.equal(logo.filter, "none");
+      assert(
+        theme === "dark"
+          ? logo.src ===
+              `data:image/svg+xml;base64,${readFileSync(new URL("../../CoLearner/src/assets/logo2.svg", import.meta.url)).toString("base64")}`
+          : logo.src.includes("logo.png"),
+      );
       await A.screenshot(`branding-profile-${theme}-${width}`);
     }
   }

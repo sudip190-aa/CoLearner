@@ -7,6 +7,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Keep the whole uploaded artwork visible, with a calm surface around it. */
+.project-banner {
+  height: clamp(220px, 34vw, 460px);
+}
+
+.project-detail [role='tabpanel'] {
+  overflow-wrap: anywhere;
+}
+
 :root {
   color-scheme: light;
   --c-surface: #ffffff;

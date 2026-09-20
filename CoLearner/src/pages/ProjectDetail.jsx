@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
+  ArrowLeft,
   CalendarDays,
   Check,
   Clipboard,
@@ -24,7 +25,6 @@ import {
   Textarea,
   useToast,
 } from '../components/ui'
-import { BookCover } from '../components/books/BookCover'
 import { projects } from '../services/api.js'
 import { useAuthStore } from '../store/authStore'
 import { formatDate, formatRelative } from '../lib/formatters.js'
@@ -35,6 +35,31 @@ import {
 } from '../lib/projectStatus.js'
 
 const roleLabels = { owner: 'Owner', mentor: 'Mentor', member: 'Member' }
+
+// Signed URLs for the same stored image can have different query strings.
+const imageIdentity = (url) => url?.split('?')[0]
+
+function ProjectBanner({ src, title }) {
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) return null
+  return (
+    <a
+      href={src}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`View ${title} cover image`}
+      className="project-banner block border-b border-c-border/60 bg-c-blue-wash dark:bg-c-bg"
+    >
+      <img
+        src={src}
+        alt={`${title} cover`}
+        onError={() => setFailed(true)}
+        className="h-full w-full object-contain"
+        fetchpriority="high"
+      />
+    </a>
+  )
+}
 
 function Milestones({ milestones }) {
   if (!milestones.length)
@@ -74,6 +99,10 @@ function Milestones({ milestones }) {
 
 export default function ProjectDetail() {
   const { slug } = useParams()
+  return <ProjectDetailContent key={slug} slug={slug} />
+}
+
+function ProjectDetailContent({ slug }) {
   const navigate = useNavigate()
   const toast = useToast()
   const currentUserId = useAuthStore((state) => state.user?.id)
@@ -132,6 +161,10 @@ export default function ProjectDetail() {
   const pending = viewer.joinRequest?.status === 'pending'
   const full = project.spotsLeft <= 0
   const closed = isClosedProject(project)
+  const banner = project.cover || project.galleryUrls?.find(Boolean) || ''
+  const gallery = [...new Set(project.galleryUrls || [])].filter(
+    (url) => url && imageIdentity(url) !== imageIdentity(banner),
+  )
 
   const run = async (work, success, leavePrivate = false) => {
     if (busy) return
@@ -232,13 +265,20 @@ export default function ProjectDetail() {
   )
 
   return (
-    <div className="space-y-8">
-      <section className="overflow-hidden rounded-brand-lg border border-c-border bg-c-surface shadow-sm">
-        <div className="h-48 bg-c-blue-wash sm:h-64">
-          <BookCover book={project} className="h-full w-full" />
-        </div>
-        <div className="p-5 sm:p-8">
-          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+    <div className="project-detail space-y-7 sm:space-y-8">
+      <Link
+        to="/projects"
+        className="inline-flex items-center gap-2 text-sm font-medium text-c-text-muted transition-colors hover:text-c-blue"
+      >
+        <ArrowLeft size={16} /> All projects
+      </Link>
+      <section
+        aria-label="Project introduction"
+        className="overflow-hidden rounded-2xl border border-c-border/70 bg-c-surface shadow-sm"
+      >
+        <ProjectBanner key={banner} src={banner} title={project.title} />
+        <div className="p-5 sm:p-8 lg:p-9">
+          <div className="flex flex-col gap-6">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={projectStatusVariant(project.status)}>
@@ -249,79 +289,64 @@ export default function ProjectDetail() {
                 </span>
                 {!project.isPublic && <Badge variant="gray">Private</Badge>}
               </div>
-              <h1 className="mt-3 text-3xl font-bold leading-tight text-c-text sm:text-4xl">
+              <h1 className="mt-4 max-w-4xl break-words text-3xl font-semibold leading-tight tracking-tight text-c-text sm:text-4xl lg:text-[2.75rem]">
                 {project.title}
               </h1>
               {project.summary && (
-                <p className="mt-2 max-w-2xl text-base text-c-text-muted">
+                <p className="mt-3 max-w-3xl break-words text-sm leading-relaxed text-c-text-muted sm:text-base">
                   {project.summary}
                 </p>
               )}
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-c-text-muted">
+            </div>
+            <div className="flex flex-col gap-5 border-t border-c-border/60 pt-5 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3 text-xs text-c-text-muted sm:text-sm">
                 <Link
                   to={`/u/${project.owner.username}`}
-                  className="flex items-center gap-2 hover:text-c-blue"
+                  className="flex min-w-0 items-center gap-2.5 font-medium text-c-text transition-colors hover:text-c-blue"
                 >
                   <Avatar
                     src={project.owner.avatar}
                     name={project.owner.fullName}
                     size="sm"
                   />
-                  {project.owner.fullName}
+                  <span className="break-words">{project.owner.fullName}</span>
                 </Link>
-                <span>·</span>
-                <span>
-                  Created {formatDate(project.createdAt, 'MMM d, yyyy')}
+                <span className="inline-flex items-center gap-2">
+                  <CalendarDays size={15} className="shrink-0" />
+                  {formatDate(project.createdAt, 'MMM d, yyyy')}
                 </span>
               </div>
-            </div>
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
-              {project.demoUrl && (
-                <a
-                  href={project.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-c-action px-4 py-2.5 text-sm font-semibold text-white"
-                >
-                  View Live Demo <ExternalLink size={15} />
-                </a>
-              )}
-              {project.repositoryUrl && (
-                <a
-                  href={project.repositoryUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-c-blue"
-                >
-                  Repository ?
-                </a>
-              )}
-              {action}
+              <div className="project-actions flex flex-wrap items-center gap-3">
+                {action}
+                {project.demoUrl && (
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-c-border px-4 py-2.5 text-sm font-medium text-c-text transition-colors hover:border-c-blue hover:bg-c-blue-wash"
+                  >
+                    View Live Demo <ExternalLink size={15} />
+                  </a>
+                )}
+                {project.repositoryUrl && (
+                  <a
+                    href={project.repositoryUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-1 py-2 text-sm font-medium text-c-blue hover:underline"
+                  >
+                    Repository <ExternalLink size={14} />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
-      {!!project.galleryUrls?.length && (
-        <section
-          aria-label="Project gallery"
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {project.galleryUrls.map((url, index) => (
-            <a key={url} href={url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={url}
-                alt={`${project.title} screenshot ${index + 1}`}
-                loading="lazy"
-                className="h-52 w-full rounded-2xl border border-c-border bg-c-surface object-contain"
-              />
-            </a>
-          ))}
-        </section>
-      )}
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
           <Tabs value={tab} onChange={setTab}>
-            <TabsList>
+            <TabsList aria-label="Project details" className="gap-5 sm:gap-8">
               <TabTrigger value="overview">Overview</TabTrigger>
               <TabTrigger value="team">
                 Team <span className="ml-1 text-xs">{project.memberCount}</span>
@@ -331,7 +356,7 @@ export default function ProjectDetail() {
                 <span className="ml-1 text-xs">{project.updates.length}</span>
               </TabTrigger>
             </TabsList>
-            <TabContent value="overview">
+            <TabContent value="overview" className="pt-6 sm:pt-8">
               <div className="space-y-8">
                 <section>
                   <h2 className="text-xl font-bold text-c-text">
@@ -348,6 +373,28 @@ export default function ProjectDetail() {
                     </p>
                   )}
                 </section>
+                {gallery.length > 0 && (
+                  <section aria-label="Project gallery">
+                    <h2 className="text-xl font-bold text-c-text">Gallery</h2>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      {gallery.map((url, index) => (
+                        <a
+                          key={url}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={url}
+                            alt={`${project.title} screenshot ${index + 1}`}
+                            loading="lazy"
+                            className="h-52 w-full rounded-xl border border-c-border bg-c-surface object-contain"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  </section>
+                )}
                 <section>
                   <h2 className="text-xl font-bold text-c-text">Tech stack</h2>
                   <div className="mt-3 flex flex-wrap gap-2">
