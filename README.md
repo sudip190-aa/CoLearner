@@ -2,6 +2,8 @@
 
 React + Supabase learning and collaboration platform: curated books, peer projects, community discussions, and public portfolios.
 
+Live website: **https://colearn-zuqe.onrender.com** — hosted as a free Render Static Site with Supabase. See [deployment details and verification](supabase/RENDER_DEPLOYMENT.md).
+
 ## Run locally
 
 ```powershell
@@ -26,7 +28,7 @@ Open http://127.0.0.1:5176. Django is not used by the frontend. The linked Supab
 ```powershell
 supabase link --project-ref ghjdpcvnzclfvyosfhoz
 supabase db push --linked --yes --skip-vault
-supabase functions deploy account contact book-library book-worker --use-api --no-verify-jwt
+supabase functions deploy account contact book-library book-worker voice-ice --use-api --no-verify-jwt
 ```
 
 These cloud commands do not require Docker. Edge Functions validate authentication internally; service keys remain private. Email/password uses Supabase Auth. Google/GitHub credentials are read from the ignored `.env.oauth` file by `supabase/scripts/configure-oauth.ps1`.

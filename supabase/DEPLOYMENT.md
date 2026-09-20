@@ -4,7 +4,11 @@ React runs against the linked COlearn Supabase project `ghjdpcvnzclfvyosfhoz`. D
 
 ## Frontend
 
-Use Node 22 and set the hosting project's root directory to **CoLearner**. The checked-in `vercel.json` selects Vite, builds with `npm run build`, publishes `dist`, and rewrites client routes to `index.html`. This preserves direct visits to profiles, project conversations, OAuth callbacks and password-reset pages. The configuration follows [Vercel's Vite SPA guidance](https://vercel.com/docs/frameworks/frontend/vite).
+The live frontend is **https://colearn-zuqe.onrender.com**, deployed as a free Render Static Site. The repository-root `render.yaml` records the configuration: Node 22, root directory `CoLearner`, build command `npm ci --include=dev && npm run build`, publish directory `dist`, SPA rewrite and security/microphone headers. Automatic deployment follows `main`. No Render database or paid compute service is required. See [the Render deployment record](RENDER_DEPLOYMENT.md).
+
+Vite uses Render's `RENDER_EXTERNAL_URL` for canonical/share metadata unless `VITE_SITE_URL` is explicitly set. Only the Supabase public URL and anon/publishable key are configured on Render. Private backend credentials remain in Supabase.
+
+For an alternative Vercel deployment, the checked-in `CoLearner/vercel.json` selects Vite, builds with `npm run build`, publishes `dist`, and rewrites client routes to `index.html`. The configuration follows [Vercel's Vite SPA guidance](https://vercel.com/docs/frameworks/frontend/vite).
 
 On another static host, serve `CoLearner/dist`, use HTTPS and fall back to `index.html` for application routes. Keep static assets available at their actual paths. Allow microphone access from the app's own origin; the Vercel configuration includes this permission and basic response security headers.
 
@@ -41,12 +45,12 @@ Do not reimport legacy data or rerun the original importer against the live appl
 
 ## Public URL and authentication
 
-The final production domain has not been supplied and no frontend hosting deployment is claimed. Once it is known, set Supabase Auth's Site URL to that HTTPS origin and add these exact application redirects:
+Supabase Auth's Site URL is `https://colearn-zuqe.onrender.com`. These exact production application redirects are configured, alongside the existing localhost development callbacks:
 
-- `https://YOUR_DOMAIN/auth/callback`
-- `https://YOUR_DOMAIN/auth/callback?next=/reset-password`
+- `https://colearn-zuqe.onrender.com/auth/callback`
+- `https://colearn-zuqe.onrender.com/auth/callback?next=/reset-password`
 
-Use exact production URLs, following [Supabase redirect configuration](https://supabase.com/docs/guides/auth/redirect-urls). Retain local development entries if still needed. Google and GitHub's **provider** callback remains `https://ghjdpcvnzclfvyosfhoz.supabase.co/auth/v1/callback`.
+When adding a custom domain, update the Site URL, application redirects and `VITE_SITE_URL` to that exact HTTPS origin, following [Supabase redirect configuration](https://supabase.com/docs/guides/auth/redirect-urls). Google and GitHub's **provider** callback remains `https://ghjdpcvnzclfvyosfhoz.supabase.co/auth/v1/callback`.
 
 Both providers are enabled and handoff/state/callback checks pass. Their real account owners must complete consent with two GitHub accounts to verify the last external identity step. CoLearn logout clears CoLearn sessions; GitHub controls its own account chooser and provider cookies.
 

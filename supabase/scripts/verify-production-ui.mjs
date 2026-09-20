@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
 const ref = "ghjdpcvnzclfvyosfhoz",
-  origin = "http://127.0.0.1:4177",
+  origin = process.env.COLEARN_TEST_ORIGIN || "http://127.0.0.1:4177",
   tag = `release-smoke-${Date.now()}`;
 const raw = JSON.parse(
   execFileSync(
@@ -269,6 +269,10 @@ try {
   ws.close();
   writeFileSync(
     ".dist/production-smoke.json",
-    JSON.stringify({ checks, errors, network, fixturesRemoved: true }, null, 2),
+    JSON.stringify(
+      { origin, checks, errors, network, fixturesRemoved: true },
+      null,
+      2,
+    ),
   );
 }

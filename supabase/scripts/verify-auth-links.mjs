@@ -4,6 +4,7 @@ import { createClient } from "../../CoLearner/node_modules/@supabase/supabase-js
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
+const origin = process.env.COLEARN_TEST_ORIGIN || "http://127.0.0.1:5176";
 const ref = "ghjdpcvnzclfvyosfhoz",
   tag = `links-${Date.now()}`,
   email = `${tag}@example.com`,
@@ -113,7 +114,7 @@ try {
   const clear = await send("Page.addScriptToEvaluateOnNewDocument", {
     source: "localStorage.clear(); sessionStorage.clear()",
   });
-  await send("Page.navigate", { url: "http://127.0.0.1:5176/signup" });
+  await send("Page.navigate", { url: `${origin}/signup` });
   await wait("!!document.querySelector('input[name=terms]')");
   await send("Page.removeScriptToEvaluateOnNewDocument", {
     identifier: clear.identifier,
@@ -132,7 +133,7 @@ try {
   assert(user, "Signup did not create an account");
   assert(
     await evalJS(
-      "import('/src/services/supabase/client.js').then(async m=>!!(await m.session()))",
+      `(()=>{const session=JSON.parse(localStorage.getItem('sb-${ref}-auth-token')||'null');return !!session?.access_token&&session.user?.id===${JSON.stringify(user.id)}})()`,
     ),
     "Signup did not retain the session",
   );
@@ -140,7 +141,7 @@ try {
   console.log(
     "PASS signup form immediately signs in and opens onboarding without confirmation email",
   );
-  await send("Page.navigate", { url: "http://127.0.0.1:5176/forgot-password" });
+  await send("Page.navigate", { url: `${origin}/forgot-password` });
   await wait("!!document.querySelector('input[name=email]')");
   await evalJS(
     `(()=>{const el=document.querySelector('input[name=email]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,${JSON.stringify(email)});el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('form').requestSubmit()})()`,
@@ -179,7 +180,7 @@ try {
     admin.auth.admin.generateLink({ type: "recovery", email }),
   );
   await send("Page.navigate", {
-    url: `http://127.0.0.1:5176/auth/callback?type=recovery&token_hash=${encodeURIComponent(recovery.properties.hashed_token)}`,
+    url: `${origin}/auth/callback?type=recovery&token_hash=${encodeURIComponent(recovery.properties.hashed_token)}`,
   });
   await wait(
     "location.pathname==='/reset-password' && document.querySelectorAll('input[type=password]').length===2",
@@ -200,7 +201,7 @@ try {
   console.log(
     "PASS recovery callback, password-reset form, old-password rejection, new-password login",
   );
-  await send("Page.navigate", { url: "http://127.0.0.1:5176/dashboard" });
+  await send("Page.navigate", { url: `${origin}/dashboard` });
   await wait("location.pathname==='/login'");
   console.log("PASS sign-out and protected-route redirect");
   const confirmation = await ok(
@@ -219,7 +220,7 @@ try {
   );
   confirmationUser = confirmation.user;
   await send("Page.navigate", {
-    url: `http://127.0.0.1:5176/auth/callback?type=signup&token_hash=${encodeURIComponent(confirmation.properties.hashed_token)}`,
+    url: `${origin}/auth/callback?type=signup&token_hash=${encodeURIComponent(confirmation.properties.hashed_token)}`,
   });
   await wait("location.pathname==='/onboarding'");
   assert(
@@ -230,7 +231,7 @@ try {
     "PASS email confirmation token creates a session and opens onboarding",
   );
   await send("Page.navigate", {
-    url: `http://127.0.0.1:5176/auth/callback?type=signup&token_hash=${encodeURIComponent(confirmation.properties.hashed_token)}`,
+    url: `${origin}/auth/callback?type=signup&token_hash=${encodeURIComponent(confirmation.properties.hashed_token)}`,
   });
   await wait("document.body.innerText.includes('Unable to continue')");
   console.log(
@@ -240,7 +241,7 @@ try {
     "localStorage.removeItem('sb-ghjdpcvnzclfvyosfhoz-auth-token-code-verifier')",
   );
   await send("Page.navigate", {
-    url: "http://127.0.0.1:5176/auth/callback?code=invalid-test-code",
+    url: `${origin}/auth/callback?code=invalid-test-code`,
   });
   await wait(
     "document.body.innerText.includes('This sign-in link could not be verified')",
@@ -248,9 +249,7 @@ try {
   console.log(
     "PASS OAuth callback without its PKCE verifier cannot reuse an older session",
   );
-  await evalJS(
-    "import('/src/services/supabase/client.js').then(m=>m.supabase.auth.signOut())",
-  );
+  await anon.auth.signOut();
 } finally {
   if (!user)
     user = (await ok(admin.auth.admin.listUsers({ perPage: 1000 }))).users.find(

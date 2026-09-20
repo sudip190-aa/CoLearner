@@ -1,7 +1,7 @@
 // Tests live provider handoffs; stops before credentials/consent, which need a real user.
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-const origin = "http://127.0.0.1:5176";
+const origin = process.env.COLEARN_TEST_ORIGIN || "http://127.0.0.1:5176";
 const ref = "ghjdpcvnzclfvyosfhoz";
 const tabs = await (await fetch("http://127.0.0.1:9224/json")).json();
 const ws = new WebSocket(
@@ -57,6 +57,7 @@ const wait = async (predicate) => {
   throw new Error("Browser did not reach expected state: " + predicate);
 };
 const report = {
+  origin,
   checkedAt: new Date().toISOString(),
   providers: {},
   endToEndConsent: "Requires interactive sign-in by the account owner",
