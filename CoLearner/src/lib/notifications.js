@@ -61,7 +61,14 @@ const VERBS = {
   project_removed: { phrase: 'removed you from', to: () => '/projects' },
   project_member_left: { phrase: 'left', to: workspace },
   project_update: { phrase: 'posted an update in', to: workspace },
-  task_assigned: { phrase: 'assigned you a task in', to: workspace },
+  task_assigned: { phrase: 'assigned you a task:', to: workspace },
+  task_status_todo: { phrase: 'moved a task to To Do:', to: workspace },
+  task_status_in_progress: {
+    phrase: 'moved a task to In Progress:',
+    to: workspace,
+  },
+  task_status_review: { phrase: 'moved a task to In Review:', to: workspace },
+  task_status_done: { phrase: 'marked a task Completed:', to: workspace },
 }
 
 export function describeNotification(notification) {

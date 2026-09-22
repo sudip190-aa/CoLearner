@@ -45,10 +45,10 @@ import {
 } from '../lib/projectStatus.js'
 
 const columns = [
-  { id: 'todo', label: 'To do' },
-  { id: 'in_progress', label: 'In progress' },
-  { id: 'review', label: 'Review' },
-  { id: 'done', label: 'Done' },
+  { id: 'todo', label: 'To Do' },
+  { id: 'in_progress', label: 'In Progress' },
+  { id: 'review', label: 'In Review' },
+  { id: 'done', label: 'Completed' },
 ]
 const priorities = [
   { value: 'low', label: 'Low' },
@@ -139,6 +139,7 @@ function TaskForm({ members, initial = {}, onSubmit, onCancel, onDelete }) {
     assignee: initial.assigneeId || '',
     priority: initial.priority || 'medium',
     dueDate: initial.dueDate?.slice(0, 10) || '',
+    status: initial.status || 'todo',
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -201,6 +202,14 @@ function TaskForm({ members, initial = {}, onSubmit, onCancel, onDelete }) {
           options={priorities}
         />
       </div>
+      {initial.id && (
+        <Select
+          label="Status"
+          value={form.status}
+          onChange={(event) => set('status', event.target.value)}
+          options={columns.map(({ id, label }) => ({ value: id, label }))}
+        />
+      )}
       <Input
         label="Due date"
         type="date"

@@ -418,6 +418,7 @@ class TaskDetailAPIView(APIView):
     def patch(self, request, id, *args, **kwargs):
         task = self._task(request, id)
         previous_assignee = task.assignee_id
+        previous_status = task.status
         was_done = task.status == Task.STATUS_DONE
         serializer = TaskSerializer(task, data=_apply_legacy_assignee(request.data), partial=True, context={"request": request, "project": task.project})
         serializer.is_valid(raise_exception=True)
@@ -425,6 +426,22 @@ class TaskDetailAPIView(APIView):
 
         if task.assignee_id and task.assignee_id != previous_assignee:
             create_notification(task.assignee, request.user, "task_assigned", task.project)
+
+        # Notify the relevant party when the task status changes.
+        _STATUS_VERB = {
+            Task.STATUS_TODO: "task_status_todo",
+            Task.STATUS_IN_PROGRESS: "task_status_in_progress",
+            Task.STATUS_REVIEW: "task_status_review",
+            Task.STATUS_DONE: "task_status_done",
+        }
+        if task.status != previous_status and task.status in _STATUS_VERB:
+            verb = _STATUS_VERB[task.status]
+            # Notify the assignee (if someone else changed their task's status).
+            if task.assignee_id and task.assignee_id != request.user.id:
+                create_notification(task.assignee, request.user, verb, task)
+            # Also notify the project owner so they stay aware of progress.
+            elif task.project.owner_id and task.project.owner_id != request.user.id:
+                create_notification(task.project.owner, request.user, verb, task)
 
         xp_awarded, recipient = 0, None
         if task.status == Task.STATUS_DONE and not was_done and not task.xp_awarded:

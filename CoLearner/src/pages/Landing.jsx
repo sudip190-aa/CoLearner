@@ -71,10 +71,10 @@ export const Landing = () => {
   const signedIn = useAuthStore((s) => s.isAuthenticated)
   return (
     <div id="top" className="min-h-screen bg-c-surface font-sans text-c-text">
-      <section className="relative overflow-hidden border-b border-c-border bg-gradient-to-b from-c-blue-wash to-white pb-16 pt-16 sm:pt-24 lg:pb-24">
+      <section className="relative overflow-hidden border-b border-c-border bg-gradient-to-b from-c-blue-wash to-white pb-16 pt-16 sm:pt-24 lg:pb-24 dark:[background-image:none] dark:bg-c-bg">
         <div className="container grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
           <div>
-            <p className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-c-blue">
+            <p className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-c-blue">
               <span className="h-2 w-2 rounded-full bg-c-action" /> Learn.
               Build. Prove.
             </p>
@@ -85,7 +85,7 @@ export const Landing = () => {
               <br />
               <span className="text-c-blue">Show your skills.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-c-text-muted">
+            <p className="mt-6 max-w-lg text-lg leading-relaxed tracking-normal text-c-text-muted">
               Read curated books, build projects with others, and create a
               portfolio that shows what you can do.
             </p>
